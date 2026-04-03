@@ -1,26 +1,5 @@
 {
   "version": 2,
-  "buildCommand": null,
-  "installCommand": null,
-  "outputDirectory": ".",
-  "framework": null,
   "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/admin", "dest": "/gallery-admin.html" },
-    { "src": "/gallery-admin", "dest": "/gallery-admin.html" },
-    { "src": "/script.js", "dest": "/script.js" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" }
-      ]
-    }
-  ]
+  "trailingSlash": false
 }
