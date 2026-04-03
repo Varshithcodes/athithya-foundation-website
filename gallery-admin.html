@@ -1422,65 +1422,73 @@
 
     async function addImpactItem() {
       if (!pendingFile) { showToast('⚠️ Please select a file first.'); return; }
-      if (!client) { showToast('⚠️ Sanity client not initialized.'); return; }
 
       const title = document.getElementById('newItemTitle').value.trim() || pendingFile.name.replace(/\.[^.]+$/, '');
       const desc = document.getElementById('newItemDesc').value.trim();
       const type = document.getElementById('newItemType').value;
 
-      showToast('🚀 Uploading to Sanity Assets...');
+      // ── OPTION A: Sanity Write (Requires Token) ──
+      if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== 'your_sanity_write_token') {
+        showToast('🚀 Uploading to Sanity Cloud...');
+        try {
+          const asset = await client.assets.upload(type === 'video' ? 'file' : 'image', pendingFile, {
+            filename: pendingFile.name
+          });
+          const result = await client.create({
+            _type: 'galleryItem', title, caption: desc,
+            image: type === 'photo' ? { _type: 'image', asset: { _ref: asset._id } } : undefined,
+            videoUrl: type === 'video' ? asset.url : undefined,
+          });
+          gallery.unshift({ id: result._id, type, media: asset.url, title, desc, addedAt: new Date().toISOString() });
+          renderAdminGallery();
+          resetForm();
+          showToast('✅ Sanity Cloud Updated!');
+          return;
+        } catch (e) {
+          console.error(e);
+          showToast('❌ Sanity Cloud error. Trying local server...');
+        }
+      }
+
+      // ── OPTION B: Local Server (Direct Storage) ──
+      showToast('🏢 Syncing to Local Server...');
+      const formData = new FormData();
+      formData.append('image', pendingFile);
+      formData.append('title', title);
+      formData.append('location', desc);
 
       try {
-        // 1. Upload the image/video asset to Sanity
-        const asset = await client.assets.upload(type === 'video' ? 'file' : 'image', pendingFile, {
-          filename: pendingFile.name
-        });
-
-        // 2. Create the Gallery document
-        const newDoc = {
-          _type: 'galleryItem',
-          title: title,
-          caption: desc,
-          image: type === 'photo' ? {
-            _type: 'image',
-            asset: { _type: 'reference', _ref: asset._id }
-          } : undefined,
-          videoUrl: type === 'video' ? asset.url : undefined,
-        };
-
-        const result = await client.create(newDoc);
-        showToast('✅ Added to Sanity successfully!');
-
-        // 3. Update local state for UI (optional, or just fetch again)
-        gallery.unshift({
-          id: result._id,
-          type: type,
-          media: asset.url,
-          title: title,
-          desc: desc,
-          addedAt: new Date().toISOString()
-        });
-
-        renderAdminGallery();
-
-        // Reset form
-        pendingFile = null;
-        document.getElementById('fileInput').value = '';
-        document.getElementById('newItemTitle').value = '';
-        document.getElementById('newItemDesc').value = '';
-
-      } catch (error) {
-        console.error('Sanity Upload Error:', error);
-        let msg = '❌ Error syncing to Sanity.';
-        if (SANITY_WRITE_TOKEN === 'your_sanity_write_token') {
-          msg = '🔑 Missing Sanity Write Token! Please add your API key to the code.';
-        } else if (error.message && error.message.includes('401')) {
-          msg = '🚫 Unauthorized: Your Sanity Token might be expired or incorrect.';
-        } else if (error.message && error.message.includes('403')) {
-          msg = '🛡️ Forbidden: Check your Sanity CORS origins or project permissions.';
+        const res = await fetch('/api/gallery', { method: 'POST', body: formData });
+        const result = await res.json();
+        if (result.success) {
+          gallery.unshift({
+            id: 'loc_' + Date.now(),
+            type: type,
+            media: result.image.image,
+            title: title,
+            desc: desc,
+            addedAt: new Date().toISOString()
+          });
+          renderAdminGallery();
+          saveAndRefresh();
+          resetForm();
+          showToast('✅ Saved to Local Gallery!');
+        } else {
+          throw new Error('Server upload failed');
         }
-        showToast(msg);
+      } catch (error) {
+        console.error('Final Sync Error:', error);
+        showToast('❌ Total Failure: No cloud and no local server connection.');
       }
+    }
+
+    function resetForm() {
+      pendingFile = null;
+      document.getElementById('fileInput').value = '';
+      document.getElementById('uploadIcon').textContent = '📁';
+      document.getElementById('uploadLabel').textContent = 'Click to upload Photo/Video';
+      document.getElementById('newItemTitle').value = '';
+      document.getElementById('newItemDesc').value = '';
     }
 
     // ── GALLERY RENDER ──

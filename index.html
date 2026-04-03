@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -5379,18 +5379,25 @@
     function simulatePayment() {
       const name = prompt('Your Name (for our records):') || 'Anonymous';
       const email = prompt('Your Email (optional):') || '';
-      const amount = prompt('Amount donated (₹):') || '0';
+      const amountStr = prompt('Amount donated (₹):') || '0';
       const phone = prompt('Phone number (optional):') || '';
-
+      
+      const amount = parseFloat(amountStr).toFixed(2);
       const txnId = 'TXN' + Date.now();
+      
+      // Use local timestamp for accuracy
+      const now = new Date();
+      const istTime = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
       const donation = {
         sheetName: 'Payments',
         txnId,
         name,
         email,
         phone,
-        amount,
-        date: new Date().toISOString()
+        amount: Number(amount),
+        date: istTime,
+        isoDate: now.toISOString()
       };
 
       // 1. Save to localStorage (Admin Panel)
@@ -5400,7 +5407,7 @@
 
       // 2. Clear view and show success
       document.getElementById('donatePaymentView').style.display = 'none';
-      document.getElementById('donateTxnDisplay').textContent = 'Transaction ID: ' + txnId;
+      document.getElementById('donateTxnDisplay').innerHTML = `Transaction ID: <strong>${txnId}</strong><br>Time: ${istTime}`;
       document.getElementById('donateSuccessView').style.display = 'block';
 
       // 3. Sync to Google Sheets
