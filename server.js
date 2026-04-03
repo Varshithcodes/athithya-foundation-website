@@ -56,7 +56,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// 4. Upload Gallery Image (Limit 10 items)
+// 4. Upload Gallery Image
 app.post('/api/gallery', upload.single('image'), (req, res) => {
   const data = readData();
   const newImage = {
@@ -65,13 +65,7 @@ app.post('/api/gallery', upload.single('image'), (req, res) => {
     image: '/images/' + req.file.filename,
     date: new Date().toISOString()
   };
-  
-  // Add to the beginning and keep only the top 10
-  data.gallery.unshift(newImage);
-  if (data.gallery.length > 10) {
-    data.gallery = data.gallery.slice(0, 10);
-  }
-  
+  data.gallery.push(newImage);
   writeData(data);
   res.status(200).json({ success: true, image: newImage });
 });

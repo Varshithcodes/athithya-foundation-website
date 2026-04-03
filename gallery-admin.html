@@ -1469,7 +1469,6 @@
             desc: desc,
             addedAt: new Date().toISOString()
           });
-          if (gallery.length > 10) gallery = gallery.slice(0, 10);
           renderAdminGallery();
           saveAndRefresh();
           resetForm();
