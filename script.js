@@ -198,7 +198,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 2. Fallback to localStorage (or hardcoded data)
+  // 2. Try Local API Server Fallback
+  try {
+    const localRes = await fetch('/api/gallery');
+    if (localRes.ok) {
+      const localData = await localRes.ok ? await localRes.json() : [];
+      if (Array.isArray(localData) && localData.length > 0) {
+        renderData(localData.map(i => ({ 
+          image: i.image, 
+          title: i.title, 
+          location: i.location || i.desc || '' 
+        })));
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn('Local API fallback unavailable.');
+  }
+
+  // 3. Fallback to localStorage (or hardcoded data)
   const savedGallery = localStorage.getItem('af_gallery');
   if (savedGallery) {
     try {
