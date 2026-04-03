@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -5381,10 +5381,10 @@
       const email = prompt('Your Email (optional):') || '';
       const amountStr = prompt('Amount donated (₹):') || '0';
       const phone = prompt('Phone number (optional):') || '';
-      
+
       const amount = parseFloat(amountStr).toFixed(2);
       const txnId = 'TXN' + Date.now();
-      
+
       // Use local timestamp for accuracy
       const now = new Date();
       const istTime = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });

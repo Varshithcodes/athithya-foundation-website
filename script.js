@@ -184,87 +184,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.gal-grid');
   if (!grid) return;
 
-  // Track if we caught anything
-  let finalData = [];
+  // 1. Try to fetch from Sanity.io
+  const query = `*[_type == "galleryItem"] | order(_createdAt desc)`;
+  const sanityData = await sanityFetch(query);
 
-  // 1. Try Local Server First (Direct Connection)
-  try {
-    const localRes = await fetch('/api/gallery');
-    if (localRes.ok) {
-      const localData = await localRes.json();
-      if (Array.isArray(localData) && localData.length > 0) {
-        finalData = localData;
-      }
-    }
-  } catch (e) {
-    console.warn('Local Server not available. Falling back...');
+  if (sanityData && sanityData.length > 0) {
+    renderData(sanityData.map(item => ({
+      image: urlFor(item.image),
+      title: item.title,
+      location: item.caption || item.location || "",
+      videoUrl: item.videoUrl
+    })));
+    return;
   }
 
-  // 2. Try Sanity (if empty)
-  if (finalData.length === 0) {
-    const query = `*[_type == "galleryItem"] | order(_createdAt desc)`;
-    const sanityData = await sanityFetch(query);
-    if (sanityData && sanityData.length > 0) {
-      finalData = sanityData.map(item => ({
-        image: urlFor(item.image),
-        title: item.title,
-        location: item.caption || item.location || "",
-        videoUrl: item.videoUrl
-      }));
-    }
-  }
-
-  // 3. Try LocalStorage (if empty)
-  if (finalData.length === 0) {
+  // 2. Fallback to localStorage (or hardcoded data)
+  const savedGallery = localStorage.getItem('af_gallery');
+  if (savedGallery) {
     try {
-      const saved = JSON.parse(localStorage.getItem('af_gallery') || '[]');
-      if (saved.length > 0) finalData = saved;
+      const data = JSON.parse(savedGallery);
+      if (Array.isArray(data) && data.length > 0) { renderData(data); return; }
     } catch (e) { }
   }
 
-  // 4. Ultimate Fallback (10+ Local Images)
-  if (finalData.length === 0) {
-     finalData = [
-       { image: "images/photo_2026-04-02_02-54-33.jpg", title: "Smart Classroom Setup", location: "Govt. School, Malleshwaram" },
-       { image: "images/img3 educlassrooms.jpeg", title: "Technology for the future", location: "Kolar" },
-       { image: "images/IMG_0490.PNG", title: "Our Core Mission", location: "Foundation HQ" },
-       { image: "images/architecture-independence-palace-ho-chi-minh-city.jpg", title: "School Infrastructure", location: "Bengaluru" },
-       { image: "images/class.avif", title: "Learning Without Limits", location: "Educational Hub" },
-       { image: "images/lib.avif", title: "Library Initiative", location: "Local School" },
-       { image: "images/img3.webp", title: "Women Empowerment", location: "Community Center" },
-       { image: "images/photo_2024-03-14_22-37-56.jpg", title: "Leadership in Action", location: "Bengaluru" },
-       { image: "images/img1.avif", title: "Health & Nutrition Camp", location: "Rural Outreach" },
-       { image: "images/Gemini_Generated_Image_svf4ursvf4ursvf4.png", title: "Future Leaders", location: "Karnataka" }
-     ];
+  // 3. Absolute Fallback
+  const fallbackData = [
+    { image: "", title: "Smart Classroom Setup", location: "Govt. School, Malleshwaram" },
+    { image: "", title: "Community Welfare", location: "Health & Nutrition Camp" },
+    { image: "", title: "Digital Literacy Session", location: "Student Training" },
+    { image: "", title: "Teacher Training", location: "Pedagogical Development" },
+    { image: "", title: "CSR Partner Visit", location: "Corporate Engagement" }
+  ];
+  renderData(fallbackData);
+
+  function renderData(data) {
+    grid.innerHTML = '';
+    data.forEach((item, index) => {
+      const isTall = index === 0;
+      const div = document.createElement('div');
+      div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
+      div.onclick = () => openLightbox(item.title, item.location, item.image);
+
+      const imgHtml = item.image
+        ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`
+        : `<div class="gi-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f9f9f9;">📸</div>`;
+
+      div.innerHTML = `
+        ${imgHtml}
+        <div class="gi-ov" style="z-index:1;position:relative;height:100%;"><span>View Photo</span></div>
+        <div class="gi-cap" style="z-index:2;position:absolute;bottom:0;left:0;right:0;">
+          <p>${item.title}</p><span>${item.location}</span>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
   }
-
-  renderData(finalData);
 });
-
-function renderData(data) {
-  const grid = document.querySelector('.gal-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  data.forEach((item, index) => {
-    const isTall = index === 0;
-    const div = document.createElement('div');
-    div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
-    div.onclick = () => openLightbox(item.title, item.location, item.image);
-
-    const imgHtml = item.image
-      ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`
-      : `<div class="gi-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f9f9f9;">📸</div>`;
-
-    div.innerHTML = `
-      ${imgHtml}
-      <div class="gi-ov" style="z-index:1;position:relative;height:100%;"><span>View Photo</span></div>
-      <div class="gi-cap" style="z-index:2;position:absolute;bottom:0;left:0;right:0;">
-        <p>${item.title}</p><span>${item.location}</span>
-      </div>
-    `;
-    grid.appendChild(div);
-  });
-}
 
 // ── Shared Sanity Review Loader ──
 async function loadSanityReviews() {
