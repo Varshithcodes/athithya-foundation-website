@@ -398,15 +398,11 @@ const popupData = {
   // Mosaic Items
   main: {
     img: 'images/IMG_0490.PNG',
-    icon: '🏫',
-    headTitle: 'Our Impact',
     title: 'Our Work in Action',
     desc: 'Athithya Foundation® has transformed over 50 government schools across Karnataka. We provide infrastructure upgrades, smart classrooms, libraries, and ongoing mentoring - giving every child the environment they deserve to learn and grow.'
   },
   sec: {
     img: 'images/class.avif',
-    icon: '🎬',
-    headTitle: 'Inside Our Classrooms',
     title: 'Learning Without Limits',
     desc: 'Our smart classrooms bring digital learning to children who never had access to technology. With interactive projectors, curated content, and trained teachers, we are bridging the education gap one school at a time.'
   },

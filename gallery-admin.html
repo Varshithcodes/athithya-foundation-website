@@ -1060,7 +1060,7 @@
       <div class="tab-panel active" id="tab-gallery">
         <div class="card">
           <div class="card-hd">
-            <h2>🖼️ Gallery Manager</h2>
+            <h2>🖼️ Gallery Manager <span id="gal-count" style="font-size:0.8rem;color:var(--mut);"></span></h2>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" onclick="clearGallery()">🗑 Clear</button>
               <button class="btn-main" onclick="saveAndRefresh()">✅ Save & Apply</button>
@@ -1081,7 +1081,8 @@
                 placeholder="Caption..."></textarea>
               <div class="upload-zone" id="uploadZone" style="padding:15px; margin-bottom:12px;">
                 <input type="file" id="fileInput" accept="image/*,video/*">
-                <p style="font-size:0.75rem;">Click to upload Photo/Video</p>
+                <div id="uploadIcon" style="font-size:2rem;">📁</div>
+                <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
               </div>
               <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
             </div>
@@ -1181,6 +1182,13 @@
       }
     }
 
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
     // ── CHECK SESSION ON LOAD ──
     (function checkSession() {
       const token = localStorage.getItem(SESSION_KEY);
@@ -1203,9 +1211,6 @@
       const pass = document.getElementById('loginPass').value;
       const errEl = document.getElementById('loginError');
 
-      // Note: In a production environment with Vercel, 
-      // you should ideally move this check to a Vercel Serverless Function (API route)
-      // to keep ADMIN_PASS truly hidden from the client-side source code.
       if (user === ADMIN_USER && pass === ADMIN_PASS) {
         // Create session token
         const payload = { user, expires: Date.now() + SESSION_DURATION };
@@ -1249,7 +1254,7 @@
           gallery = sanityGallery.map(item => ({
             id: item._id,
             type: item.image ? 'photo' : 'video',
-            media: item.image ? urlFor(item.image) : item.videoUrl,
+            media: item.image ? item.image.asset.url : item.videoUrl,
             title: item.title,
             desc: item.caption,
             addedAt: item._createdAt
@@ -1375,7 +1380,6 @@
       const isVideo = file.type.startsWith('video/');
       document.getElementById('uploadIcon').textContent = isVideo ? '🎬' : '📸';
       document.getElementById('uploadLabel').textContent = file.name;
-      // Auto-set type
       document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
     });
 
@@ -1429,7 +1433,7 @@
         gallery.unshift({
           id: result._id,
           type: type,
-          media: type === 'photo' ? asset.url : asset.url, // Sanity asset URL
+          media: asset.url,
           title: title,
           desc: desc,
           addedAt: new Date().toISOString()
@@ -1442,8 +1446,6 @@
         document.getElementById('fileInput').value = '';
         document.getElementById('newItemTitle').value = '';
         document.getElementById('newItemDesc').value = '';
-        document.getElementById('uploadIcon').textContent = '📁';
-        document.getElementById('uploadLabel').textContent = 'Click or drag file here';
 
       } catch (error) {
         console.error('Sanity Upload Error:', error);
@@ -1735,6 +1737,21 @@
     }
 
     // ── TOAST ──
+    function setSyncStatus(status, message) {
+      if (!syncStatus || !syncText) return;
+      
+      // We only show critical errors. Minor sync issues use small dots.
+      if (status === 'error') {
+        console.warn('Sync issue:', message);
+        syncStatus.className = 'status-badge status-warning';
+        syncText.textContent = 'Limited Sync';
+        return;
+      }
+      
+      syncStatus.className = `status-badge status-${status}`;
+      syncText.textContent = message;
+    }
+
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
