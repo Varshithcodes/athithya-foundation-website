@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -289,6 +289,24 @@
       line-height: 1.15
     }
 
+    .header-contact {
+      display: flex !important;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+
+    .header-contact a {
+      color: var(--or);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: clamp(0.7rem, 3vw, 0.9rem);
+      /* Smoothly shrinks on tiny phones */
+      white-space: nowrap !important;
+      display: inline-block;
+    }
+
     .brand-sub {
       font-size: 10px;
       text-transform: uppercase;
@@ -304,23 +322,6 @@
       list-style: none
     }
 
-    .header-contact {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .header-contact a {
-      color: var(--or);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.85rem;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-    }
 
     .nav-links a {
       font-size: .86rem;
@@ -3376,7 +3377,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 1s;
+      transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.5s;
     }
 
     #loader-wrap.loaded {
@@ -3387,8 +3388,8 @@
 
     .loader-ring {
       position: relative;
-      width: 140px;
-      height: 140px;
+      width: 80px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3412,7 +3413,7 @@
     }
 
     .loader-logo {
-      width: 70px;
+      width: 40px;
       height: auto;
       animation: pulse 2s infinite ease-in-out;
     }

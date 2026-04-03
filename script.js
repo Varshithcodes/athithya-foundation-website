@@ -24,7 +24,7 @@ window.addEventListener('load', () => {
   if (loader) {
     setTimeout(() => {
       loader.classList.add('loaded');
-    }, 500);
+    }, 200);
   }
 });
 
@@ -248,15 +248,6 @@ async function loadSanityReviews() {
   return reviews || [];
 }
 
-// ── Remove Loader on Load ──
-window.addEventListener('load', () => {
-  const loader = document.getElementById('loader-wrap');
-  if (loader) {
-    setTimeout(() => {
-      loader.classList.add('loaded');
-    }, 500);
-  }
-});
 
 // ── Navbar: add shadow on scroll ──
 window.addEventListener('scroll', () => {
