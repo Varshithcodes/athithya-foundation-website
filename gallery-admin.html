@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athithya Foundation® — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --or: #E8610A;
+      --orv: #FF7B20;
+      --ors: #FFA04D;
+      --orp: #FFF0E6;
+      --ink: #2C1400;
+      --txt: #3D2000;
+      --mut: #7A5C40;
+      --bdr: #F0D5C0;
+      --crm: #FFFAF5;
+      --teal: #0A7B6E;
+      --blue: #1A5FAB;
+      --red: #C0392B;
+      --green: #1a8a5a;
+      --gold: #FFD700;
+      --pub: #27AE60;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #F5F0EB;
+      color: var(--txt);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN OVERLAY ── */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: linear-gradient(140deg, #1A0A00 0%, #3D1800 45%, #6B2800 75%, #1A0A00 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    #loginOverlay .login-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 123, 32, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 123, 32, .035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none;
+    }
+
+    .login-box {
+      background: rgba(255, 250, 245, .97);
+      border-radius: 24px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .5);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp .4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .login-logo img {
+      height: 48px;
+      width: auto;
+    }
+
+    .login-logo-txt h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .login-logo-txt p {
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--or);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .login-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--ink);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      text-align: center;
+      font-size: .8rem;
+      color: var(--mut);
+      margin-bottom: 28px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 16px;
+    }
+
+    .login-field label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: .9rem;
+      color: var(--ink);
+      background: var(--crm);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--or);
+      background: #fff;
+    }
+
+    #loginError {
+      background: rgba(192, 57, 43, .1);
+      color: var(--red);
+      border: 1px solid rgba(192, 57, 43, .25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+      margin-top: 4px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(232, 97, 10, .45);
+    }
+
+    /* ── ADMIN CONTENT (hidden until login) ── */
+    #adminContent {
+      display: none;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: linear-gradient(135deg, #1A0A00, #3D1800);
+      padding: 16px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .3);
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-brand img {
+      height: 42px;
+      width: auto;
+    }
+
+    .topbar-brand-txt h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .topbar-brand-txt p {
+      font-size: .65rem;
+      color: var(--ors);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-back {
+      color: var(--ors);
+      font-size: .82rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 160, 77, .3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+
+    .topbar-back:hover {
+      background: rgba(255, 160, 77, .15);
+      color: #fff;
+    }
+
+    .btn-logout {
+      background: rgba(192, 57, 43, .2);
+      color: #ff9f9f;
+      border: 1px solid rgba(192, 57, 43, .4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(192, 57, 43, .4);
+      color: #fff;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 5%;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .85rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .2s;
+    }
+
+    .tab.active {
+      background: var(--or);
+      color: #fff;
+      border-color: var(--or);
+    }
+
+    .tab:not(.active) {
+      background: #fff;
+      color: var(--mut);
+      border-color: var(--bdr);
+    }
+
+    .tab:not(.active):hover {
+      border-color: var(--or);
+      color: var(--or);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid var(--bdr);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-hd {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--bdr);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-hd h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .card-hd span {
+      font-size: .78rem;
+      color: var(--mut);
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* ── Upload Zone ── */
+    .upload-zone {
+      border: 2.5px dashed var(--bdr);
+      border-radius: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s;
+      background: var(--crm);
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag {
+      border-color: var(--or);
+      background: var(--orp);
+    }
+
+    .upload-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-zone .uz-icon {
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+    }
+
+    .upload-zone h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .upload-zone p {
+      font-size: .82rem;
+      color: var(--mut);
+    }
+
+    /* ── Impact Item Form ── */
+    .impact-form {
+      background: var(--crm);
+      border: 1.5px solid var(--bdr);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .impact-form h3 {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+
+    .if-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .fg label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .fg input,
+    .fg select,
+    .fg textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .88rem;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .fg input:focus,
+    .fg select:focus,
+    .fg textarea:focus {
+      border-color: var(--or);
+    }
+
+    .fg textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ── Gallery Grid (Admin) ── */
+    .gal-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .gal-admin-item {
+      background: #f0ece8;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .1);
+      transition: transform .2s, box-shadow .2s;
+      border: 1.5px solid var(--bdr);
+    }
+
+    .gal-admin-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+    }
+
+    .gal-admin-thumb {
+      position: relative;
+      aspect-ratio: 16/10;
+      overflow: hidden;
+    }
+
+    .gal-admin-thumb img,
+    .gal-admin-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .type-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, .75);
+      color: #fff;
+      font-size: .62rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .type-badge.video {
+      background: rgba(26, 95, 171, .85);
+    }
+
+    .type-badge.photo {
+      background: rgba(10, 123, 110, .85);
+    }
+
+    .gal-admin-meta {
+      padding: 12px 14px;
+    }
+
+    .gal-admin-meta .gai-title {
+      font-size: .82rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gal-admin-meta .gai-desc {
+      font-size: .72rem;
+      color: var(--mut);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .gal-admin-actions {
+      display: flex;
+      gap: 6px;
+      padding: 0 14px 12px;
+    }
+
+    .gal-admin-actions button {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      border-radius: 7px;
+      font-size: .72rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .btn-move-up {
+      background: var(--orp);
+      color: var(--or);
+    }
+
+    .btn-move-up:hover {
+      background: var(--or);
+      color: #fff;
+    }
+
+    .btn-del {
+      background: rgba(192, 57, 43, .1);
+      color: var(--red);
+    }
+
+    .btn-del:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── Submissions Table ── */
+    .sub-filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sub-filter button {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--bdr);
+      background: #fff;
+      color: var(--mut);
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .sub-filter button.active,
+    .sub-filter button:hover {
+      background: var(--or);
+      color: #fff;
+      border-color: var(--or);
+    }
+
+    .sub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sub-card {
+      background: var(--crm);
+      border: 1.5px solid var(--bdr);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      transition: border-color .2s;
+    }
+
+    .sub-card:hover {
+      border-color: var(--ors);
+    }
+
+    .sub-card .sub-tag {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 6px;
+    }
+
+    .sub-tag.contact {
+      background: rgba(26, 95, 171, .12);
+      color: var(--blue);
+    }
+
+    .sub-tag.csr {
+      background: var(--orp);
+      color: var(--or);
+    }
+
+    .sub-card h4 {
+      font-size: .92rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .sub-card .sub-meta {
+      font-size: .78rem;
+      color: var(--mut);
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .sub-card .sub-msg {
+      font-size: .82rem;
+      color: var(--txt);
+      line-height: 1.6;
+      background: #fff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--bdr);
+    }
+
+    .sub-card .sub-date {
+      font-size: .68rem;
+      color: var(--mut);
+      white-space: nowrap;
+    }
+
+    .sub-del {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      transition: color .2s;
+    }
+
+    .sub-del:hover {
+      color: var(--red);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--mut);
+    }
+
+    .empty-state .es-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    /* ── Moderation Cards ── */
+    .mod-card {
+      background: var(--crm);
+      border: 1.5px solid var(--bdr);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+
+    .mod-card:hover {
+      border-color: var(--ors);
+    }
+
+    .mod-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mod-author-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mod-av {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .mod-av-info h4 {
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .mod-av-info p {
+      font-size: .72rem;
+      color: var(--mut);
+    }
+
+    .mod-status-badge {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .mod-status-badge.pending {
+      background: rgba(232, 97, 10, .12);
+      color: var(--or);
+    }
+
+    .mod-status-badge.approved {
+      background: rgba(10, 123, 110, .12);
+      color: var(--teal);
+    }
+
+    .mod-status-badge.published {
+      background: rgba(39, 174, 96, .12);
+      color: var(--pub);
+      font-weight: 900;
+      border: 1px solid var(--pub);
+    }
+
+    .mod-msg {
+      font-size: .84rem;
+      color: var(--txt);
+      line-height: 1.65;
+      background: #fff;
+      padding: 12px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--bdr);
+      margin-bottom: 14px;
+    }
+
+    .mod-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, var(--teal), #065a50);
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+    }
+
+    .btn-approve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(10, 123, 110, .4);
+    }
+
+    .btn-reject {
+      background: rgba(192, 57, 43, .1);
+      color: var(--red);
+      border: 1.5px solid rgba(192, 57, 43, .25);
+      padding: 9px 20px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+    }
+
+    .btn-reject:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: #fff;
+      border: 1.5px solid var(--bdr);
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: center;
+    }
+
+    .stat-box .sb-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--or);
+    }
+
+    .stat-box .sb-l {
+      font-size: .7rem;
+      color: var(--mut);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 3px;
+    }
+
+    /* ── Btn ── */
+    .btn-main {
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: .88rem;
+      border: none;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(232, 97, 10, .4);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--or);
+      border: 2px solid var(--or);
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline:hover {
+      background: var(--or);
+      color: #fff;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1A0A00;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: .85rem;
+      font-weight: 700;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .35s;
+      z-index: 9999;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .3);
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media(max-width:900px) {
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .if-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gal-admin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+
+    @media(max-width:600px) {
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .login-box {
+        padding: 32px 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── LOGIN OVERLAY ── -->
+  <div id="loginOverlay">
+    <div class="login-bg-grid"></div>
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="Athithya_Foundation_Logo_withoutBG.png" alt="Logo">
+        <div class="login-logo-txt">
+          <h2>Admin Panel</h2>
+          <p>Athithya Foundation®</p>
+        </div>
+      </div>
+      <h2 class="login-title">Secure Login</h2>
+      <p class="login-sub">Enter your credentials to access the admin dashboard</p>
+
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div id="loginError">❌ Invalid username or password. Please try again.</div>
+      <button class="btn-login" onclick="doLogin()">🔐 Login to Admin Panel</button>
+    </div>
+  </div>
+
+  <!-- ── ADMIN CONTENT ── -->
+  <div id="adminContent">
+
+    <div class="topbar">
+      <div class="topbar-brand">
+        <img src="Athithya_Foundation_Logo_withoutBG.png" alt="Logo">
+        <div class="topbar-brand-txt">
+          <h1>Admin Panel</h1>
+          <p>Athithya Foundation®</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="index.html" class="topbar-back">← Back to Website</a>
+        <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Stats Row -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-box">
+          <div class="sb-n" id="stat-gal">0</div>
+          <div class="sb-l">Gallery Items</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-total-reviews">0</div>
+          <div class="sb-l">Total Reviews</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-pub">0</div>
+          <div class="sb-l">Published</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-pending">0</div>
+          <div class="sb-l">Pending Reviews</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-donations">0</div>
+          <div class="sb-l">Donations</div>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('gallery')">🖼️ Gallery</div>
+        <div class="tab" onclick="switchTab('reviews')">⭐ Reviews</div>
+        <div class="tab" onclick="switchTab('donations')">💳 Donations</div>
+        <div class="tab" onclick="switchTab('contacts')">📧 CSR Contacts</div>
+      </div>
+
+      <!-- ── GALLERY TAB ── -->
+      <div class="tab-panel active" id="tab-gallery">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🖼️ Gallery Manager</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="clearGallery()">🗑 Clear</button>
+              <button class="btn-main" onclick="saveAndRefresh()">✅ Save & Apply</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="impact-form"
+              style="margin-bottom:24px; padding:15px; background:rgba(0,0,0,0.02); border-radius:12px;">
+              <h3 style="font-size:0.9rem; margin-bottom:10px;">✨ Add New Gallery Item</h3>
+              <div class="if-grid">
+                <select id="newItemType">
+                  <option value="photo">📷 Photo</option>
+                  <option value="video">🎬 Video</option>
+                </select>
+                <input type="text" id="newItemTitle" placeholder="Title/Location">
+              </div>
+              <textarea id="newItemDesc" style="width:100%; height:60px; margin-bottom:12px;"
+                placeholder="Caption..."></textarea>
+              <div class="upload-zone" id="uploadZone" style="padding:15px; margin-bottom:12px;">
+                <input type="file" id="fileInput" accept="image/*,video/*">
+                <p style="font-size:0.75rem;">Click to upload Photo/Video</p>
+              </div>
+              <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
+            </div>
+            <div class="gal-admin-grid" id="adminGalGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── REVIEWS TAB ── -->
+      <div class="tab-panel" id="tab-reviews">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🛡️ Review Moderation</h2>
+            <div class="sub-filter" style="margin:0;">
+              <button class="active" onclick="filterMod(this,'pending')">⏳ Pending</button>
+              <button onclick="filterMod(this,'approved')">🛡️ Hidden</button>
+              <button onclick="filterMod(this,'published')">📢 Live</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="modList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CONTACTS TAB ── -->
+      <div class="tab-panel" id="tab-contacts">
+        <div class="card">
+          <div class="card-hd">
+            <h2>📧 Contact Submissions</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="exportCSV()">⬇ Export</button>
+              <button class="btn-outline" onclick="clearAllSubmissions()" style="color:var(--red);">🗑 Clear</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sub-list" id="subList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DONATIONS TAB ── -->
+      <div class="tab-panel" id="tab-donations">
+        <div class="card">
+          <div class="card-hd">
+            <h2>💳 Donation Records</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="exportDonationsCSV()">⬇ Export</button>
+              <button class="btn-outline" onclick="clearDonations()" style="color:var(--red);">🗑 Clear</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sub-list" id="donationList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- Sanity Client SDK -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@sanity/client@6.15.10';
+    window.createSanityClient = createClient;
+  </script>
+
+  <script>
+    // ── AUTH & SANITY CONFIG ──
+    const ADMIN_USER = 'Jyothi Gudi';
+    const ADMIN_PASS = window.ADMIN_PASSWORD || '2507';
+    const SESSION_KEY = 'af_admin_token';
+    const SESSION_DURATION = 30 * 60 * 1000;
+
+    // SECURE: Replace these with your actual Sanity Project Details
+    const SANITY_PROJECT_ID = 'm5wsa8rt';
+    const SANITY_DATASET = 'production';
+    // This token is required for WRITE operations. 
+    // In production, consider fetching this via a secure Vercel API route.
+    const SANITY_WRITE_TOKEN = 'your_sanity_write_token';
+
+    // Google Apps Script Backend (Ensure this matches the one in script.js)
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynWy0eUcqv6FliR-pKinCOE3bzMDojNvBdEDbKDA3f47rtXlS6zOK3vWP6bZseRb9U/exec';
+
+    let client = null;
+
+    function initSanityClient() {
+      if (window.createSanityClient && !client) {
+        client = window.createSanityClient({
+          projectId: SANITY_PROJECT_ID,
+          dataset: SANITY_DATASET,
+          useCdn: false, // Must be false for write operations
+          token: SANITY_WRITE_TOKEN,
+          apiVersion: '2023-01-01',
+        });
+      }
+    }
+
+    // ── CHECK SESSION ON LOAD ──
+    (function checkSession() {
+      const token = localStorage.getItem(SESSION_KEY);
+      if (token) {
+        try {
+          const { expires } = JSON.parse(atob(token));
+          if (Date.now() < expires) {
+            showAdmin();
+            return;
+          }
+        } catch (e) { }
+      }
+      // Show login
+      document.getElementById('loginOverlay').style.display = 'flex';
+      document.getElementById('adminContent').style.display = 'none';
+    })();
+
+    function doLogin() {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+
+      // Note: In a production environment with Vercel, 
+      // you should ideally move this check to a Vercel Serverless Function (API route)
+      // to keep ADMIN_PASS truly hidden from the client-side source code.
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        // Create session token
+        const payload = { user, expires: Date.now() + SESSION_DURATION };
+        const token = btoa(JSON.stringify(payload));
+        localStorage.setItem(SESSION_KEY, token);
+        errEl.style.display = 'none';
+        document.getElementById('loginOverlay').style.display = 'none';
+        showAdmin();
+      } else {
+        errEl.style.display = 'block';
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+      }
+    }
+
+    function doLogout() {
+      if (!confirm('Are you sure you want to log out?')) return;
+      localStorage.removeItem(SESSION_KEY);
+      location.reload();
+    }
+
+    function showAdmin() {
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      initSanityClient();
+      initAdmin();
+    }
+
+    // ── STATE ──
+    let gallery = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+    let currentFilter = 'all';
+    let currentModFilter = 'pending';
+
+    async function initAdmin() {
+      showToast('🔄 Syncing with Sanity.io & Google Sheets...');
+
+      try {
+        // 1. Fetch Latest Gallery (Sanity)
+        if (client) {
+          const sanityGallery = await client.fetch(`*[_type == "galleryItem"] | order(_createdAt desc)`);
+          gallery = sanityGallery.map(item => ({
+            id: item._id,
+            type: item.image ? 'photo' : 'video',
+            media: item.image ? urlFor(item.image) : item.videoUrl,
+            title: item.title,
+            desc: item.caption,
+            addedAt: item._createdAt
+          }));
+        }
+
+        // 2. Fetch Latest Reviews and Merge with Local & Google Sheets
+        if (client) {
+          const sanityReviews = await client.fetch(`*[_type == "review"] | order(_createdAt desc)`);
+          const sReviews = sanityReviews.map(r => ({
+            id: r._id,
+            name: r.authorName,
+            role: r.role,
+            message: r.reviewText,
+            status: r.status,
+            date: r._createdAt
+          }));
+
+          // Fetch from Google Sheets
+          let gsReviews = [];
+          if (GOOGLE_SCRIPT_URL) {
+            try {
+              const res = await fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Reviews`);
+              const gsData = await res.json();
+              if (Array.isArray(gsData)) {
+                 gsReviews = gsData.map(r => ({
+                    id: r.id || 'gs_' + Date.now() + Math.random(),
+                    name: r.name,
+                    role: r.role,
+                    message: r.message,
+                    status: processReviewStatus(sReviews, r.id, r.status || 'pending'),
+                    date: r.date
+                 }));
+              }
+            } catch(e) { console.warn('Google Sheet Sync Error:', e); }
+          }
+
+          // Merge Strategy: Prefer Sanity > Google Sheets > Local
+          const existingIds = new Set(sReviews.map(r => r.id));
+          const uniqueGsReviews = gsReviews.filter(r => !existingIds.has(r.id));
+          
+          existingIds.forEach(id => existingIds.add(id)); // add sanity
+          uniqueGsReviews.forEach(r => existingIds.add(r.id)); // add sheet
+          
+          const localReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]').filter(r => !existingIds.has(r.id));
+          
+          const merged = [...sReviews, ...uniqueGsReviews, ...localReviews];
+          localStorage.setItem('af_reviews', JSON.stringify(merged));
+        }
+        
+        // 3. Fetch remote submissions from Sheets
+        if (GOOGLE_SCRIPT_URL) {
+           try {
+              const [csrRes, contactRes, donateRes] = await Promise.all([
+                 fetch(`${GOOGLE_SCRIPT_URL}?sheetName=CSR_Companies`),
+                 fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Sheet1`), // Default fallback or exact name
+                 fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Payments`)
+              ]);
+              
+              if(csrRes.ok) localStorage.setItem('af_csr', JSON.stringify(await csrRes.json()));
+              if(contactRes.ok) localStorage.setItem('af_contact', JSON.stringify(await contactRes.json()));
+              if(donateRes.ok) localStorage.setItem('af_donations', JSON.stringify(await donateRes.json()));
+           } catch(e) { console.warn('Could not sync remote submissions'); }
+        }
+
+        renderAdminGallery();
+        renderSubmissions();
+        renderModeration();
+        updateStats();
+
+      } catch (err) {
+        console.error('Initial Sync Error:', err);
+        showToast('⚠️ Sync failed. Using local data.');
+        renderAdminGallery();
+        renderSubmissions();
+        renderModeration();
+        updateStats();
+      }
+    }
+    
+    function processReviewStatus(sReviews, id, defaultStatus) {
+       const existing = sReviews.find(r => r.id === id);
+       return existing ? existing.status : defaultStatus;
+    }
+
+    // ── TABS ──
+    const tabKeys = ['gallery', 'reviews', 'donations', 'contacts'];
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((t, i) =>
+        t.classList.toggle('active', tabKeys[i] === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+
+      if (name === 'gallery') renderAdminGallery();
+      if (name === 'reviews') renderModeration();
+      if (name === 'donations') renderDonations();
+      if (name === 'contacts') renderSubmissions();
+    }
+
+    // ── STATS ──
+    function updateStats() {
+      const csr = JSON.parse(localStorage.getItem('af_csr') || '[]').length;
+      const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      const pending = reviews.filter(r => r.status === 'pending').length;
+      const published = reviews.filter(r => r.status === 'published').length;
+      const donations = JSON.parse(localStorage.getItem('af_donations') || '[]').length;
+
+      document.getElementById('stat-gal').textContent = gallery.length;
+      document.getElementById('stat-total-reviews').textContent = reviews.length;
+      document.getElementById('stat-pub').textContent = published;
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-donations').textContent = donations;
+      document.getElementById('gal-count').textContent = gallery.length ? `(${gallery.length} items)` : '';
+    }
+
+    // ── FILE UPLOAD ──
+    let pendingFile = null;
+
+    document.getElementById('fileInput').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      pendingFile = file;
+      const isVideo = file.type.startsWith('video/');
+      document.getElementById('uploadIcon').textContent = isVideo ? '🎬' : '📸';
+      document.getElementById('uploadLabel').textContent = file.name;
+      // Auto-set type
+      document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
+    });
+
+    const zone = document.getElementById('uploadZone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag');
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      pendingFile = file;
+      const isVideo = file.type.startsWith('video/');
+      document.getElementById('uploadIcon').textContent = isVideo ? '🎬' : '📸';
+      document.getElementById('uploadLabel').textContent = file.name;
+      document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
+    });
+
+    async function addImpactItem() {
+      if (!pendingFile) { showToast('⚠️ Please select a file first.'); return; }
+      if (!client) { showToast('⚠️ Sanity client not initialized.'); return; }
+
+      const title = document.getElementById('newItemTitle').value.trim() || pendingFile.name.replace(/\.[^.]+$/, '');
+      const desc = document.getElementById('newItemDesc').value.trim();
+      const type = document.getElementById('newItemType').value;
+
+      showToast('🚀 Uploading to Sanity Assets...');
+
+      try {
+        // 1. Upload the image/video asset to Sanity
+        const asset = await client.assets.upload(type === 'video' ? 'file' : 'image', pendingFile, {
+          filename: pendingFile.name
+        });
+
+        // 2. Create the Gallery document
+        const newDoc = {
+          _type: 'galleryItem',
+          title: title,
+          caption: desc,
+          image: type === 'photo' ? {
+            _type: 'image',
+            asset: { _type: 'reference', _ref: asset._id }
+          } : undefined,
+          videoUrl: type === 'video' ? asset.url : undefined,
+        };
+
+        const result = await client.create(newDoc);
+        showToast('✅ Added to Sanity successfully!');
+
+        // 3. Update local state for UI (optional, or just fetch again)
+        gallery.unshift({
+          id: result._id,
+          type: type,
+          media: type === 'photo' ? asset.url : asset.url, // Sanity asset URL
+          title: title,
+          desc: desc,
+          addedAt: new Date().toISOString()
+        });
+
+        renderAdminGallery();
+
+        // Reset form
+        pendingFile = null;
+        document.getElementById('fileInput').value = '';
+        document.getElementById('newItemTitle').value = '';
+        document.getElementById('newItemDesc').value = '';
+        document.getElementById('uploadIcon').textContent = '📁';
+        document.getElementById('uploadLabel').textContent = 'Click or drag file here';
+
+      } catch (error) {
+        console.error('Sanity Upload Error:', error);
+        showToast('❌ Error uploading to Sanity. Check console.');
+      }
+    }
+
+    // ── GALLERY RENDER ──
+    function renderAdminGallery() {
+      const grid = document.getElementById('adminGalGrid');
+      if (!gallery.length) {
+        grid.innerHTML = '<p style="color:var(--mut);font-size:.85rem;padding:20px 0;">No items yet. Add some above!</p>';
+        updateStats();
+        return;
+      }
+      grid.innerHTML = '';
+      gallery.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'gal-admin-item';
+        const isVideo = item.type === 'video';
+        const mediaHtml = isVideo
+          ? `<video src="${item.media}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
+          : `<img src="${item.media}" alt="${item.title}">`;
+
+        div.innerHTML = `
+          <div class="gal-admin-thumb">
+            ${mediaHtml}
+            <span class="type-badge ${item.type}">${isVideo ? '🎬 Video' : '📷 Photo'}</span>
+          </div>
+          <div class="gal-admin-meta">
+            <div class="gai-title">${item.title || 'Untitled'}</div>
+            <div class="gai-desc">${item.desc || 'No description'}</div>
+          </div>
+          <div class="gal-admin-actions">
+            ${i > 0 ? `<button class="btn-move-up" onclick="moveUp(${i})">↑ Move Up</button>` : '<button style="flex:1;padding:6px;background:#f5f0eb;border:none;border-radius:7px;font-size:.72rem;color:var(--mut);" disabled>↑ Top</button>'}
+            <button class="btn-del" onclick="deleteGalItem(${i})">🗑 Delete</button>
+          </div>`;
+        grid.appendChild(div);
+      });
+      updateStats();
+    }
+
+    function moveUp(i) {
+      if (i === 0) return;
+      [gallery[i - 1], gallery[i]] = [gallery[i], gallery[i - 1]];
+      renderAdminGallery();
+    }
+
+    function deleteGalItem(i) {
+      if (!confirm('Remove this item?')) return;
+      gallery.splice(i, 1);
+      renderAdminGallery();
+    }
+
+    function clearGallery() {
+      if (!confirm('Remove all gallery items? This cannot be undone.')) return;
+      gallery = [];
+      localStorage.setItem('af_gallery', '[]');
+      renderAdminGallery();
+      showToast('Gallery cleared.');
+    }
+
+    function saveAndRefresh() {
+      localStorage.setItem('af_gallery', JSON.stringify(gallery));
+      showToast('✅ Gallery saved! Refresh the website to see changes.');
+      updateStats();
+    }
+
+    // ── SUBMISSIONS ──
+    function getAllSubmissions() {
+      const contact = JSON.parse(localStorage.getItem('af_contact') || '[]');
+      const csr = JSON.parse(localStorage.getItem('af_csr') || '[]');
+      return [...contact, ...csr].sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function renderSubmissions() {
+      const all = getAllSubmissions().filter(s => currentFilter === 'all' || s.type === currentFilter);
+      const list = document.getElementById('subList');
+      if (!all.length) {
+        list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>No submissions yet.</p></div>';
+        return;
+      }
+      list.innerHTML = all.map(s => {
+        const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const name = s.type === 'csr' ? `${s.firstName} ${s.lastName}` : s.name;
+        const extra = s.type === 'csr'
+          ? `<span>🏢 ${s.company || '—'}</span><span>💰 ${s.budget || '—'}</span>`
+          : `<span>👤 ${s.enquiryType || 'General'}</span>`;
+        return `<div class="sub-card">
+          <div>
+            <span class="sub-tag ${s.type}">${s.type === 'csr' ? 'CSR Enquiry' : 'Contact'}</span>
+            <h4>${name}</h4>
+            <div class="sub-meta"><span>✉️ ${s.email}</span>${extra}</div>
+            ${s.message ? `<div class="sub-msg">${s.message}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+            <span class="sub-date">${date}</span>
+            <button class="sub-del" onclick="deleteSubmission('${s.type}','${s.date}')" title="Delete">🗑</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function filterSubs(btn, filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderSubmissions();
+    }
+
+    function deleteSubmission(type, date) {
+      if (!confirm('Delete this submission?')) return;
+      const key = type === 'csr' ? 'af_csr' : 'af_contact';
+      let data = JSON.parse(localStorage.getItem(key) || '[]');
+      data = data.filter(s => s.date !== date);
+      localStorage.setItem(key, JSON.stringify(data));
+      updateStats();
+      renderSubmissions();
+      showToast('Submission deleted.');
+    }
+
+    function clearAllSubmissions() {
+      if (!confirm('Delete ALL submissions? This cannot be undone.')) return;
+      localStorage.removeItem('af_contact');
+      localStorage.removeItem('af_csr');
+      updateStats();
+      renderSubmissions();
+      showToast('All submissions cleared.');
+    }
+
+    function exportCSV() {
+      const all = getAllSubmissions();
+      if (!all.length) { showToast('No data to export.'); return; }
+      const headers = ['Type', 'Name', 'Email', 'Company', 'BudgetRange', 'EnquiryType', 'Message', 'Date'];
+      const rows = all.map(s => [
+        s.type, s.type === 'csr' ? `${s.firstName} ${s.lastName}` : s.name,
+        s.email, s.company || '', s.budget || '', s.enquiryType || '', (s.message || '').replace(/"/g, "'"), s.date
+      ].map(v => `"${v}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'athithya_submissions.csv' });
+      a.click();
+      showToast('CSV exported!');
+    }
+
+    // ── MODERATION ──
+    function renderModeration() {
+      const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      const filtered = reviews.filter(r => {
+        if (currentModFilter === 'all') return true;
+        return r.status === currentModFilter;
+      });
+      const list = document.getElementById('modList');
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews.</p></div>`;
+        return;
+      }
+      list.innerHTML = filtered.map(r => {
+        const date = new Date(r.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+        let statusLabel = '⏳ Pending';
+        if (r.status === 'approved') statusLabel = '🛡️ Approved (Hidden)';
+        if (r.status === 'published') statusLabel = '📢 Published on Site';
+
+        return `<div class="mod-card">
+          <div class="mod-card-top">
+            <div class="mod-author-info">
+              <div class="mod-av">${initials}</div>
+              <div class="mod-av-info">
+                <h4>${r.name}</h4>
+                <p>${r.role || 'Visitor'} · ${date}</p>
+              </div>
+            </div>
+            <span class="mod-status-badge ${r.status}">${statusLabel}</span>
+          </div>
+          <div class="mod-msg">"${r.message}"</div>
+          <div class="mod-actions">
+            ${r.status === 'pending' ? `<button class="btn-approve" onclick="moveReview('${r.id}', 'approved')">✅ Approve</button>` : ''}
+            ${r.status === 'approved' ? `<button class="btn-approve" style="background:var(--pub)" onclick="moveReview('${r.id}', 'published')">📢 Publish to Website</button>` : ''}
+            ${r.status === 'published' ? `<button class="btn-outline" onclick="moveReview('${r.id}', 'approved')">🙈 Hide from Site</button>` : ''}
+            <button class="btn-reject" onclick="deleteReview('${r.id}')">🗑 Delete</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function filterMod(btn, filter) {
+      currentModFilter = filter;
+      document.querySelectorAll('#tab-reviews .sub-filter button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderModeration();
+    }
+
+    async function moveReview(id, newStatus) {
+      showToast('⏳ Updating review status...');
+
+      // 1. Update on Sanity (if possible and starts with a Sanity ID)
+      if (client && !id.startsWith('rv_')) {
+        try {
+          await client.patch(id).set({ status: newStatus }).commit();
+        } catch (err) {
+          console.error('Sanity Update Error:', err);
+          // Continue to local update anyway
+        }
+      }
+
+      // 2. Always update local state
+      let reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      reviews = reviews.map(r => r.id === id ? { ...r, status: newStatus } : r);
+      localStorage.setItem('af_reviews', JSON.stringify(reviews));
+
+      updateStats();
+      renderModeration();
+      showToast(newStatus === 'published' ? '📢 Published!' : '✅ Status Updated');
+    }
+
+    async function deleteReview(id) {
+      const isLocal = id.startsWith('rv_');
+      const msg = isLocal ? 'Delete this local review?' : 'Delete this review permanently from Sanity/Site?';
+      if (!confirm(msg)) return;
+
+      showToast('⏳ Deleting review...');
+
+      // 1. Delete from Sanity (if possible and not local)
+      if (client && !isLocal) {
+        try {
+          await client.delete(id);
+        } catch (err) {
+          console.error('Sanity Delete Error:', err);
+          // If Sanity delete fails, we might still want to remove it locally?
+          // Or maybe tell the user it failed. 
+        }
+      }
+
+      // 2. Always delete locally
+      let reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      reviews = reviews.filter(r => r.id !== id);
+      localStorage.setItem('af_reviews', JSON.stringify(reviews));
+
+      updateStats();
+      renderModeration();
+      showToast('🗑 Review Deleted.');
+    }
+
+    // ── DONATIONS ──
+    function renderDonations() {
+      const donations = JSON.parse(localStorage.getItem('af_donations') || '[]').reverse();
+      const list = document.getElementById('donationList');
+      if (!donations.length) {
+        list.innerHTML = '<div class="empty-state"><div class="es-icon">💳</div><p>No donations recorded yet.</p></div>';
+        return;
+      }
+      list.innerHTML = donations.map(d => {
+        const date = new Date(d.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return `<div class="sub-card">
+          <div>
+            <span class="sub-tag csr">Donation</span>
+            <h4>${d.name || 'Anonymous'}</h4>
+            <div class="sub-meta">
+              <span>💰 ₹${d.amount || '—'}</span>
+              <span>🆔 ${d.txnId}</span>
+              ${d.email ? `<span>✉️ ${d.email}</span>` : ''}
+            </div>
+          </div>
+          <span class="sub-date">${date}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function clearDonations() {
+      if (!confirm('Clear all donation records?')) return;
+      localStorage.removeItem('af_donations');
+      updateStats();
+      renderDonations();
+      showToast('Donation records cleared.');
+    }
+
+    function exportDonationsCSV() {
+      const donations = JSON.parse(localStorage.getItem('af_donations') || '[]');
+      if (!donations.length) { showToast('No donations to export.'); return; }
+      const headers = ['Name', 'Email', 'Amount', 'TransactionID', 'Date'];
+      const rows = donations.map(d => [d.name || '', d.email || '', d.amount || '', d.txnId || '', d.date].map(v => `"${v}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'athithya_donations.csv' });
+      a.click();
+      showToast('Donations CSV exported!');
+    }
+
+    // ── TOAST ──
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+
+</html>

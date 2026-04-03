@@ -1,0 +1,27 @@
+# ── Vercel Ignore File ──
+# Vercel will skip everything listed here during deployment.
+# This prevents Vercel from running a Sanity build and crashing your website.
+
+# Node.js / Local Dev
+node_modules/
+server.js
+data.json
+
+# Sanity Studio (THIS was the cause of your previous CSS crash)
+package.json
+package-lock.json
+sanity.config.js
+sanity.cli.js
+sanity.js
+my-sanity-project/
+
+# Leftover Next.js files
+layout.js
+page.js
+
+# Dev-only reference files
+AppsScriptCode.js
+globals.css
+
+# Editor settings
+.vscode/
