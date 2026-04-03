@@ -1172,10 +1172,14 @@
 
     function initSanityClient() {
       if (window.createSanityClient && !client) {
+        if (!SANITY_WRITE_TOKEN || SANITY_WRITE_TOKEN === 'your_sanity_write_token') {
+          console.warn('Sanity Write Token is missing. Uploads will fail.');
+          return;
+        }
         client = window.createSanityClient({
           projectId: SANITY_PROJECT_ID,
           dataset: SANITY_DATASET,
-          useCdn: false, // Must be false for write operations
+          useCdn: false,
           token: SANITY_WRITE_TOKEN,
           apiVersion: '2023-01-01',
         });
@@ -1449,7 +1453,15 @@
 
       } catch (error) {
         console.error('Sanity Upload Error:', error);
-        showToast('❌ Error uploading to Sanity. Check console.');
+        let msg = '❌ Error syncing to Sanity.';
+        if (SANITY_WRITE_TOKEN === 'your_sanity_write_token') {
+          msg = '🔑 Missing Sanity Write Token! Please add your API key to the code.';
+        } else if (error.message && error.message.includes('401')) {
+          msg = '🚫 Unauthorized: Your Sanity Token might be expired or incorrect.';
+        } else if (error.message && error.message.includes('403')) {
+          msg = '🛡️ Forbidden: Check your Sanity CORS origins or project permissions.';
+        }
+        showToast(msg);
       }
     }
 
