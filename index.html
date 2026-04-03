@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -282,11 +282,11 @@
 
     .brand-name {
       font-family: 'Playfair Display', serif;
-      font-size: 30px;
-      /* Exact hardcoded px to lock in header text scaling safely (Decreased to look less awkward) */
+      font-size: clamp(18px, 4vw, 30px);
       font-weight: 900;
       color: var(--or);
-      line-height: 1.15
+      line-height: 1.1;
+      white-space: nowrap;
     }
 
     .brand-sub {
@@ -307,16 +307,17 @@
     .header-contact {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       white-space: nowrap;
       flex-shrink: 0;
+      margin-left: auto;
     }
 
     .header-contact a {
       color: var(--or);
       text-decoration: none;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: clamp(0.7rem, 2.5vw, 0.85rem);
       white-space: nowrap;
       display: flex;
       align-items: center;
@@ -800,9 +801,28 @@
       z-index: 10;
     }
 
-    .hero-logo-box:active {
-      transform: translateX(-50%) scale(0.95);
-    }
+      /* Mobile responsive header tweaks */
+      @media (max-width: 500px) {
+        #topnav {
+          padding: 8px 3%;
+          min-height: 70px;
+        }
+        .logo-wrap {
+          width: 50px;
+          height: 50px;
+        }
+        .logo-svg-nav {
+          width: 45px;
+          height: 45px;
+        }
+        .brand-sub {
+          display: none; /* Hide sub-text on small mobile to save space */
+        }
+        .nav-logo {
+          gap: 8px;
+        }
+      }
+    </style>
 
     .hero-logo-big {
       width: 108px;
