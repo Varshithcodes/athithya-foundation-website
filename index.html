@@ -11,7 +11,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="Athithya Foundation® (aathithya) is the leading charity and foundation for school donations in Karnataka. We transform government schools through education, smart classrooms, and library initiatives. Donate today for real social impact." />
-  <meta name="keywords" content="aathithya, athithya, Athithya, Aatitya, aatitya, aditya foundation, aatithya foundation, charities in karnataka, school donations karnataka, smart classroom donation, library donation foundation, varshith shetty foundation, aathithya foundation, aathithhya, schools Karnataka, donations, school donations, charity, foundation, Athithya Foundation, NGO Bangalore, government school adoption, education programs, charity for kids, social impact India" />
+  <meta name="keywords"
+    content="aathithya, athithya, Athithya, Aatitya, aatitya, aditya foundation, aatithya foundation, charities in karnataka, school donations karnataka, smart classroom donation, library donation foundation, varshith shetty foundation, aathithya foundation, aathithhya, schools Karnataka, donations, school donations, charity, foundation, Athithya Foundation, NGO Bangalore, government school adoption, education programs, charity for kids, social impact India" />
   <meta name="author" content="Athithya Foundation®" />
   <meta name="robots" content="index, follow" />
   <meta property="og:title" content="Athithya Foundation® | Transforming Education & Society" />
@@ -21,6 +22,12 @@
   <meta property="og:url" content="https://www.athithyafoundation.org" />
   <meta name="twitter:card" content="summary_large_image" />
   <title>Athithya Foundation® | Leading NGO for School Donations & Charity in Karnataka</title>
+    <style>
+      /* GPU Acceleration for silky smooth scrolling */
+      .reveal-item, section, .hero-inner, .mosaic-grid, .program-card {
+        will-change: transform, opacity;
+      }
+    </style>
 
   <!-- SEO SCHEMA JSON-LD -->
   <script type="application/ld+json">
@@ -296,17 +303,19 @@
     .header-contact {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 6px;
       white-space: nowrap;
-      min-width: min-content;
+      flex-shrink: 0;
     }
 
     .header-contact a {
-      color: var(--primary);
+      color: var(--or);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: 700;
+      font-size: 0.85rem;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
     }
 
     .nav-links a {
@@ -975,7 +984,7 @@
     .mos-main-cap {
       position: relative;
       bottom: -150px;
-      left: -60px;
+      left: -45px;
       right: 15px;
       z-index: 1;
       color: #fff
