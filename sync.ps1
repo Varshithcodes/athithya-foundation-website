@@ -1,14 +1,17 @@
-# Athithya Foundation - Auto-Sync to GitHub
-Write-Host "🚀 Starting Auto-Sync..." -ForegroundColor Cyan
+# Universal Sync Script for Athithya Foundation
+Write-Host "--- Syncing Website ---" -ForegroundColor Yellow
 
-# 1. Add all changes (Mosaic, Header, etc.)
-git add .
+# 1. Pull any remote changes first
+git pull origin main --rebase
 
-# 2. Commit with a timestamped message
-$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-git commit -m "Website Update - $timestamp"
+# 2. Add EVERYTHING (Mosaic, SEO, Header, Subfolders)
+git add -A
 
-# 3. Push to GitHub (Vercel will see this and update)
+# 3. Commit with time
+$date = Get-Date -Format "HH:mm:ss"
+git commit -m "Site Update at $date"
+
+# 4. Push to GitHub
 git push origin main
 
-Write-Host "✅ Sync Complete! Your website will update on Vercel in 60 seconds." -ForegroundColor Green
+Write-Host "--- DONE! Website is updating... ---" -ForegroundColor Green
