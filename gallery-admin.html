@@ -1017,6 +1017,12 @@
         </div>
       </div>
       <div class="topbar-right">
+        <div class="sanity-lock-input" style="margin-right:15px; display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.05); padding:5px 12px; border-radius:8px;">
+          <span title="Your Sanity Write Token" style="font-size:1.1rem;">🔑</span>
+          <input type="password" id="sanityTokenInput" placeholder="Enter Sanity Key" 
+            style="border:none; background:transparent; font-size:0.75rem; width:120px; outline:none;"
+            onchange="saveSanityToken(this.value)">
+        </div>
         <a href="index.html" class="topbar-back">← Back to Website</a>
         <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
       </div>
@@ -1163,7 +1169,14 @@
     const SANITY_DATASET = 'production';
     // This token is required for WRITE operations. 
     // In production, consider fetching this via a secure Vercel API route.
-    const SANITY_WRITE_TOKEN = 'your_sanity_write_token';
+    const SANITY_WRITE_TOKEN = localStorage.getItem('af_sanity_token') || 'your_sanity_write_token';
+
+    function saveSanityToken(val) {
+      if (!val) return;
+      localStorage.setItem('af_sanity_token', val);
+      showToast('🔑 Sanity Key Saved! Ready to sync.');
+      setTimeout(() => location.reload(), 1000);
+    }
 
     // Google Apps Script Backend (Ensure this matches the one in script.js)
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynWy0eUcqv6FliR-pKinCOE3bzMDojNvBdEDbKDA3f47rtXlS6zOK3vWP6bZseRb9U/exec';
@@ -1208,6 +1221,10 @@
       // Show login
       document.getElementById('loginOverlay').style.display = 'flex';
       document.getElementById('adminContent').style.display = 'none';
+      // Pre-fill token if exists
+      const savedToken = localStorage.getItem('af_sanity_token');
+      const tokenInput = document.getElementById('sanityTokenInput');
+      if (tokenInput && savedToken) tokenInput.value = savedToken;
     })();
 
     function doLogin() {
@@ -1360,17 +1377,18 @@
 
     // ── STATS ──
     function updateStats() {
-      const csr = JSON.parse(localStorage.getItem('af_csr') || '[]').length;
       const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
       const pending = reviews.filter(r => r.status === 'pending').length;
       const published = reviews.filter(r => r.status === 'published').length;
-      const donations = JSON.parse(localStorage.getItem('af_donations') || '[]').length;
+      const donationsData = JSON.parse(localStorage.getItem('af_donations') || '[]');
+      // Fix: Count unique donors by name + email to avoid duplicates
+      const uniqueDonors = new Set(donationsData.map(d => `${(d.name || '').toLowerCase()}|${(d.email || '').toLowerCase()}`)).size;
 
       document.getElementById('stat-gal').textContent = gallery.length;
       document.getElementById('stat-total-reviews').textContent = reviews.length;
       document.getElementById('stat-pub').textContent = published;
       document.getElementById('stat-pending').textContent = pending;
-      document.getElementById('stat-donations').textContent = donations;
+      document.getElementById('stat-donations').textContent = uniqueDonors;
       document.getElementById('gal-count').textContent = gallery.length ? `(${gallery.length} items)` : '';
     }
 
