@@ -347,7 +347,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 const docData = {
   privacy: {
     title: 'Privacy Policy',
-    content: '<p style="margin-bottom:12px;"><strong>Athithya Foundation®</strong> respects your privacy and is committed to protecting your personal data. We collect minimal information required to process donations and communicate our impact. We do not sell or share your personal data with third parties.</p><p style="margin-bottom:12px;">The information we collect is solely used to send updates, newsletters, and donation receipts. We implement appropriate security measures to prevent unauthorized access or disclosure of your information.</p><p>For any privacy-related queries, please contact us at athithyafoundation@gmail.com.</p>'
+    content: '<p style="margin-bottom:12px;"><strong>Athithya Foundation®</strong> respects your privacy and is committed to protecting your personal data. We collect minimal information required to process donations and communicate our impact. We do not sell or share your personal data with third parties.</p><p style="margin-bottom:12px;">The information we collect is solely used to send updates, newsletters, and donation receipts. We implement appropriate security measures to prevent unauthorized access or disclosure of your information.</p><p>For any privacy-related queries, please contact us at foundationathithya@gmail.com.</p>'
   },
   terms: {
     title: 'Terms & Conditions',
