@@ -2,15 +2,8 @@ import { createClient } from "next-sanity";
 import imageUrlBuilder from "@sanity/image-url";
 
 // This client handles both READ (public) and WRITE (with token)
-// It prioritizes environment variables, then falls back to localStorage for the admin panel.
 const getWriteToken = () => {
-  if (typeof process !== 'undefined' && process.env.SANITY_SECRET_TOKEN) {
-    return process.env.SANITY_SECRET_TOKEN;
-  }
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('af_sanity_token');
-  }
-  return null;
+  return "skacpSe1YADeBSjFRDpXCWdGjxy4uO0jubtTB0Zk7p00Qn55Tgx1SgRfSqJLHHoPBDSNyvB8dx3MYcaChRHb1oyq3NtFNoywoBrCUNlwbSzKTVI8apVjZ8NKgazccUq2kdwurCORlNsEj1LdI3Xz4Voq00Z9KkkmDJ4Wn4chZQXsHh9BHg89";
 };
 
 export const client = createClient({
