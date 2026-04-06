@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -2407,26 +2407,21 @@
     }
 
     /* LinkedIn: dark navy blue glow */
-    [title="LinkedIn"]:hover,
+    [title="LinkedIn"] {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      will-change: transform;
+    }
+
     .soc-btn-v.revealed[title="LinkedIn"] {
       background: rgba(10, 102, 194, 0.12) !important;
       border-color: #0A66C2 !important;
       color: #0A66C2 !important;
       box-shadow: 0 10px 30px rgba(10, 102, 194, 0.35) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
     }
 
-    [title="LinkedIn"]:hover svg rect,
-    [title="LinkedIn"]:hover svg path,
     .soc-btn-v.revealed[title="LinkedIn"] svg rect,
     .soc-btn-v.revealed[title="LinkedIn"] svg path {
       stroke: #0A66C2 !important;
-    }
-
-    [title="LinkedIn"]:hover span,
-    .soc-btn-v.revealed[title="LinkedIn"] span {
-      color: #0A66C2 !important;
     }
 
     /* Facebook: blue-to-white glow */
@@ -2478,25 +2473,23 @@
     }
 
     /* ── New Social Platforms ── */
-    [title="Twitter"]:hover,
-    .soc-btn-v.revealed[title="Twitter"] {
+    [title="Twitter"] {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      will-change: transform;
+    }
+
+    [title="Twitter"]:hover {
       background: rgba(0, 0, 0, 0.08) !important;
       border-color: #000000 !important;
       color: #000000 !important;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+      box-shadow: 0 10px 30px rgba(29, 155, 240, 0.4) !important;
       transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
       z-index: 10;
     }
 
-    [title="Twitter"]:hover svg path,
-    .soc-btn-v.revealed[title="Twitter"] svg path {
+    [title="Twitter"]:hover svg path {
       fill: #000000 !important;
       stroke: none !important;
-    }
-
-    [title="Twitter"]:hover span,
-    .soc-btn-v.revealed[title="Twitter"] span {
-      color: #000 !important;
     }
 
     /* Override for Hero Section (Dark background) */
@@ -2509,8 +2502,12 @@
       fill: #FFFFFF !important;
     }
 
-    [title="YouTube"]:hover,
-    .soc-btn-v.revealed[title="YouTube"] {
+    [title="YouTube"] {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      will-change: transform;
+    }
+
+    [title="YouTube"]:hover {
       background: rgba(255, 0, 0, 0.08) !important;
       border-color: #FF0000 !important;
       color: #FF0000 !important;
@@ -2519,83 +2516,35 @@
       z-index: 10;
     }
 
-    [title="YouTube"]:hover svg path,
-    .soc-btn-v.revealed[title="YouTube"] svg path {
+    [title="YouTube"]:hover svg path {
       stroke: #FF0000 !important;
     }
 
-    [title="YouTube"]:hover svg path:last-child,
-    .soc-btn-v.revealed[title="YouTube"] svg path:last-child {
+    [title="YouTube"]:hover svg path:last-child {
       fill: #FF0000 !important;
       stroke: none !important;
     }
 
-    [title="YouTube"]:hover span,
-    .soc-btn-v.revealed[title="YouTube"] span {
-      color: #FF0000 !important;
-    }
-
-    [title="Call Now"]:hover,
+    .soc-btn-v.revealed[title="Contact Us"],
     .soc-btn-v.revealed[title="Call Now"] {
       background: var(--orp) !important;
       border-color: var(--or) !important;
       color: var(--or) !important;
       box-shadow: 0 10px 30px rgba(232, 97, 10, 0.25) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
     }
 
-    [title="Call Now"]:hover span,
-    .soc-btn-v.revealed[title="Call Now"] span {
-      color: var(--or) !important;
-    }
-
-    [title="WhatsApp"]:hover,
     .soc-btn-v.revealed[title="WhatsApp"] {
       background: rgba(37, 211, 102, 0.1) !important;
       border-color: #25D366 !important;
       color: #25D366 !important;
       box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
     }
 
-    [title="WhatsApp"]:hover svg,
-    .soc-btn-v.revealed[title="WhatsApp"] svg {
-      fill: #25D366 !important;
-    }
-
-    [title="WhatsApp"]:hover span,
-    .soc-btn-v.revealed[title="WhatsApp"] span {
-      color: #25D366 !important;
-    }
-
-    [title="Instagram"]:hover,
     .soc-btn-v.revealed[title="Instagram"] {
       background: linear-gradient(135deg, rgba(245, 96, 64, 0.15), rgba(131, 58, 180, 0.15), rgba(64, 93, 230, 0.15)) !important;
       border-color: #C13584 !important;
       color: #C13584 !important;
       box-shadow: 0 10px 30px rgba(193, 53, 132, 0.35) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
-    }
-
-    [title="Instagram"]:hover svg rect,
-    [title="Instagram"]:hover svg circle,
-    [title="Instagram"]:hover svg path,
-    .soc-btn-v.revealed[title="Instagram"] svg rect,
-    .soc-btn-v.revealed[title="Instagram"] svg circle {
-      stroke: #C13584 !important;
-    }
-
-    [title="Instagram"]:hover svg circle:last-child,
-    .soc-btn-v.revealed[title="Instagram"] svg circle:last-child {
-      fill: #C13584 !important;
-    }
-
-    [title="Instagram"]:hover span,
-    .soc-btn-v.revealed[title="Instagram"] span {
-      color: #C13584 !important;
     }
 
     .soc-btn-v.revealed[title="YouTube"] {
@@ -3750,7 +3699,7 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 550px) {
       #topnav {
         min-height: 60px;
         padding: 5px 5%;
@@ -3925,11 +3874,7 @@
       }
     }
 
-    @media (max-width: 1024px) and (min-width: 769px) {
-      .hero-right {
-        display: none !important;
-      }
-    }
+
 
     @media (max-width: 430px) {
       #topnav {
