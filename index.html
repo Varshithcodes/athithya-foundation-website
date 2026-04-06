@@ -2250,15 +2250,26 @@
 
     .contact-grid {
       display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 76px;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
       margin-top: 52px;
-      align-items: start
+      align-items: stretch
+    }
+
+    .contact-info {
+      background: #fff;
+      border: 1.5px solid var(--bdr);
+      border-radius: 22px;
+      padding: 32px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
+      display: flex;
+      flex-direction: column;
     }
 
     .contact-info .sec-sub {
       max-width: 100%;
-      margin-bottom: 36px
+      margin-bottom: 24px;
+      text-align: left;
     }
 
     .cmeths {
@@ -2396,12 +2407,8 @@
     }
 
     /* LinkedIn: dark navy blue glow */
-    [title="LinkedIn"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    [title="LinkedIn"]:hover {
+    [title="LinkedIn"]:hover,
+    .soc-btn-v.revealed[title="LinkedIn"] {
       background: rgba(10, 102, 194, 0.12) !important;
       border-color: #0A66C2 !important;
       color: #0A66C2 !important;
@@ -2411,8 +2418,15 @@
     }
 
     [title="LinkedIn"]:hover svg rect,
-    [title="LinkedIn"]:hover svg path {
+    [title="LinkedIn"]:hover svg path,
+    .soc-btn-v.revealed[title="LinkedIn"] svg rect,
+    .soc-btn-v.revealed[title="LinkedIn"] svg path {
       stroke: #0A66C2 !important;
+    }
+
+    [title="LinkedIn"]:hover span,
+    .soc-btn-v.revealed[title="LinkedIn"] span {
+      color: #0A66C2 !important;
     }
 
     /* Facebook: blue-to-white glow */
@@ -2421,17 +2435,15 @@
       will-change: transform;
     }
 
-    [title="Facebook"]:hover {
+    .soc-btn-v.revealed[title="Facebook"] {
       background: linear-gradient(135deg, rgba(24, 119, 242, 0.18), rgba(255, 255, 255, 0.08)) !important;
       border-color: #1877F2 !important;
       color: #1877F2 !important;
       box-shadow: 0 10px 30px rgba(24, 119, 242, 0.35) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
     }
 
-    [title="Facebook"]:hover svg rect,
-    [title="Facebook"]:hover svg path {
+    .soc-btn-v.revealed[title="Facebook"] svg rect,
+    .soc-btn-v.revealed[title="Facebook"] svg path {
       stroke: #1877F2 !important;
     }
 
@@ -2466,23 +2478,25 @@
     }
 
     /* ── New Social Platforms ── */
-    [title="Twitter"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    [title="Twitter"]:hover {
+    [title="Twitter"]:hover,
+    .soc-btn-v.revealed[title="Twitter"] {
       background: rgba(0, 0, 0, 0.08) !important;
       border-color: #000000 !important;
       color: #000000 !important;
-      box-shadow: 0 10px 30px rgba(29, 155, 240, 0.4) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
       transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
       z-index: 10;
     }
 
-    [title="Twitter"]:hover svg path {
+    [title="Twitter"]:hover svg path,
+    .soc-btn-v.revealed[title="Twitter"] svg path {
       fill: #000000 !important;
       stroke: none !important;
+    }
+
+    [title="Twitter"]:hover span,
+    .soc-btn-v.revealed[title="Twitter"] span {
+      color: #000 !important;
     }
 
     /* Override for Hero Section (Dark background) */
@@ -2495,12 +2509,8 @@
       fill: #FFFFFF !important;
     }
 
-    [title="YouTube"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    [title="YouTube"]:hover {
+    [title="YouTube"]:hover,
+    .soc-btn-v.revealed[title="YouTube"] {
       background: rgba(255, 0, 0, 0.08) !important;
       border-color: #FF0000 !important;
       color: #FF0000 !important;
@@ -2509,26 +2519,132 @@
       z-index: 10;
     }
 
-    [title="YouTube"]:hover svg path {
+    [title="YouTube"]:hover svg path,
+    .soc-btn-v.revealed[title="YouTube"] svg path {
       stroke: #FF0000 !important;
     }
 
-    [title="YouTube"]:hover svg path:last-child {
+    [title="YouTube"]:hover svg path:last-child,
+    .soc-btn-v.revealed[title="YouTube"] svg path:last-child {
       fill: #FF0000 !important;
       stroke: none !important;
     }
 
-    [title="Contact Us"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    [title="YouTube"]:hover span,
+    .soc-btn-v.revealed[title="YouTube"] span {
+      color: #FF0000 !important;
     }
 
-    [title="Contact Us"]:hover {
+    [title="Call Now"]:hover,
+    .soc-btn-v.revealed[title="Call Now"] {
       background: var(--orp) !important;
       border-color: var(--or) !important;
       color: var(--or) !important;
       box-shadow: 0 10px 30px rgba(232, 97, 10, 0.25) !important;
       transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
       z-index: 10;
+    }
+
+    [title="Call Now"]:hover span,
+    .soc-btn-v.revealed[title="Call Now"] span {
+      color: var(--or) !important;
+    }
+
+    [title="WhatsApp"]:hover,
+    .soc-btn-v.revealed[title="WhatsApp"] {
+      background: rgba(37, 211, 102, 0.1) !important;
+      border-color: #25D366 !important;
+      color: #25D366 !important;
+      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3) !important;
+      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
+      z-index: 10;
+    }
+
+    [title="WhatsApp"]:hover svg,
+    .soc-btn-v.revealed[title="WhatsApp"] svg {
+      fill: #25D366 !important;
+    }
+
+    [title="WhatsApp"]:hover span,
+    .soc-btn-v.revealed[title="WhatsApp"] span {
+      color: #25D366 !important;
+    }
+
+    [title="Instagram"]:hover,
+    .soc-btn-v.revealed[title="Instagram"] {
+      background: linear-gradient(135deg, rgba(245, 96, 64, 0.15), rgba(131, 58, 180, 0.15), rgba(64, 93, 230, 0.15)) !important;
+      border-color: #C13584 !important;
+      color: #C13584 !important;
+      box-shadow: 0 10px 30px rgba(193, 53, 132, 0.35) !important;
+      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
+      z-index: 10;
+    }
+
+    [title="Instagram"]:hover svg rect,
+    [title="Instagram"]:hover svg circle,
+    [title="Instagram"]:hover svg path,
+    .soc-btn-v.revealed[title="Instagram"] svg rect,
+    .soc-btn-v.revealed[title="Instagram"] svg circle {
+      stroke: #C13584 !important;
+    }
+
+    [title="Instagram"]:hover svg circle:last-child,
+    .soc-btn-v.revealed[title="Instagram"] svg circle:last-child {
+      fill: #C13584 !important;
+    }
+
+    [title="Instagram"]:hover span,
+    .soc-btn-v.revealed[title="Instagram"] span {
+      color: #C13584 !important;
+    }
+
+    .soc-btn-v.revealed[title="YouTube"] {
+      background: rgba(255, 0, 0, 0.08) !important;
+      border-color: #FF0000 !important;
+      color: #FF0000 !important;
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3) !important;
+    }
+
+    .soc-btn-v.revealed[title="Twitter"] {
+      background: rgba(0, 0, 0, 0.08) !important;
+      border-color: #000000 !important;
+      color: #000000 !important;
+      box-shadow: 0 10px 30px rgba(29, 155, 240, 0.4) !important;
+    }
+
+    /* Branded colors for revealed state */
+    .soc-btn-v.revealed[title="Instagram"] svg rect,
+    .soc-btn-v.revealed[title="Instagram"] svg circle {
+      stroke: #C13584 !important;
+    }
+
+    .soc-btn-v.revealed[title="Instagram"] svg circle:last-child {
+      fill: #C13584 !important;
+    }
+
+    .soc-btn-v.revealed[title="LinkedIn"] svg rect,
+    .soc-btn-v.revealed[title="LinkedIn"] svg path {
+      stroke: #0A66C2 !important;
+    }
+
+    .soc-btn-v.revealed[title="YouTube"] svg path {
+      stroke: #FF0000 !important;
+    }
+
+    .soc-btn-v.revealed[title="YouTube"] svg path:last-child {
+      fill: #FF0000 !important;
+    }
+
+    .soc-btn-v.revealed[title="Twitter"] svg path {
+      fill: #000000 !important;
+    }
+
+    .soc-btn-v.revealed[title="WhatsApp"] svg {
+      fill: #25D366 !important;
+    }
+
+    .soc-btn-v.revealed span {
+      color: var(--ink) !important;
     }
 
     /* Branded Border Colors for Contact row */
@@ -2616,7 +2732,7 @@
     .soc-btn-v:hover {
       border-color: var(--or);
       background: var(--crm);
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-10px) scale(1.05) rotateX(5deg);
       box-shadow: 0 16px 32px rgba(232, 97, 10, 0.18);
     }
 
@@ -2696,13 +2812,13 @@
 
     @media (min-width: 768px) {
       .owner-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
       }
     }
 
     @media (min-width: 1024px) {
       .owner-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
       }
     }
 
@@ -2729,8 +2845,10 @@
       background: #fff;
       border: 1.5px solid var(--bdr);
       border-radius: 22px;
-      padding: 32px;
+      padding: 40px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
+      display: flex;
+      flex-direction: column;
     }
 
     .owner-wrap h3 {
@@ -2745,18 +2863,20 @@
     .owner-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 32px;
+      flex: 1;
+      align-content: space-evenly;
     }
 
     .owner-card {
       display: flex;
-      gap: 16px;
+      gap: 24px;
       align-items: center;
-      padding: 16px;
+      padding: 24px;
       background: var(--crm);
-      border: 1px solid var(--bdr);
-      border-radius: 14px;
-      transition: all .2s;
+      border: 1.5px solid var(--bdr);
+      border-radius: 18px;
+      transition: all .35s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     .owner-card:hover {
@@ -2767,14 +2887,14 @@
 
     .owner-pic {
       position: relative;
-      width: 70px;
-      height: 70px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: var(--or);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       color: #fff;
       font-weight: 900;
       flex-shrink: 0;
@@ -2785,13 +2905,13 @@
 
     .owner-pic {
       position: relative;
-      width: 76px;
-      height: 76px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       color: #fff;
       font-weight: 900;
       flex-shrink: 0;
@@ -4546,7 +4666,7 @@
             <div class="vm">
               <div class="vm-ico">🎯</div>
               <h4>Our Mission</h4>
-              <p>Redefine education through innovative, value-based learning and responsible citizenship.</p>
+              <p>Redefine education through innovative, value based learning and responsible citizenship.</p>
             </div>
           </div>
           <div class="about-quote">"✦ Vidya Vinayena Shobhite ✦" - Knowledge shines brightest when paired with humility
@@ -4887,120 +5007,6 @@
       <div class="eyebrow">Get In Touch</div>
       <h2 class="sec-title">We'd Love to <span>Hear From You</span></h2>
       <div class="contact-grid">
-        <div class="contact-info">
-          <p class="sec-sub">Whether you're a donor, volunteer, school, or corporate partner we are here to connect,
-            collaborate, and create change together.</p>
-          <div class="cmeths stagger-reveal">
-            <div class="cm">
-              <div class="cm-ic">🗺️</div>
-              <div class="cm-txt">
-                <label>Our Office</label>
-                <a href="https://maps.app.goo.gl/Wy1MPTTyNtHKV9M39" target="_blank" rel="noopener"
-                  style="font-weight:700;font-size:.88rem;line-height:1.5;color:var(--ink);">Rudra Chambers, No.4/1,
-                  Ground Floor,<br />4th Main Road, Between 8th &amp; 9th Cross,<br />Malleshwaram, Bangalore –
-                  560003</a>
-              </div>
-            </div>
-            <div class="cm">
-              <div class="cm-ic">📱</div>
-              <div class="cm-txt">
-                <label>Phone</label>
-                <a href="tel:+919945825477">+91 99458 25477</a>
-              </div>
-            </div>
-            <div class="cm">
-              <div class="cm-ic">📨</div>
-              <div class="cm-txt">
-                <label>Email</label>
-                <!-- CHANGE THIS: Replace with your real email -->
-                <a href="mailto:foundationathithya@gmail.com">foundationathithya@gmail.com</a>
-              </div>
-            </div>
-            <div class="cm">
-              <div class="cm-ic">🌐</div>
-              <div class="cm-txt">
-                <label>Website</label>
-                <a href="#">www.athithyafoundation.org</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- ══════════════════════════════════════
-             SOCIAL MEDIA LINKS IN CONTACT SECTION
-             Change each href="#" to your real URL
-             Example: href="https://instagram.com/athithyafoundation"
-        ══════════════════════════════════════ -->
-          <div class="contact-socials-ref">
-            <h4>Connect with us</h4>
-            <div class="soc-row-final">
-              <a href="tel:+919945825477" class="soc-btn-v" title="Call Now">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--or)" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path
-                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                    </path>
-                  </svg>
-                  <span>Call Now</span>
-                </div>
-              </a>
-              <a href="#" class="soc-btn-v" title="Instagram" target="_blank" rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="#E8610A" stroke-width="2" />
-                    <circle cx="12" cy="12" r="4" stroke="#E8610A" stroke-width="2" />
-                    <circle cx="17.5" cy="6.5" r="1.2" fill="#E8610A" />
-                  </svg>
-                  <span>Instagram</span>
-                </div>
-              </a>
-              <a href="https://www.linkedin.com/company/athithya-foundation" class="soc-btn-v" title="LinkedIn"
-                target="_blank" rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="2" width="20" height="20" rx="4" stroke="#0077B5" stroke-width="2" />
-                    <path d="M7 10v7M7 7v.5" stroke="#0077B5" stroke-width="2" stroke-linecap="round" />
-                    <path d="M11 17v-4c0-1.5 1-2 2-2s2 .5 2 2v4M11 10v7" stroke="#0077B5" stroke-width="2"
-                      stroke-linecap="round" />
-                  </svg>
-                  <span>LinkedIn</span>
-                </div>
-              </a>
-              <a href="https://www.youtube.com/@AthithyaFoundation" class="soc-btn-v" title="YouTube" target="_blank"
-                rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"
-                      stroke="#FF0000" stroke-width="2" />
-                    <path d="m9.75 15.02 5.75-3.27-5.75-3.27v6.54z" fill="#FF0000" />
-                  </svg>
-                  <span>YouTube</span>
-                </div>
-              </a>
-              <a href="#" class="soc-btn-v" title="Twitter" target="_blank" rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-                      fill="#333" />
-                  </svg>
-                  <span>X (Twitter)</span>
-                </div>
-              </a>
-              <a href="https://wa.me/919945825477" class="soc-btn-v" title="WhatsApp" target="_blank" rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="#25D366">
-                    <path
-                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                  </svg>
-                  <span>WhatsApp</span>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-
         <div class="owner-wrap">
           <h3>Foundation Leadership</h3>
           <div class="owner-grid stagger-reveal">
@@ -5063,6 +5069,117 @@
                 <span class="owner-badge">Trustee</span>
                 <p>"Providing youth with digital tools is the core of our vision for a better Education..."</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info">
+          <p class="sec-sub">Whether you're a donor, volunteer, school, or corporate partner we are here to connect,
+            collaborate, and create change together.</p>
+          <div class="cmeths stagger-reveal">
+            <div class="cm">
+              <div class="cm-ic">🗺️</div>
+              <div class="cm-txt">
+                <label>Our Office</label>
+                <a href="https://maps.app.goo.gl/Wy1MPTTyNtHKV9M39" target="_blank" rel="noopener"
+                  style="font-weight:700;font-size:.88rem;line-height:1.5;color:var(--ink);">Rudra Chambers, No.4/1,
+                  Ground Floor,<br />4th Main Road, Between 8th &amp; 9th Cross,<br />Malleshwaram, Bangalore –
+                  560003</a>
+              </div>
+            </div>
+            <div class="cm">
+              <div class="cm-ic">📱</div>
+              <div class="cm-txt">
+                <label>Phone</label>
+                <a href="tel:+919945825477">+91 99458 25477</a>
+              </div>
+            </div>
+            <div class="cm">
+              <div class="cm-ic">📨</div>
+              <div class="cm-txt">
+                <label>Email</label>
+                <a href="mailto:foundationathithya@gmail.com">foundationathithya@gmail.com</a>
+              </div>
+            </div>
+            <div class="cm">
+              <div class="cm-ic">🌐</div>
+              <div class="cm-txt">
+                <label>Website</label>
+                <a href="#">www.athithyafoundation.org</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-socials-ref">
+            <h4 onclick="openMosaicPopup('connect')">Connect with us</h4>
+            <div class="soc-row-final">
+              <a href="tel:+919945825477" class="soc-btn-v" title="Call Now" onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--or)" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
+                  </svg>
+                  <span>Call Now</span>
+                </div>
+              </a>
+              <a href="#" class="soc-btn-v" title="Instagram" target="_blank" rel="noopener"
+                onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="var(--or)" stroke-width="2" />
+                    <circle cx="12" cy="12" r="4" stroke="var(--or)" stroke-width="2" />
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="var(--or)" />
+                  </svg>
+                  <span>Instagram</span>
+                </div>
+              </a>
+              <a href="https://www.linkedin.com/company/athithya-foundation" class="soc-btn-v" title="LinkedIn"
+                target="_blank" rel="noopener" onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="4" stroke="var(--or)" stroke-width="2" />
+                    <path d="M7 10v7M7 7v.5" stroke="var(--or)" stroke-width="2" stroke-linecap="round" />
+                    <path d="M11 17v-4c0-1.5 1-2 2-2s2 .5 2 2v4M11 10v7" stroke="var(--or)" stroke-width="2"
+                      stroke-linecap="round" />
+                  </svg>
+                  <span>LinkedIn</span>
+                </div>
+              </a>
+              <a href="https://www.youtube.com/@AthithyaFoundation" class="soc-btn-v" title="YouTube" target="_blank"
+                rel="noopener" onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"
+                      stroke="var(--or)" stroke-width="2" />
+                    <path d="m9.75 15.02 5.75-3.27-5.75-3.27v6.54z" fill="var(--or)" />
+                  </svg>
+                  <span>YouTube</span>
+                </div>
+              </a>
+              <a href="#" class="soc-btn-v" title="Twitter" target="_blank" rel="noopener"
+                onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                      fill="var(--or)" />
+                  </svg>
+                  <span>X (Twitter)</span>
+                </div>
+              </a>
+              <a href="https://wa.me/919945825477" class="soc-btn-v" title="WhatsApp" target="_blank" rel="noopener"
+                onclick="openMosaicPopup('connect')">
+                <div class="soc-btn-wrap">
+                  <svg viewBox="0 0 24 24" fill="var(--or)">
+                    <path
+                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                  </svg>
+                  <span>WhatsApp</span>
+                </div>
+              </a>
             </div>
           </div>
         </div>

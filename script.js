@@ -569,5 +569,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     logoTrigger.addEventListener('touchend', () => clearTimeout(logoTimer));
   }
+
+  // ── Social Icons: Reveal color on click ──
+  const socBtns = document.querySelectorAll('.soc-btn-v');
+  socBtns.forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      this.classList.toggle('revealed');
+    });
+  });
 });
 
