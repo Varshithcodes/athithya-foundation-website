@@ -445,7 +445,7 @@ const popupData = {
     desc: "Athithya Foundation delivered exactly what they had promised, Transparent reporting, visible impact, and genuine dedication. For me, Athithya is the best CSR partner we have worked with in Bengaluru.Their professionalism and on ground execution are unparalleled, and seeing the real world change they create gave us total confidence that our funds were being used perfectly.It is rare that we get to find a partner that combines such heart with such high level efficiency."
   },
   guest3: {
-    img: 'images/Gemini_Generated_Image_8zhnth8zhnth8zhn.png',
+    img: 'images/Gemini_Generated_Image_k25u8gk25u8gk25u.png',
     title: 'Praveen V. Gudi',
     desc: 'I have visited many schools and foundations before, but what Athithya Foundation has achieved here is truly commendable. Transitioning from broken benches and no library to a modern smart classroom and 500 books in just two years is a remarkable feat of on ground execution. As someone in the health department, I know that environment dictates outcomes... by providing these resources, they have brought a renewed sense of dignity and hope to both students and teachers. The transformation is unbelievable, and it is clear that their dedication to the community is genuine'
   },
