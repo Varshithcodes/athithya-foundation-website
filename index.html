@@ -5269,11 +5269,17 @@
             </div>
           </div>
 
-          <!-- Simulate Payment -->
-          <div style="border-top:1px solid var(--bdr);padding-top:18px;">
-            <p style="font-size:.78rem;color:var(--mut);text-align:center;margin-bottom:12px;">After payment, click
-              below to confirm & record your donation.</p>
-            <button class="donate-simulate" onclick="simulatePayment()">✅ I Have Completed the Payment</button>
+          <!-- Payment Confirmation Form -->
+          <div style="border-top:1px solid var(--bdr);padding-top:16px; margin-top:20px;">
+            <p style="font-size:.85rem;color:var(--ink);font-weight:700;margin-bottom:12px;text-align:center;">Already Paid? Record Your Donation</p>
+            <div id="donateForm" style="display:flex; flex-direction:column; gap:10px;">
+              <input type="text" id="donName" placeholder="Your Name" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
+              <input type="email" id="donEmail" placeholder="Your Email (Optional)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
+              <input type="tel" id="donPhone" placeholder="Phone Number (Optional)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
+              <input type="number" id="donAmount" placeholder="Amount Donated (₹)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
+              
+              <button class="donate-simulate" onclick="simulatePaymentForm()" style="margin-top:5px; width:100%;">✅ Confirm & Submit Details</button>
+            </div>
           </div>
         </div>
       </div>
@@ -5438,16 +5444,20 @@
       document.body.style.overflow = '';
     }
 
-    function simulatePayment() {
-      const name = prompt('Your Name (for our records):') || 'Anonymous';
-      const email = prompt('Your Email (optional):') || '';
-      const amountStr = prompt('Amount donated (₹):') || '0';
-      const phone = prompt('Phone number (optional):') || '';
+    function simulatePaymentForm() {
+      const name = document.getElementById('donName').value.trim() || 'Anonymous';
+      const email = document.getElementById('donEmail').value.trim() || '';
+      const phone = document.getElementById('donPhone').value.trim() || '';
+      const amountStr = document.getElementById('donAmount').value.trim() || '0';
+
+      if (!amountStr || parseFloat(amountStr) <= 0) {
+        alert("Please enter a valid donation amount to confirm.");
+        return;
+      }
 
       const amount = parseFloat(amountStr).toFixed(2);
       const txnId = 'TXN' + Date.now();
 
-      // Use local timestamp for accuracy
       const now = new Date();
       const istTime = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
@@ -5555,24 +5565,10 @@
     });
 
     async function loadDynamicReviews() {
-      // 1. Try Sanity First
-      const sanityReviews = await loadSanityReviews();
+      // Load directly from local storage/Google sheets logic
       let published = [];
-
-      if (sanityReviews && sanityReviews.length > 0) {
-        published = sanityReviews.map(r => ({
-          name: r.authorName,
-          role: r.role,
-          message: r.reviewText,
-          dp: r.authorImage ? urlFor(r.authorImage) : null,
-          status: 'published',
-          date: r._createdAt
-        }));
-      } else {
-        // Fallback to localStorage
-        const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-        published = allReviews.filter(r => r.status === 'published').reverse();
-      }
+      const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      published = allReviews.filter(r => r.status === 'published').reverse();
 
       if (published.length > 0) {
         const section = document.getElementById('dynamicReviewsSection');
@@ -5626,21 +5622,8 @@
 
     // ── REVIEWS MODAL ──
     async function renderAllReviews() {
-      const sanityReviews = await loadSanityReviews();
-      let published = [];
-
-      if (sanityReviews && sanityReviews.length > 0) {
-        published = sanityReviews.map(r => ({
-          name: r.authorName,
-          role: r.role,
-          message: r.reviewText,
-          dp: r.authorImage ? urlFor(r.authorImage) : null,
-          date: r._createdAt
-        }));
-      } else {
-        const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-        published = allReviews.filter(r => r.status === 'published').reverse();
-      }
+      const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      const published = allReviews.filter(r => r.status === 'published').reverse();
 
       const grid = document.getElementById('allReviewsGrid');
 
@@ -5677,23 +5660,16 @@
       document.body.style.overflow = 'hidden';
 
       const grid = document.getElementById('fullGalleryGrid');
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading full gallery from Sanity.io...</div>';
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading gallery...</div>';
 
-      // 1. Fetch data
-      const query = `*[_type == "galleryItem"] | order(_createdAt desc)`;
-      const data = await sanityFetch(query);
+      // Load full gallery from local storage
+      const localGallery = JSON.parse(localStorage.getItem('af_gallery') || '[]');
 
-      if (data && data.length > 0) {
-        fullGalleryData = data.map(item => ({
-          image: urlFor(item.image),
-          title: item.title,
-          desc: item.caption,
-          type: item.videoUrl ? 'video' : 'photo',
-          videoUrl: item.videoUrl
-        }));
+      if (localGallery && localGallery.length > 0) {
+        fullGalleryData = localGallery;
         renderGalleryItems(fullGalleryData);
       } else {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No items found in the official gallery.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No items found in the gallery. Use the Admin panel to add some.</div>';
       }
     }
 
