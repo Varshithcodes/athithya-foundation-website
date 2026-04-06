@@ -14,36 +14,49 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the current directory
 app.use(express.static(__dirname));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Ensure data existence
+// Ensure directories and data file exist
+const imagesDir = path.join(__dirname, 'images');
+if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
+
 const dataFile = path.join(__dirname, 'data.json');
 if (!fs.existsSync(dataFile)) {
   fs.writeFileSync(dataFile, JSON.stringify({ contacts: [], csrs: [], gallery: [] }));
 }
 
 // Helper to read/write JSON data
-const readData = () => JSON.parse(fs.readFileSync(dataFile));
+const readData = () => {
+    try {
+        return JSON.parse(fs.readFileSync(dataFile));
+    } catch (e) {
+        return { contacts: [], csrs: [], gallery: [] };
+    }
+};
 const writeData = (data) => fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 
 /* --- API ENDPOINTS --- */
 
-// 1. Submit Contact Form
+// 1. Health Check
+app.get('/api/status', (req, res) => res.json({ status: 'online', time: new Date() }));
+
+// 2. Submit Contact Form
 app.post('/api/contact', (req, res) => {
   const data = readData();
-  data.contacts.push({ ...req.body, date: new Date().toISOString() });
+  data.contacts.unshift({ ...req.body, date: new Date().toISOString() });
   writeData(data);
   res.status(200).json({ success: true, message: 'Contact saved!' });
 });
 
-// 2. Submit CSR Form
+// 3. Submit CSR Form
 app.post('/api/csr', (req, res) => {
   const data = readData();
-  data.csrs.push({ ...req.body, date: new Date().toISOString() });
+  data.csrs.unshift({ ...req.body, date: new Date().toISOString() });
   writeData(data);
   res.status(200).json({ success: true, message: 'CSR enquiry saved!' });
 });
 
-// 3. Get Submissions (Admin)
+// 4. Get Submissions (Admin)
 app.get('/api/submissions', (req, res) => {
   const data = readData();
   res.json({ contacts: data.contacts, csrs: data.csrs });
@@ -51,34 +64,46 @@ app.get('/api/submissions', (req, res) => {
 
 // Configure Multer for local image uploads (Admin Panel use case)
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, 'images')),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+  destination: (req, file, cb) => cb(null, imagesDir),
+  filename: (req, file, cb) => cb(null, `gal_${Date.now()}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage });
 
-// 4. Upload Gallery Image
+// 5. Upload Gallery Image
 app.post('/api/gallery', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+
   const data = readData();
   const newImage = {
+    id: 'local_' + Date.now(),
     title: req.body.title || 'New Photo',
     location: req.body.location || '',
     image: '/images/' + req.file.filename,
     date: new Date().toISOString()
   };
-  data.gallery.push(newImage);
+  data.gallery.unshift(newImage);
   writeData(data);
   res.status(200).json({ success: true, image: newImage });
 });
 
-// 5. Get Gallery
+// 6. Get Gallery
 app.get('/api/gallery', (req, res) => {
   const data = readData();
-  res.json(data.gallery);
+  res.json(data.gallery || []);
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('SERVER ERROR:', err.stack);
+  res.status(500).json({ success: false, message: 'Internal Server Error' });
 });
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-  console.log(`To view the site: http://localhost:${PORT}/index.html`);
-  console.log(`To view the admin panel: http://localhost:${PORT}/gallery-admin.html`);
+  console.log(`\n🚀 ATHITHYA ADMIN SERVER STARTED`);
+  console.log(`----------------------------------`);
+  console.log(`📡 API Status: http://localhost:${PORT}/api/status`);
+  console.log(`📂 Web Admin:  http://localhost:${PORT}/gallery-admin.html`);
+  console.log(`🎨 Main Site:  http://localhost:${PORT}/index.html\n`);
+  console.log(`⚠️  Keep this terminal open to allow local image uploads.\n`);
 });

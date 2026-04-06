@@ -1002,6 +1002,17 @@
       </div>
       <div id="loginError">❌ Invalid username or password. Please try again.</div>
       <button class="btn-login" onclick="doLogin()">🔐 Login to Admin Panel</button>
+      
+      <div id="sanityConfigArea" style="display:none; margin-top:20px; padding-top:15px; border-top:1px solid var(--bdr); text-align:center;">
+        <p style="font-size:0.65rem; color:var(--mut); margin-bottom:8px;">☁️ Sanity Cloud Token (Advanced)</p>
+        <div style="display:flex; gap:5px;">
+          <input type="password" id="sanityTokenInput" placeholder="sk..." style="flex:1; padding:8px 12px; border:1px solid var(--bdr); border-radius:6px; font-size:0.75rem;">
+          <button onclick="saveSanityToken(document.getElementById('sanityTokenInput').value)" style="padding:8px 12px; background:var(--teal); color:#fff; border:none; border-radius:6px; font-size:0.7rem; cursor:pointer; font-weight:700;">Save</button>
+        </div>
+      </div>
+      <p style="text-align:center; margin-top:15px;">
+        <a href="javascript:void(0)" onclick="document.getElementById('sanityConfigArea').style.display='block';this.style.display='none'" style="font-size:0.65rem; color:var(--mut); text-decoration:underline;">Advanced: Connect Sanity Cloud</a>
+      </p>
     </div>
   </div>
 
@@ -1017,7 +1028,10 @@
         </div>
       </div>
       <div class="topbar-right">
-
+        <div id="serverStatus" style="display:none; font-size: 0.72rem; color: var(--mut); align-items: center; gap: 8px; margin-right: 15px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);">
+            <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
+            <span id="serverText">Checking Server...</span>
+        </div>
         <a href="index.html" class="topbar-back">← Back to Website</a>
         <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
       </div>
@@ -1170,17 +1184,20 @@
       const ADMIN_USER = 'Jyothi Gudi';
       const ADMIN_PASS = window.ADMIN_PASSWORD || '2507';
       const SESSION_KEY = 'af_admin_token';
-      const SESSION_DURATION = 30 * 60 * 1000;
+      const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 Days session persistence
 
       // SECURE: Replace these with your actual Sanity Project Details
       const SANITY_PROJECT_ID = 'm5wsa8rt';
       const SANITY_DATASET = 'production';
       // This token is required for WRITE operations. 
       // In production, consider fetching this via a secure Vercel API route.
-      const SANITY_WRITE_TOKEN = localStorage.getItem('af_sanity_token') || 'your_sanity_write_token';
+      const SANITY_WRITE_TOKEN = localStorage.getItem('af_sanity_token') || '';
 
       function saveSanityToken(val) {
-        if (!val) return;
+        if (!val) {
+          showToast('⚠️ Please enter a token.');
+          return;
+        }
         localStorage.setItem('af_sanity_token', val);
         showToast('🔑 Sanity Key Saved! Ready to sync.');
         setTimeout(() => location.reload(), 1000);
@@ -1190,12 +1207,42 @@
       const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynWy0eUcqv6FliR-pKinCOE3bzMDojNvBdEDbKDA3f47rtXlS6zOK3vWP6bZseRb9U/exec';
 
       let client = null;
+      async function checkServerStatus() {
+        const dot = document.getElementById('serverDot');
+        const txt = document.getElementById('serverText');
+        const statusBox = document.getElementById('serverStatus');
+        if (!dot || !txt || !statusBox) return;
+
+        // Only show Local Server Status on Localhost
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isLocal) {
+          statusBox.style.display = 'none';
+          return false;
+        }
+
+        statusBox.style.display = 'flex';
+        try {
+          // Use relative path locally (works on port 3000)
+          const res = await fetch('/api/status');
+          if (res.ok) {
+            dot.style.background = '#27AE60';
+            dot.style.boxShadow = '0 0 8px #27AE60';
+            txt.textContent = 'Local Server Live';
+            return true;
+          }
+        } catch (e) { }
+        
+        dot.style.background = '#E67E22';
+        dot.style.boxShadow = 'none';
+        txt.textContent = 'Static Mode (serve)';
+        return false;
+      }
 
       function initSanityClient() {
         if (window.createSanityClient && !client) {
           if (!SANITY_WRITE_TOKEN || SANITY_WRITE_TOKEN === 'your_sanity_write_token') {
             console.warn('Sanity Write Token is missing. Uploads will fail.');
-            return;
+            // We don't return early here so that READ operations might still work if public
           }
           client = window.createSanityClient({
             projectId: SANITY_PROJECT_ID,
@@ -1232,7 +1279,10 @@
         // Pre-fill token if exists
         const savedToken = localStorage.getItem('af_sanity_token');
         const tokenInput = document.getElementById('sanityTokenInput');
-        if (tokenInput && savedToken) tokenInput.value = savedToken;
+        if (tokenInput && savedToken) {
+          tokenInput.value = savedToken;
+          document.getElementById('sanityConfigArea').style.display = 'block';
+        }
       })();
 
       function doLogin() {
@@ -1264,6 +1314,7 @@
       function showAdmin() {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
+        checkServerStatus();
         initSanityClient();
         initAdmin();
       }
@@ -1436,7 +1487,7 @@
         const type = document.getElementById('newItemType').value;
 
         // ── OPTION A: Sanity Write (Requires Token) ──
-        if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== 'your_sanity_write_token') {
+        if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== '') {
           showToast('🚀 Uploading to Sanity Cloud...');
           try {
             const asset = await client.assets.upload(type === 'video' ? 'file' : 'image', pendingFile, {
@@ -1454,12 +1505,17 @@
             return;
           } catch (e) {
             console.error(e);
-            showToast('❌ Sanity Cloud error. Trying local server...');
+            showToast('❌ Sanity Cloud error. Check your Write Token/Permissions.');
           }
         }
 
         // ── OPTION B: Local Server (Direct Storage) ──
-        showToast('🏢 Syncing to Local Server...');
+        if (!SANITY_WRITE_TOKEN) {
+           showToast('🔑 Missing Sanity Token. Trying Local Server...');
+        } else {
+           showToast('🏢 Retrying via Local Server...');
+        }
+
         const formData = new FormData();
         formData.append('image', pendingFile);
         formData.append('title', title);
@@ -1467,6 +1523,8 @@
 
         try {
           const res = await fetch('/api/gallery', { method: 'POST', body: formData });
+          if (!res.ok) throw new Error('API Endpoint not found');
+          
           const result = await res.json();
           if (result.success) {
             gallery.unshift({
@@ -1486,9 +1544,14 @@
           }
         } catch (error) {
           console.error('Final Sync Error:', error);
-          showToast('❌ Total Failure: No cloud and no local server connection.');
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+             showToast('❌ CONNECTION FAILED: Upload rejected. Please check you are running the server correctly.');
+          } else {
+             showToast('❌ UPLOAD FAILED: No Sanity Cloud Token found. Image could not be saved to cloud.');
+          }
         }
       }
+
 
       function resetForm() {
         pendingFile = null;
