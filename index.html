@@ -5420,6 +5420,10 @@
   <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
   <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
   <script src="script.js"></script>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@sanity/client@6.15.10';
+    window.createSanityClient = createClient;
+  </script>
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,kn,hi', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
@@ -5652,16 +5656,47 @@
 
     // ── FULL GALLERY MODAL LOGIC ──
     let fullGalleryData = [];
+    let sanityReadClient = null;
+
+    async function initSanityRead() {
+      if (typeof window.createSanityClient !== 'undefined') {
+          sanityReadClient = window.createSanityClient({
+            projectId: 'm5wsa8rt',
+            dataset: 'production',
+            useCdn: true, // Use CDN for public reads
+            apiVersion: '2023-01-01',
+          });
+      }
+    }
 
     async function openGalleryModal() {
       document.getElementById('galleryModal').classList.add('open');
       document.body.style.overflow = 'hidden';
 
       const grid = document.getElementById('fullGalleryGrid');
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading gallery...</div>';
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading cloud gallery...</div>';
 
-      // Load data locally
-      const data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+      // 1. Try to fetch from Sanity Cloud first
+      if (!sanityReadClient) await initSanityRead();
+      
+      let data = [];
+      if (sanityReadClient) {
+        try {
+          const sanityItems = await sanityReadClient.fetch(`*[_type == "galleryItem"] | order(_createdAt desc)`);
+          data = sanityItems.map(item => ({
+            id: item._id,
+            type: item.image ? 'photo' : 'video',
+            media: item.image ? item.image.asset.url : item.videoUrl,
+            title: item.title,
+            desc: item.caption
+          }));
+        } catch (e) { console.warn('Sanity read failed, using local fallback.', e); }
+      }
+
+      // 2. Fallback to local data if Cloud failed or returned empty
+      if (!data.length) {
+         data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+      }
 
       if (data && data.length > 0) {
         fullGalleryData = data.map(item => ({

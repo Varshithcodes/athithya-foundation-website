@@ -1076,31 +1076,30 @@
       <div class="tab-panel active" id="tab-gallery">
         <div class="card">
           <div class="card-hd">
-            <h2>🖼️ Gallery Manager <span id="gal-count" style="font-size:0.8rem;color:var(--mut);"></span></h2>
+            <h2>🖼️ Gallery Manager <span id="gal-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
             <div style="display:flex;gap:10px;">
-              <button class="btn-outline" onclick="clearGallery()">🗑 Clear</button>
-              <button class="btn-main" onclick="saveAndRefresh()">✅ Save & Apply</button>
+               <button class="btn-outline" onclick="toggleSelectionMode()" id="bulkToggle">📥 Bulk Select</button>
+               <button class="btn-outline" id="bulkDeleteBtn" style="display:none; color:var(--red); border-color:var(--red);" onclick="deleteSelectedItems()">🗑 Delete Selected</button>
+               <button class="btn-outline" onclick="clearGallery()" style="color:var(--red);">🗑 ALL</button>
             </div>
           </div>
           <div class="card-body">
-            <div class="impact-form"
-              style="margin-bottom:24px; padding:15px; background:rgba(0,0,0,0.02); border-radius:12px;">
-              <h3 style="font-size:0.9rem; margin-bottom:10px;">✨ Add New Gallery Item</h3>
-              <div class="if-grid">
-                <select id="newItemType">
-                  <option value="photo">📷 Photo</option>
-                  <option value="video">🎬 Video</option>
-                </select>
-                <input type="text" id="newItemTitle" placeholder="Title/Location">
-              </div>
-              <textarea id="newItemDesc" style="width:100%; height:60px; margin-bottom:12px;"
-                placeholder="Caption..."></textarea>
-              <div class="upload-zone" id="uploadZone" style="padding:15px; margin-bottom:12px;">
-                <input type="file" id="fileInput" accept="image/*,video/*">
-                <div id="uploadIcon" style="font-size:2rem;">📁</div>
-                <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
-              </div>
-              <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
+            <div class="gal-upload-card">
+               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                  <input type="text" id="newItemTitle" placeholder="Title/Location">
+                  <select id="newItemType">
+                    <option value="photo">Photo</option>
+                    <option value="video">Video</option>
+                  </select>
+               </div>
+               <textarea id="newItemDesc" placeholder="Caption..." rows="2" style="width:100%; margin-bottom:15px;"></textarea>
+               
+               <div id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                 <input type="file" id="fileInput" hidden accept="image/*,video/*">
+                 <div id="uploadIcon" style="font-size:2rem;">📁</div>
+                 <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
+               </div>
+               <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
             </div>
             <div class="gal-admin-grid" id="adminGalGrid"></div>
           </div>
@@ -1115,11 +1114,7 @@
             <div class="sub-filter" style="margin:0;">
               <button class="active" onclick="filterMod(this,'pending')">⏳ Pending</button>
               <button onclick="filterMod(this,'approved')">🛡️ Hidden</button>
-              <button onclick="filterMod(this,'published')">📢 Live</button>
             </div>
-          </div>
-          <div class="card-body">
-            <div id="modList"></div>
           </div>
         </div>
       </div>
@@ -1131,7 +1126,6 @@
             <h2>📧 Contact Submissions</h2>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" onclick="exportCSV()">⬇ Export</button>
-              <button class="btn-outline" onclick="clearAllSubmissions()" style="color:var(--red);">🗑 Clear</button>
             </div>
           </div>
           <div class="card-body">
@@ -1140,7 +1134,7 @@
         </div>
       </div>
 
-      <!-- ── DONATIONS TAB ── -->
+      <!-- DONATIONS TAB -->
       <div class="tab-panel" id="tab-donations">
         <div class="card">
           <div class="card-hd">
@@ -1150,25 +1144,57 @@
               <button class="btn-outline" onclick="clearDonations()" style="color:var(--red);">🗑 Clear</button>
             </div>
           </div>
-        </div>
-
-        <!-- ── TRASH BIN TAB ── -->
-        <div class="tab-panel" id="tab-trash">
-          <div class="card">
-            <div class="card-hd">
-              <h2>🗑️ Trash Bin (Recently Deleted items)</h2>
-              <div style="display:flex;gap:10px;">
-                <button class="btn-outline" onclick="emptyTrash()" style="color:var(--red);border-color:var(--red);">🔥
-                  Empty Trash</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="sub-list" id="trashList"></div>
-            </div>
+          <div class="card-body">
+            <div class="sub-list" id="donationList"></div>
           </div>
         </div>
-
       </div>
+
+      <!-- CSR CONTACTS TAB -->
+      <div class="tab-panel" id="tab-csr">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🏢 CSR & Company Enquiries</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="exportCSRCSV()">⬇ Export</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sub-list" id="csrList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRASH BIN TAB -->
+      <div class="tab-panel" id="tab-trash">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🗑️ Trash Bin (Recently Deleted)</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="emptyTrash()" style="color:var(--red);border-color:var(--red);">🔥 Empty Trash</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.7rem; color:var(--mut); margin-bottom:15px;">Note: Items here are hidden from the website but stored locally for 30 days.</p>
+            <div class="sub-list" id="trashList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="editModal" style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; padding:24px;">
+       <div class="card" style="max-width:500px; width:100%;">
+          <div class="card-hd"><h2>✏️ Edit Item</h2></div>
+          <div class="card-body">
+             <input type="text" id="editItemTitle" placeholder="Title" style="width:100%; margin-bottom:15px;">
+             <textarea id="editItemDesc" placeholder="Caption" rows="3" style="width:100%; margin-bottom:15px;"></textarea>
+             <div style="display:flex; gap:10px;">
+                <button class="btn-main" onclick="saveEdit()" style="flex:1;">Save Changes</button>
+                <button class="btn-outline" onclick="closeEdit()" style="flex:1;">Cancel</button>
+             </div>
+          </div>
+       </div>
     </div>
 
     <div id="toast"></div>
@@ -1335,8 +1361,82 @@
 
       // ── STATE ──
       let gallery = JSON.parse(localStorage.getItem('af_gallery') || '[]');
-      let currentFilter = 'all';
-      let currentModFilter = 'pending';
+      let trash = JSON.parse(localStorage.getItem('af_trash') || '[]');
+      let selectionMode = false;
+      let selectedIndices = new Set();
+      let editingIndex = -1;
+
+      function saveAndRefresh() {
+        localStorage.setItem('af_gallery', JSON.stringify(gallery));
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+        updateStats();
+      }
+
+      function toggleSelectionMode() {
+        selectionMode = !selectionMode;
+        document.getElementById('bulkToggle').textContent = selectionMode ? '🚫 Cancel' : '📥 Bulk Select';
+        document.getElementById('bulkDeleteBtn').style.display = selectionMode ? 'inline-block' : 'none';
+        selectedIndices.clear();
+        renderAdminGallery();
+      }
+
+      function toggleItemSelection(i) {
+        if (selectedIndices.has(i)) selectedIndices.delete(i);
+        else selectedIndices.add(i);
+        renderAdminGallery();
+      }
+
+      async function deleteSelectedItems() {
+        if (selectedIndices.size === 0) return;
+        if (!confirm(`Move ${selectedIndices.size} items to Trash?`)) return;
+
+        const indices = Array.from(selectedIndices).sort((a,b) => b - a);
+        for (const i of indices) {
+           await deleteGalItem(i, true); // true = silent (don't confirm each)
+        }
+        selectedIndices.clear();
+        selectionMode = false;
+        document.getElementById('bulkToggle').textContent = '📥 Bulk Select';
+        document.getElementById('bulkDeleteBtn').style.display = 'none';
+        renderAdminGallery();
+      }
+
+      function openEdit(i) {
+        editingIndex = i;
+        const item = gallery[i];
+        document.getElementById('editItemTitle').value = item.title || '';
+        document.getElementById('editItemDesc').value = item.desc || '';
+        document.getElementById('editModal').style.display = 'flex';
+      }
+
+      function closeEdit() {
+        document.getElementById('editModal').style.display = 'none';
+      }
+
+      async function saveEdit() {
+        if (editingIndex === -1) return;
+        const item = gallery[editingIndex];
+        const newTitle = document.getElementById('editItemTitle').value.trim();
+        const newDesc = document.getElementById('editItemDesc').value.trim();
+
+        // 1. Update in Sanity if cloud item
+        if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
+           showToast('☁️ Updating Sanity cloud...');
+           try {
+             await client.patch(item.id).set({ title: newTitle, caption: newDesc }).commit();
+           } catch (e) {
+             console.error('Sanity Update Error:', e);
+             showToast('⚠️ Cloud update failed, but local copy updated.');
+           }
+        }
+
+        item.title = newTitle;
+        item.desc = newDesc;
+        saveAndRefresh();
+        renderAdminGallery();
+        closeEdit();
+        showToast('✅ Item updated!');
+      }
 
       async function initAdmin() {
         showToast('🔄 Syncing with Sanity.io & Google Sheets...');
@@ -1435,7 +1535,7 @@
       }
 
       // ── TABS ──
-      const tabKeys = ['gallery', 'reviews', 'donations', 'contacts'];
+      const tabKeys = ['gallery', 'reviews', 'donations', 'contacts', 'csr', 'trash'];
       function switchTab(name) {
         document.querySelectorAll('.tab').forEach((t, i) =>
           t.classList.toggle('active', tabKeys[i] === name));
@@ -1446,6 +1546,8 @@
         if (name === 'reviews') renderModeration();
         if (name === 'donations') renderDonations();
         if (name === 'contacts') renderSubmissions();
+        if (name === 'csr') renderCSRList();
+        if (name === 'trash') renderTrash();
       }
 
       // ── STATS ──
@@ -1495,6 +1597,18 @@
 
       async function addImpactItem() {
         if (!pendingFile) { showToast('⚠️ Please select a file first.'); return; }
+
+        // Sanity client can sometimes load slowly from the CDN. Force initialize if possible.
+        if (!client) {
+            initSanityClient();
+        }
+
+        // If STILL not ready, wait 500ms and try one last time.
+        if (!client && !window.createSanityClient) {
+            showToast('🔄 Preparing cloud connection...');
+            await new Promise(r => setTimeout(r, 800));
+            initSanityClient();
+        }
 
         const title = document.getElementById('newItemTitle').value.trim() || pendingFile.name.replace(/\.[^.]+$/, '');
         const desc = document.getElementById('newItemDesc').value.trim();
@@ -1582,23 +1696,26 @@
         gallery.forEach((item, i) => {
           const div = document.createElement('div');
           div.className = 'gal-admin-item';
+          if (selectedIndices.has(i)) div.style.boxShadow = '0 0 0 3px var(--or)';
+          
           const isVideo = item.type === 'video';
           const mediaHtml = isVideo
             ? `<video src="${item.media}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
             : `<img src="${item.media}" alt="${item.title}">`;
 
           div.innerHTML = `
-          <div class="gal-admin-thumb">
+          <div class="gal-admin-thumb" onclick="${selectionMode ? `toggleItemSelection(${i})` : `openEdit(${i})`}">
             ${mediaHtml}
             <span class="type-badge ${item.type}">${isVideo ? '🎬 Video' : '📷 Photo'}</span>
+            ${selectionMode ? `<div class="sel-check" style="position:absolute; top:10px; left:10px; background:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">${selectedIndices.has(i) ? '✅' : ''}</div>` : ''}
           </div>
           <div class="gal-admin-meta">
             <div class="gai-title">${item.title || 'Untitled'}</div>
             <div class="gai-desc">${item.desc || 'No description'}</div>
           </div>
           <div class="gal-admin-actions">
-            ${i > 0 ? `<button class="btn-move-up" onclick="moveUp(${i})">↑ Move Up</button>` : '<button style="flex:1;padding:6px;background:#f5f0eb;border:none;border-radius:7px;font-size:.72rem;color:var(--mut);" disabled>↑ Top</button>'}
-            <button class="btn-del" onclick="deleteGalItem(${i})">🗑 Delete</button>
+            <button class="btn-edit" onclick="openEdit(${i})" style="flex:1;">✏️ Edit</button>
+            <button class="btn-del" onclick="deleteGalItem(${i})">🗑</button>
           </div>`;
           grid.appendChild(div);
         });
@@ -1611,10 +1728,75 @@
         renderAdminGallery();
       }
 
-      function deleteGalItem(i) {
-        if (!confirm('Remove this item?')) return;
+      async function deleteGalItem(i, silent = false) {
+        if (!silent && !confirm('Move this item to Trash? It will be removed from the live website.')) return;
+        
+        const item = gallery[i];
+        
+        // 1. If it's a Sanity item, we need to delete it from the cloud
+        if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
+           if (!silent) showToast('🗑 Removing from Sanity Cloud...');
+           try {
+             await client.delete(item.id);
+           } catch (e) {
+             console.error('Cloud Delete Error:', e);
+           }
+        }
+
+        // 2. Move to local trash
+        trash.unshift({ ...item, deletedAt: new Date().toISOString() });
         gallery.splice(i, 1);
-        renderAdminGallery();
+        
+        saveAndRefresh();
+        if (!silent) renderAdminGallery();
+      }
+
+      function renderTrash() {
+        const list = document.getElementById('trashList');
+        if (!trash.length) {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">🗑️</div><p>Trash is empty.</p></div>';
+          return;
+        }
+        list.innerHTML = trash.map((item, i) => `
+          <div class="sub-card">
+            <div style="display:flex; gap:15px; align-items:center;">
+               <img src="${item.media}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
+               <div>
+                 <h4 style="margin:0;">${item.title || 'Deleted Item'}</h4>
+                 <small style="color:var(--mut);">Deleted: ${new Date(item.deletedAt).toLocaleString()}</small>
+               </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-restore" onclick="restoreFromTrash(${i})" style="padding:6px 12px; font-size:0.7rem; background:var(--teal); color:#fff; border:none; border-radius:6px; cursor:pointer;">↺ Restore</button>
+              <button class="btn-del" onclick="permanentlyDelete(${i})" style="padding:6px; background:none; border:none; cursor:pointer;">🔥</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function restoreFromTrash(i) {
+        const item = trash[i];
+        gallery.unshift(item);
+        trash.splice(i, 1);
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+        saveAndRefresh();
+        renderTrash();
+        showToast('✅ Item restored to Gallery (Save & Apply to sync to Cloud).');
+      }
+
+      function permanentlyDelete(i) {
+        if (!confirm('Permanently delete this item? This cannot be undone.')) return;
+        trash.splice(i, 1);
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+        renderTrash();
+      }
+
+      function emptyTrash() {
+        if (!confirm('Permanently empty the entire trash bin?')) return;
+        trash = [];
+        localStorage.setItem('af_trash', '[]');
+        renderTrash();
+        showToast('🔥 Trash emptied.');
       }
 
       function clearGallery() {
@@ -1639,28 +1821,56 @@
       }
 
       function renderSubmissions() {
-        const all = getAllSubmissions().filter(s => currentFilter === 'all' || s.type === currentFilter);
+        // Filter out CSR entries (they have their own tab now)
+        const all = JSON.parse(localStorage.getItem('af_contact') || '[]')
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+        
         const list = document.getElementById('subList');
         if (!all.length) {
-          list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>No submissions yet.</p></div>';
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>No contact messages yet.</p></div>';
           return;
         }
         list.innerHTML = all.map(s => {
           const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-          const name = s.type === 'csr' ? `${s.firstName} ${s.lastName}` : s.name;
-          const extra = s.type === 'csr'
-            ? `<span>🏢 ${s.company || '—'}</span><span>💰 ${s.budget || '—'}</span>`
-            : `<span>👤 ${s.enquiryType || 'General'}</span>`;
           return `<div class="sub-card">
           <div>
-            <span class="sub-tag ${s.type}">${s.type === 'csr' ? 'CSR Enquiry' : 'Contact'}</span>
-            <h4>${name}</h4>
-            <div class="sub-meta"><span>✉️ ${s.email}</span>${extra}</div>
+            <span class="sub-tag contact">Contact Inquiry</span>
+            <h4>${s.name}</h4>
+            <div class="sub-meta"><span>✉️ ${s.email}</span><span>📞 ${s.phone || '—'}</span></div>
             ${s.message ? `<div class="sub-msg">${s.message}</div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
             <span class="sub-date">${date}</span>
-            <button class="sub-del" onclick="deleteSubmission('${s.type}','${s.date}')" title="Delete">🗑</button>
+            <button class="sub-del" onclick="deleteSubmission('contact','${s.date}')" title="Delete">🗑</button>
+          </div>
+        </div>`;
+        }).join('');
+      }
+
+      function renderCSRList() {
+        const csrData = JSON.parse(localStorage.getItem('af_csr') || '[]')
+                        .sort((a, b) => new Date(b.date) - new Date(a.date));
+        const list = document.getElementById('csrList');
+        if (!csrData.length) {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">🏢</div><p>No CSR enquiries yet.</p></div>';
+          return;
+        }
+        list.innerHTML = csrData.map(s => {
+          const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          return `<div class="sub-card">
+          <div>
+            <span class="sub-tag csr">CSR Enquiry</span>
+            <h4>${s.firstName} ${s.lastName}</h4>
+            <div class="sub-meta">
+              <span>🏢 ${s.company || '—'}</span>
+              <span>💰 ${s.budget || '—'}</span>
+              <span>✉️ ${s.email}</span>
+            </div>
+            ${s.message ? `<div class="sub-msg">${s.message}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+            <span class="sub-date">${date}</span>
+            <button class="sub-del" onclick="deleteSubmission('csr','${s.date}')" title="Delete">🗑</button>
           </div>
         </div>`;
         }).join('');
@@ -1693,13 +1903,30 @@
         showToast('All submissions cleared.');
       }
 
+      function exportCSRCSV() {
+        const csrData = JSON.parse(localStorage.getItem('af_csr') || '[]');
+        if (!csrData.length) { showToast('No CSR data found.'); return; }
+        const headers = ['First Name', 'Last Name', 'Email', 'Company', 'Budget', 'Message', 'Date'];
+        const rows = csrData.map(s => [
+          s.firstName, s.lastName, s.email, s.company || '', s.budget || '', (s.message || '').replace(/"/g, "'"), s.date
+        ].map(v => `"${v}"`).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = Object.create(document.createElement('a'));
+        a.href = URL.createObjectURL(blob);
+        a.download = 'athithya_csr_submissions.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('CSR CSV exported!');
+      }
+
       function exportCSV() {
-        const all = getAllSubmissions();
-        if (!all.length) { showToast('No data to export.'); return; }
-        const headers = ['Type', 'Name', 'Email', 'Company', 'BudgetRange', 'EnquiryType', 'Message', 'Date'];
+        const all = JSON.parse(localStorage.getItem('af_contact') || '[]');
+        if (!all.length) { showToast('No contact data to export.'); return; }
+        const headers = ['Name', 'Email', 'Phone', 'Message', 'Date'];
         const rows = all.map(s => [
-          s.type, s.type === 'csr' ? `${s.firstName} ${s.lastName}` : s.name,
-          s.email, s.company || '', s.budget || '', s.enquiryType || '', (s.message || '').replace(/"/g, "'"), s.date
+          s.name, s.email, s.phone || '', (s.message || '').replace(/"/g, "'"), s.date
         ].map(v => `"${v}"`).join(','));
         const csv = [headers.join(','), ...rows].join('\n');
         const blob = new Blob([csv], { type: 'text/csv' });
