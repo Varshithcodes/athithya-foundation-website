@@ -1504,51 +1504,45 @@
             showToast('✅ Sanity Cloud Updated!');
             return;
           } catch (e) {
-            console.error(e);
-            showToast('❌ Sanity Cloud error. Check your Write Token/Permissions.');
+            console.error('Sanity Error Details:', e);
+            let errMsg = '❌ Sanity Cloud error.';
+            if (e.message?.includes('CORS')) errMsg = '❌ CORS Error: Add this domain to Sanity Manage API settings.';
+            else if (e.message?.includes('token')) errMsg = '❌ Token Error: Your write token is invalid or expired.';
+            else errMsg = '❌ Sanity Error: ' + (e.message || 'Check your permissions.');
+            
+            showToast(errMsg);
+            // Don't return here if you want to try local fallback, but usually we want to fix Sanity.
           }
         }
 
         // ── OPTION B: Local Server (Direct Storage) ──
-        if (!SANITY_WRITE_TOKEN) {
-           showToast('🔑 Missing Sanity Token. Trying Local Server...');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocal) {
+          showToast('🏢 Attempting Local Server upload...');
+          const formData = new FormData();
+          formData.append('image', pendingFile);
+          formData.append('title', title);
+          formData.append('location', desc);
+
+          try {
+            const res = await fetch('/api/gallery', { method: 'POST', body: formData });
+            if (!res.ok) throw new Error('Local API not responding.');
+            
+            const result = await res.json();
+            if (result.success) {
+              gallery.unshift({ id: 'loc_' + Date.now(), type, media: result.image.image, title, desc, addedAt: new Date().toISOString() });
+              renderAdminGallery();
+              saveAndRefresh();
+              resetForm();
+              showToast('✅ Saved to Local Gallery!');
+              return;
+            }
+          } catch (error) {
+            console.error('Local Sync Error:', error);
+            showToast('❌ Local Server failed. Please check your "node server.js" terminal.');
+          }
         } else {
-           showToast('🏢 Retrying via Local Server...');
-        }
-
-        const formData = new FormData();
-        formData.append('image', pendingFile);
-        formData.append('title', title);
-        formData.append('location', desc);
-
-        try {
-          const res = await fetch('/api/gallery', { method: 'POST', body: formData });
-          if (!res.ok) throw new Error('API Endpoint not found');
-          
-          const result = await res.json();
-          if (result.success) {
-            gallery.unshift({
-              id: 'loc_' + Date.now(),
-              type: type,
-              media: result.image.image,
-              title: title,
-              desc: desc,
-              addedAt: new Date().toISOString()
-            });
-            renderAdminGallery();
-            saveAndRefresh();
-            resetForm();
-            showToast('✅ Saved to Local Gallery!');
-          } else {
-            throw new Error('Server upload failed');
-          }
-        } catch (error) {
-          console.error('Final Sync Error:', error);
-          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-             showToast('❌ CONNECTION FAILED: Upload rejected. Please check you are running the server correctly.');
-          } else {
-             showToast('❌ UPLOAD FAILED: No Sanity Cloud Token found. Image could not be saved to cloud.');
-          }
+           showToast('❌ CLOUD SYNC FAILED: High security token or CORS configuration required.');
         }
       }
 
