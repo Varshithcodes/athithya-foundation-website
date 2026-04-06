@@ -5269,17 +5269,14 @@
             </div>
           </div>
 
-          <!-- Payment Confirmation Form -->
-          <div style="border-top:1px solid var(--bdr);padding-top:16px; margin-top:20px;">
-            <p style="font-size:.85rem;color:var(--ink);font-weight:700;margin-bottom:12px;text-align:center;">Already Paid? Record Your Donation</p>
-            <div id="donateForm" style="display:flex; flex-direction:column; gap:10px;">
-              <input type="text" id="donName" placeholder="Your Name" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
-              <input type="email" id="donEmail" placeholder="Your Email (Optional)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
-              <input type="tel" id="donPhone" placeholder="Phone Number (Optional)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
-              <input type="number" id="donAmount" placeholder="Amount Donated (₹)" style="padding:10px; border-radius:8px; border:1px solid var(--bdr); width:100%;">
-              
-              <button class="donate-simulate" onclick="simulatePaymentForm()" style="margin-top:5px; width:100%;">✅ Confirm & Submit Details</button>
-            </div>
+          <!-- Record Payment Form -->
+          <div style="border-top:1px solid var(--bdr);padding-top:18px;">
+            <p style="font-size:.78rem;color:var(--mut);text-align:center;margin-bottom:12px;">After payment, fill this out to record your donation.</p>
+            <input type="text" id="donName" placeholder="Your Name" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="email" id="donEmail" placeholder="Your Email (Optional)" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="number" id="donAmount" placeholder="Amount Donated (₹)" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="text" id="donPhone" placeholder="Phone Number (Optional)" style="width:100%;margin-bottom:12px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <button class="donate-simulate" onclick="processPayment()" style="width:100%;">✅ Submit Donation Record</button>
           </div>
         </div>
       </div>
@@ -5444,20 +5441,16 @@
       document.body.style.overflow = '';
     }
 
-    function simulatePaymentForm() {
+    function processPayment() {
       const name = document.getElementById('donName').value.trim() || 'Anonymous';
-      const email = document.getElementById('donEmail').value.trim() || '';
-      const phone = document.getElementById('donPhone').value.trim() || '';
+      const email = document.getElementById('donEmail').value.trim();
       const amountStr = document.getElementById('donAmount').value.trim() || '0';
-
-      if (!amountStr || parseFloat(amountStr) <= 0) {
-        alert("Please enter a valid donation amount to confirm.");
-        return;
-      }
+      const phone = document.getElementById('donPhone').value.trim();
 
       const amount = parseFloat(amountStr).toFixed(2);
       const txnId = 'TXN' + Date.now();
 
+      // Use local timestamp for accuracy
       const now = new Date();
       const istTime = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
@@ -5471,6 +5464,12 @@
         date: istTime,
         isoDate: now.toISOString()
       };
+
+      // Clear Form Fields
+      document.getElementById('donName').value = '';
+      document.getElementById('donEmail').value = '';
+      document.getElementById('donAmount').value = '';
+      document.getElementById('donPhone').value = '';
 
       // 1. Save to localStorage (Admin Panel)
       const existing = JSON.parse(localStorage.getItem('af_donations') || '[]');
@@ -5565,10 +5564,9 @@
     });
 
     async function loadDynamicReviews() {
-      // Load directly from local storage/Google sheets logic
-      let published = [];
+      // Load directly from local storage / Admin moderation overrides
       const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-      published = allReviews.filter(r => r.status === 'published').reverse();
+      let published = allReviews.filter(r => r.status === 'published').reverse();
 
       if (published.length > 0) {
         const section = document.getElementById('dynamicReviewsSection');
@@ -5662,14 +5660,20 @@
       const grid = document.getElementById('fullGalleryGrid');
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading gallery...</div>';
 
-      // Load full gallery from local storage
-      const localGallery = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+      // Load data locally
+      const data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
 
-      if (localGallery && localGallery.length > 0) {
-        fullGalleryData = localGallery;
+      if (data && data.length > 0) {
+        fullGalleryData = data.map(item => ({
+          image: item.media,
+          title: item.title,
+          desc: item.desc,
+          type: item.type,
+          videoUrl: item.type === 'video' ? item.media : null
+        }));
         renderGalleryItems(fullGalleryData);
       } else {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No items found in the gallery. Use the Admin panel to add some.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No items found in the official gallery.</div>';
       }
     }
 
