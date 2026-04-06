@@ -1177,6 +1177,8 @@
     <script type="module">
       import { createClient } from 'https://esm.sh/@sanity/client@6.15.10';
       window.createSanityClient = createClient;
+      // Signal that the client lib is ready
+      window.dispatchEvent(new Event('sanity-client-ready'));
     </script>
 
     <script>
@@ -1240,19 +1242,31 @@
 
       function initSanityClient() {
         if (window.createSanityClient && !client) {
-          if (!SANITY_WRITE_TOKEN || SANITY_WRITE_TOKEN === 'your_sanity_write_token') {
-            console.warn('Sanity Write Token is missing. Uploads will fail.');
-            // We don't return early here so that READ operations might still work if public
+          try {
+            client = window.createSanityClient({
+              projectId: SANITY_PROJECT_ID,
+              dataset: SANITY_DATASET,
+              useCdn: false,
+              token: SANITY_WRITE_TOKEN,
+              apiVersion: '2023-01-01',
+            });
+            console.log('✅ Sanity Client Initialized');
+          } catch (e) {
+            console.error('Failed to init Sanity:', e);
           }
-          client = window.createSanityClient({
-            projectId: SANITY_PROJECT_ID,
-            dataset: SANITY_DATASET,
-            useCdn: false,
-            token: SANITY_WRITE_TOKEN,
-            apiVersion: '2023-01-01',
-          });
         }
       }
+
+      // If already logged in, wait for library to load
+      window.addEventListener('sanity-client-ready', () => {
+        if (!client) {
+          initSanityClient();
+          // If we are already on the dashboard, re-sync
+          if (document.getElementById('adminContent').style.display === 'block') {
+             initAdmin();
+          }
+        }
+      });
 
       function showToast(msg) {
         const t = document.getElementById('toast');
