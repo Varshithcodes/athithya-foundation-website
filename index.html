@@ -5777,11 +5777,11 @@
       let data = [];
       if (sanityReadClient) {
         try {
-          const sanityItems = await sanityReadClient.fetch(`*[_type == "galleryItem"] | order(_createdAt desc)`);
+          const sanityItems = await sanityReadClient.fetch(`*[_type == "galleryItem"]{..., "mediaUrl": image.asset->url} | order(_createdAt desc)`);
           data = sanityItems.map(item => ({
             id: item._id,
             type: item.image ? 'photo' : 'video',
-            media: item.image ? item.image.asset.url : item.videoUrl,
+            media: item.image ? item.mediaUrl : item.videoUrl,
             title: item.title,
             desc: item.caption
           }));

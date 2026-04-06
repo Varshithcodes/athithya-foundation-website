@@ -1112,9 +1112,12 @@
           <div class="card-hd">
             <h2>🛡️ Review Moderation</h2>
             <div class="sub-filter" style="margin:0;">
-              <button class="active" onclick="filterMod(this,'pending')">⏳ Pending</button>
-              <button onclick="filterMod(this,'approved')">🛡️ Hidden</button>
+              <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
+              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
             </div>
+          </div>
+          <div class="card-body">
+            <div id="modList"></div>
           </div>
         </div>
       </div>
@@ -1445,13 +1448,13 @@
         try {
           // 1. Fetch Latest Gallery (Sanity)
           if (client) {
-            const sanityGallery = await client.fetch(`*[_type == "galleryItem"] | order(_createdAt desc)`);
+            const sanityGallery = await client.fetch(`*[_type == "galleryItem"]{..., "mediaUrl": image.asset->url} | order(_createdAt desc)`);
             gallery = sanityGallery
               .filter(item => !trashIds.has(item._id)) // Skip items in trash
               .map(item => ({
                 id: item._id,
                 type: item.image ? 'photo' : 'video',
-                media: item.image ? item.image.asset.url : item.videoUrl,
+                media: item.image ? item.mediaUrl : item.videoUrl,
                 title: item.title,
                 desc: item.caption,
                 addedAt: item._createdAt
@@ -1460,7 +1463,7 @@
 
           // 2. Fetch Latest Reviews and Merge with Local & Google Sheets
           if (client) {
-            const sanityReviews = await client.fetch(`*[_type == "review"] | order(_createdAt desc)`);
+            const sanityReviews = await client.fetch(`*[_type == "review"]{..., "dpUrl": dp.asset->url} | order(_createdAt desc)`);
             const sReviews = sanityReviews
               .filter(r => !trashIds.has(r._id)) // Skip reviews in trash
               .map(r => ({
@@ -1469,6 +1472,7 @@
                 role: r.role,
                 message: r.reviewText,
                 status: r.status,
+                dp: r.dpUrl,
                 date: r._createdAt
               }));
 
@@ -1959,6 +1963,14 @@
       }
 
       // ── MODERATION ──
+      let currentModFilter = 'pending';
+      function filterMod(btn, status) {
+        currentModFilter = status;
+        document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderModeration();
+      }
+
       function renderModeration() {
         const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
         const filtered = reviews.filter(r => {
@@ -1966,12 +1978,14 @@
           return r.status === currentModFilter;
         });
         const list = document.getElementById('modList');
+        if (!list) return;
+        
         if (!filtered.length) {
-          list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews.</p></div>`;
+          list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews found.</p></div>`;
           return;
         }
         list.innerHTML = filtered.map(r => {
-          const date = new Date(r.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const date = new Date(r.date || Date.now()).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
           const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 
           let statusLabel = '⏳ Pending';
@@ -2133,8 +2147,72 @@
         syncText.textContent = message;
       }
 
+      // ── TRASH ──
+      function renderTrash() {
+        const list = document.getElementById('trashList');
+        if (!list) return;
+        if (!trash.length) {
+          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
+          return;
+        }
+        list.innerHTML = trash.map((it, idx) => `
+          <div class="sub-card">
+            <div>
+              <span class="sub-tag">${it.type || 'item'}</span>
+              <h4>${it.title || it.name || 'Unnamed Item'}</h4>
+              <p style="font-size:0.7rem; color:var(--mut);">Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal)">🔄</button>
+               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Permanently" style="color:var(--red)">🔥</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function restoreFromTrash(idx) {
+        const it = trash[idx];
+        if (it.type === 'photo' || it.type === 'video') {
+           gallery.unshift(it);
+        } else if (it.type === 'review') {
+           const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+           reviews.unshift(it);
+           localStorage.setItem('af_reviews', JSON.stringify(reviews));
+        } else if (it.type === 'submission') {
+           const key = it.company ? 'af_csr' : 'af_contact';
+           const data = JSON.parse(localStorage.getItem(key) || '[]');
+           data.unshift(it);
+           localStorage.setItem(key, JSON.stringify(data));
+        } else if (it.type === 'donation') {
+           const data = JSON.parse(localStorage.getItem('af_donations') || '[]');
+           data.unshift(it);
+           localStorage.setItem('af_donations', JSON.stringify(data));
+        }
+        trash.splice(idx, 1);
+        saveAndRefresh();
+        renderTrash();
+        showToast('♻️ Item Restored!');
+      }
+
+      function permDelete(idx) {
+        if (!confirm('This will be gone forever. Continue?')) return;
+        trash.splice(idx, 1);
+        saveAndRefresh();
+        renderTrash();
+        showToast('🔥 Permanently Deleted.');
+      }
+
+      function emptyTrash() {
+        if (!confirm('Destroy everything in trash permanently?')) return;
+        trash = [];
+        saveAndRefresh();
+        renderTrash();
+        showToast('🗑 Trash Emptied.');
+      }
+
       function showToast(msg) {
         const t = document.getElementById('toast');
+        if (!t) return;
         t.textContent = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
