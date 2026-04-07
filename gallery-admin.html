@@ -1032,6 +1032,7 @@
             <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
             <span id="serverText">Checking Server...</span>
         </div>
+        <button class="topbar-back" onclick="if(confirm('This will clear local cache and re-sync all data from Cloud/Sheets. Continue?')){localStorage.clear(); location.reload();}" style="background:none; color:var(--red); border-color:rgba(192,57,43,0.3); margin-right:5px;">🔥 Reset local data</button>
         <a href="index.html" class="topbar-back">← Back to Website</a>
         <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
       </div>
