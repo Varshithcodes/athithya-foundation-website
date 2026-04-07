@@ -15,13 +15,13 @@
     content="aathithya, athithya, Athithya, Aatitya, aatitya, aditya foundation, aatithya foundation, charities in karnataka, school donations karnataka, smart classroom donation, library donation foundation, varshith shetty foundation, aathithya foundation, aathithhya, schools Karnataka, donations, school donations, charity, foundation, Athithya Foundation, NGO Bangalore, government school adoption, education programs, charity for kids, social impact India" />
   <meta name="author" content="Athithya Foundation®" />
   <meta name="robots" content="index, follow" />
-  <meta property="og:title" content="Athithya Foundation® | Transforming Education & Society" />
+  <meta property="og:title" content="Athithya Foundation | Elevating Education in Karnataka" />
   <meta property="og:description"
     content="Join aathithya (Athithya Foundation) in redefining education. Donate to charity or partner for CSR impact in Karnataka schools." />
   <meta property="og:image" content="images/logo.png" />
   <meta property="og:url" content="https://www.athithyafoundation.org" />
   <meta name="twitter:card" content="summary_large_image" />
-  <title>Athithya Foundation® | Leading NGO for School Donations & Charity in Karnataka</title>
+  <title>Athithya Foundation | Leading NGO for School Donations & Charity in Karnataka</title>
   <style>
     /* GPU Acceleration for silky smooth scrolling */
     .reveal-item,
@@ -32,6 +32,16 @@
       will-change: transform, opacity;
     }
   </style>
+
+  <!-- SITE NAME JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Athithya Foundation",
+    "url": "https://www.athithyafoundation.org"
+  }
+  </script>
 
   <!-- SEO SCHEMA JSON-LD -->
   <script type="application/ld+json">
@@ -50,8 +60,6 @@
     ]
   }
   </script>
-  <link rel="icon" href="data:,">
-  <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -1608,14 +1616,30 @@
       overflow-y: auto;
       scroll-behavior: smooth;
     }
-    #galleryModal.open { display: block; animation: gmIn .45s cubic-bezier(0.19, 1, 0.22, 1) both; }
-    @keyframes gmIn { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+    #galleryModal.open {
+      display: block;
+      animation: gmIn .45s cubic-bezier(0.19, 1, 0.22, 1) both;
+    }
+
+    @keyframes gmIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     .gm-inner {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
     .gm-head {
       position: sticky;
       top: 0;
@@ -1628,44 +1652,246 @@
       justify-content: space-between;
       align-items: center;
     }
-    .gm-brand { display: flex; align-items: center; gap: 15px; }
-    .gm-brand img { height: 45px; width: auto; filter: drop-shadow(0 0 10px rgba(232, 97, 10, 0.4)); }
-    .gm-brand-txt h2 { color: #fff; font-size: 1.1rem; font-weight: 900; line-height: 1; }
-    .gm-brand-txt p { color: var(--ors); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
-    .gm-close { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; transition: 0.3s; }
-    .gm-close:hover { background: var(--or); transform: rotate(90deg); }
 
-    .gm-body { padding: 60px 5% 100px; }
-    .gm-hero { text-align: center; max-width: 800px; margin: 0 auto 50px; }
-    .gm-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: #fff; font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
-    .gm-hero h1 span { color: var(--or); }
-    .gm-hero p { color: rgba(255,255,255,0.5); font-size: 0.95rem; line-height: 1.7; }
+    .gm-brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
 
-    .gm-filt { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; }
-    .gm-fbtn { padding: 10px 24px; border-radius: 100px; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-    .gm-fbtn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .gm-fbtn.active { background: var(--or); border-color: var(--or); color: #fff; box-shadow: 0 4px 15px rgba(232, 97, 10, 0.4); }
+    .gm-brand img {
+      height: 45px;
+      width: auto;
+      filter: drop-shadow(0 0 10px rgba(232, 97, 10, 0.4));
+    }
 
-    #fullGalleryGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .gm-item { position: relative; border-radius: 20px; overflow: hidden; background: #1A0A00; cursor: pointer; aspect-ratio: 4/5; transition: 0.4s; }
-    .gm-item:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-    .gm-item img, .gm-item video { width: 100%; height: 100%; object-fit: cover; transition: 0.6s cubic-bezier(0.2,1,0.2,1); }
-    .gm-item:hover img, .gm-item:hover video { transform: scale(1.1); filter: brightness(0.7); }
-    
-    .gm-type { position: absolute; top: 15px; right: 15px; z-index: 5; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-    .gm-item-ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,7,0,0.9), transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; opacity: 0; transform: translateY(10px); transition: 0.4s; }
-    .gm-item:hover .gm-item-ov { opacity: 1; transform: translateY(0); }
-    .gm-title { color: #fff; font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 800; line-height: 1.2; margin-bottom: 5px; }
+    .gm-brand-txt h2 {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .gm-brand-txt p {
+      color: var(--ors);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    .gm-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .gm-close:hover {
+      background: var(--or);
+      transform: rotate(90deg);
+    }
+
+    .gm-body {
+      padding: 60px 5% 100px;
+    }
+
+    .gm-hero {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 50px;
+    }
+
+    .gm-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: #fff;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 15px;
+    }
+
+    .gm-hero h1 span {
+      color: var(--or);
+    }
+
+    .gm-hero p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .gm-filt {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .gm-fbtn {
+      padding: 10px 24px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .gm-fbtn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .gm-fbtn.active {
+      background: var(--or);
+      border-color: var(--or);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(232, 97, 10, 0.4);
+    }
+
+    #fullGalleryGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .gm-item {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #1A0A00;
+      cursor: pointer;
+      aspect-ratio: 4/5;
+      transition: 0.4s;
+    }
+
+    .gm-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .gm-item img,
+    .gm-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    .gm-item:hover img,
+    .gm-item:hover video {
+      transform: scale(1.1);
+      filter: brightness(0.7);
+    }
+
+    .gm-type {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 5;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .gm-item-ov {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(13, 7, 0, 0.9), transparent 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 25px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: 0.4s;
+    }
+
+    .gm-item:hover .gm-item-ov {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gm-title {
+      color: #fff;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
 
     /* ── LIGHTBOX ── */
-    #afLightbox { position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; padding: 20px; }
-    #afLightbox.show { opacity: 1; }
-    .afl-inner { position: relative; max-width: 900px; width: 100%; text-align: center; transform: scale(0.9); transition: 0.3s; }
-    #afLightbox.show .afl-inner { transform: scale(1); }
-    .afl-close { position: absolute; top: -50px; right: 0; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
-    .afl-meta { margin-top: 20px; text-align: center; }
-    .afl-meta h3 { color: #fff; font-size: 1.25rem; font-family: 'Playfair Display', serif; }
-    .afl-meta p { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 5px; }
+    #afLightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background: rgba(0, 0, 0, 0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.3s;
+      padding: 20px;
+    }
+
+    #afLightbox.show {
+      opacity: 1;
+    }
+
+    .afl-inner {
+      position: relative;
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+      transform: scale(0.9);
+      transition: 0.3s;
+    }
+
+    #afLightbox.show .afl-inner {
+      transform: scale(1);
+    }
+
+    .afl-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .afl-meta {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .afl-meta h3 {
+      color: #fff;
+      font-size: 1.25rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .afl-meta p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
 
     /* CSR form */
     .csr-form {
@@ -2449,28 +2675,16 @@
       background: var(--orp)
     }
 
-    .wa-soc {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    .wa-soc:hover {
-      border-color: #25D366 !important;
-      color: #25D366 !important;
-      background: rgba(37, 211, 102, 0.1) !important;
-      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
-    }
-
     /* ── Per-platform branded hover effects ── */
+
     /* Instagram: pink-to-blue gradient glow */
     [title="Instagram"] {
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
       will-change: transform;
     }
 
-    [title="Instagram"]:hover {
+    [title="Instagram"]:hover,
+    .soc-btn-v.revealed[title="Instagram"] {
       background: linear-gradient(135deg, rgba(245, 96, 64, 0.15), rgba(131, 58, 180, 0.15), rgba(64, 93, 230, 0.15)) !important;
       border-color: #C13584 !important;
       color: #C13584 !important;
@@ -2481,13 +2695,44 @@
 
     [title="Instagram"]:hover svg rect,
     [title="Instagram"]:hover svg circle,
-    [title="Instagram"]:hover svg path {
+    [title="Instagram"]:hover svg path,
+    .soc-btn-v.revealed[title="Instagram"] svg rect,
+    .soc-btn-v.revealed[title="Instagram"] svg circle,
+    .soc-btn-v.revealed[title="Instagram"] svg path {
       stroke: #C13584 !important;
       fill: none !important;
     }
 
-    [title="Instagram"]:hover svg circle:last-child {
+    [title="Instagram"]:hover svg circle:last-child,
+    .soc-btn-v.revealed[title="Instagram"] svg circle:last-child {
       fill: #C13584 !important;
+    }
+
+    /* WhatsApp: brand green glow */
+    [title="WhatsApp"],
+    [title="Contact us on WhatsApp"],
+    .wa-soc {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      will-change: transform;
+    }
+
+    [title="WhatsApp"]:hover,
+    [title="Contact us on WhatsApp"]:hover,
+    .wa-soc:hover,
+    .soc-btn-v.revealed[title="WhatsApp"] {
+      background: rgba(37, 211, 102, 0.1) !important;
+      border-color: #25D366 !important;
+      color: #25D366 !important;
+      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3) !important;
+      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
+      z-index: 10;
+    }
+
+    [title="WhatsApp"]:hover svg,
+    [title="Contact us on WhatsApp"]:hover svg,
+    .wa-soc:hover svg,
+    .soc-btn-v.revealed[title="WhatsApp"] svg {
+      fill: #25D366 !important;
     }
 
     /* LinkedIn: dark navy blue glow */
@@ -2496,16 +2741,22 @@
       will-change: transform;
     }
 
+    [title="LinkedIn"]:hover,
     .soc-btn-v.revealed[title="LinkedIn"] {
       background: rgba(10, 102, 194, 0.12) !important;
       border-color: #0A66C2 !important;
       color: #0A66C2 !important;
       box-shadow: 0 10px 30px rgba(10, 102, 194, 0.35) !important;
+      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
+      z-index: 10;
     }
 
+    [title="LinkedIn"]:hover svg rect,
+    [title="LinkedIn"]:hover svg path,
     .soc-btn-v.revealed[title="LinkedIn"] svg rect,
     .soc-btn-v.revealed[title="LinkedIn"] svg path {
       stroke: #0A66C2 !important;
+      fill: none !important;
     }
 
     /* Facebook: blue-to-white glow */
@@ -2514,16 +2765,22 @@
       will-change: transform;
     }
 
+    [title="Facebook"]:hover,
     .soc-btn-v.revealed[title="Facebook"] {
       background: linear-gradient(135deg, rgba(24, 119, 242, 0.18), rgba(255, 255, 255, 0.08)) !important;
       border-color: #1877F2 !important;
       color: #1877F2 !important;
       box-shadow: 0 10px 30px rgba(24, 119, 242, 0.35) !important;
+      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
+      z-index: 10;
     }
 
+    [title="Facebook"]:hover svg rect,
+    [title="Facebook"]:hover svg path,
     .soc-btn-v.revealed[title="Facebook"] svg rect,
     .soc-btn-v.revealed[title="Facebook"] svg path {
       stroke: #1877F2 !important;
+      fill: none !important;
     }
 
     /* ── Static bordered soc-btn (Contact section) ── */
@@ -2617,64 +2874,9 @@
       box-shadow: 0 10px 30px rgba(232, 97, 10, 0.25) !important;
     }
 
-    .soc-btn-v.revealed[title="WhatsApp"] {
-      background: rgba(37, 211, 102, 0.1) !important;
-      border-color: #25D366 !important;
-      color: #25D366 !important;
-      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3) !important;
-    }
+    /* Branded states are now consolidated in the main per-platform hover block above */
 
-    .soc-btn-v.revealed[title="Instagram"] {
-      background: linear-gradient(135deg, rgba(245, 96, 64, 0.15), rgba(131, 58, 180, 0.15), rgba(64, 93, 230, 0.15)) !important;
-      border-color: #C13584 !important;
-      color: #C13584 !important;
-      box-shadow: 0 10px 30px rgba(193, 53, 132, 0.35) !important;
-    }
-
-    .soc-btn-v.revealed[title="YouTube"] {
-      background: rgba(255, 0, 0, 0.08) !important;
-      border-color: #FF0000 !important;
-      color: #FF0000 !important;
-      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3) !important;
-    }
-
-    .soc-btn-v.revealed[title="Twitter"] {
-      background: rgba(0, 0, 0, 0.08) !important;
-      border-color: #000000 !important;
-      color: #000000 !important;
-      box-shadow: 0 10px 30px rgba(29, 155, 240, 0.4) !important;
-    }
-
-    /* Branded colors for revealed state */
-    .soc-btn-v.revealed[title="Instagram"] svg rect,
-    .soc-btn-v.revealed[title="Instagram"] svg circle {
-      stroke: #C13584 !important;
-    }
-
-    .soc-btn-v.revealed[title="Instagram"] svg circle:last-child {
-      fill: #C13584 !important;
-    }
-
-    .soc-btn-v.revealed[title="LinkedIn"] svg rect,
-    .soc-btn-v.revealed[title="LinkedIn"] svg path {
-      stroke: #0A66C2 !important;
-    }
-
-    .soc-btn-v.revealed[title="YouTube"] svg path {
-      stroke: #FF0000 !important;
-    }
-
-    .soc-btn-v.revealed[title="YouTube"] svg path:last-child {
-      fill: #FF0000 !important;
-    }
-
-    .soc-btn-v.revealed[title="Twitter"] svg path {
-      fill: #000000 !important;
-    }
-
-    .soc-btn-v.revealed[title="WhatsApp"] svg {
-      fill: #25D366 !important;
-    }
+    /* Branded SVG colors consolidated above */
 
     .soc-btn-v.revealed span {
       color: var(--ink) !important;
@@ -5355,12 +5557,18 @@
 
           <!-- Record Payment Form -->
           <div style="border-top:1px solid var(--bdr);padding-top:18px;">
-            <p style="font-size:.78rem;color:var(--mut);text-align:center;margin-bottom:12px;">After payment, fill this out to record your donation.</p>
-            <input type="text" id="donName" placeholder="Your Name" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
-            <input type="email" id="donEmail" placeholder="Your Email (Optional)" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
-            <input type="number" id="donAmount" placeholder="Amount Donated (₹)" style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
-            <input type="text" id="donPhone" placeholder="Phone Number (Optional)" style="width:100%;margin-bottom:12px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
-            <button class="donate-simulate" onclick="processPayment()" style="width:100%;">✅ Submit Donation Record</button>
+            <p style="font-size:.78rem;color:var(--mut);text-align:center;margin-bottom:12px;">After payment, fill this
+              out to record your donation.</p>
+            <input type="text" id="donName" placeholder="Your Name"
+              style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="email" id="donEmail" placeholder="Your Email (Optional)"
+              style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="number" id="donAmount" placeholder="Amount Donated (₹)"
+              style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <input type="text" id="donPhone" placeholder="Phone Number (Optional)"
+              style="width:100%;margin-bottom:12px;padding:10px;border:1px solid var(--bdr);border-radius:8px;">
+            <button class="donate-simulate" onclick="processPayment()" style="width:100%;">✅ Submit Donation
+              Record</button>
           </div>
         </div>
       </div>
@@ -5755,12 +5963,12 @@
 
     async function initSanityRead() {
       if (typeof window.createSanityClient !== 'undefined') {
-          sanityReadClient = window.createSanityClient({
-            projectId: 'm5wsa8rt',
-            dataset: 'production',
-            useCdn: true, // Use CDN for public reads
-            apiVersion: '2023-01-01',
-          });
+        sanityReadClient = window.createSanityClient({
+          projectId: 'm5wsa8rt',
+          dataset: 'production',
+          useCdn: true, // Use CDN for public reads
+          apiVersion: '2023-01-01',
+        });
       }
     }
 
@@ -5773,7 +5981,7 @@
 
       // 1. Try to fetch from Sanity Cloud first
       if (!sanityReadClient) await initSanityRead();
-      
+
       let data = [];
       if (sanityReadClient) {
         try {
@@ -5790,7 +5998,7 @@
 
       // 2. Fallback to local data if Cloud failed or returned empty
       if (!data.length) {
-         data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+        data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
       }
 
       if (data && data.length > 0) {
@@ -5851,7 +6059,7 @@
     function openLightbox(title, desc, type, url) {
       const lb = document.getElementById('afLightbox');
       const container = document.getElementById('aflMedia');
-      
+
       lb.style.display = 'flex';
       setTimeout(() => lb.classList.add('show'), 10);
       document.body.style.overflow = 'hidden';
@@ -5860,9 +6068,9 @@
       document.getElementById('aflDesc').textContent = desc || '';
 
       if (type === 'video') {
-         container.innerHTML = `<video src="${url}" controls autoplay style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"></video>`;
+        container.innerHTML = `<video src="${url}" controls autoplay style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"></video>`;
       } else {
-         container.innerHTML = `<img src="${url}" style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">`;
+        container.innerHTML = `<img src="${url}" style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">`;
       }
     }
 
@@ -5873,7 +6081,7 @@
         lb.style.display = 'none';
         document.getElementById('aflMedia').innerHTML = '';
         if (!document.getElementById('galleryModal').classList.contains('open')) {
-           document.body.style.overflow = '';
+          document.body.style.overflow = '';
         }
       }, 300);
     }
