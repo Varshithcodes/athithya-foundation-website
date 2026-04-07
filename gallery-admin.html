@@ -1556,8 +1556,19 @@
                  localStorage.setItem('af_contact', JSON.stringify(data));
               }
               if (donateRes.ok) {
-                 const data = (await donateRes.json()).filter(s => !trashIds.has(s.date));
-                 localStorage.setItem('af_donations', JSON.stringify(data));
+                const sheetDonations = await donateRes.json();
+                const localDonations = JSON.parse(localStorage.getItem('af_donations') || '[]');
+                
+                // Merge by Transaction ID to prevent duplication
+                const donationMap = new Map();
+                localDonations.forEach(d => {
+                   if (d.txnId && !trashIds.has(d.txnId.toString())) donationMap.set(d.txnId.toString(), d);
+                });
+                sheetDonations.forEach(d => {
+                   if (d.txnId && !trashIds.has(d.txnId.toString())) donationMap.set(d.txnId.toString(), d);
+                });
+                
+                localStorage.setItem('af_donations', JSON.stringify(Array.from(donationMap.values())));
               }
             } catch (e) { console.warn('Could not sync remote submissions'); }
           }
@@ -2241,22 +2252,28 @@
         const list = document.getElementById('trashList');
         if (!list) return;
         if (!trash.length) {
-          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
+          list.innerHTML = '<div class="empty-state">💨 Trash bin is empty</div>';
           return;
         }
-        list.innerHTML = trash.map((it, idx) => `
-          <div class="sub-card">
-            <div>
-              <span class="sub-tag">${it.type || 'item'}</span>
-              <h4>${it.title || it.name || 'Unnamed Item'}</h4>
-              <p style="font-size:0.7rem; color:var(--mut);">Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
+        list.innerHTML = trash.map((it, idx) => {
+          const isMedia = it.type === 'photo' || it.type === 'video';
+          const thumb = isMedia && it.media ? `<img src="${it.media}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--bdr);">` : `<div style="width:50px; height:50px; border-radius:8px; background:var(--orp); color:var(--or); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${it.type === 'review' ? '⭐' : '💳'}</div>`;
+          
+          return `<div class="sub-card">
+            <div style="display:flex; gap:15px; align-items:center;">
+              ${thumb}
+              <div>
+                <span class="sub-tag" style="background:var(--orp); color:var(--or); font-size:0.55rem;">${(it.type || 'item').toUpperCase()}</span>
+                <h4 style="margin:2px 0;">${it.title || it.name || it.firstName || 'Deleted Item'}</h4>
+                <p style="font-size:0.7rem; color:var(--mut);">ID: ${it.id || it.txnId || '—'} · Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
+              </div>
             </div>
             <div style="display:flex; gap:8px;">
-               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal)">🔄</button>
-               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Permanently" style="color:var(--red)">🔥</button>
+               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore to original place" style="color:var(--teal)">🔄</button>
+               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Forever" style="color:var(--red)">🔥</button>
             </div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
       }
 
       function restoreFromTrash(idx) {
