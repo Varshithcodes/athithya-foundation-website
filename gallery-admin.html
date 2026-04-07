@@ -1032,7 +1032,6 @@
             <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
             <span id="serverText">Checking Server...</span>
         </div>
-        <button class="topbar-back" onclick="if(confirm('This will clear local cache and re-sync all data from Cloud/Sheets. Continue?')){localStorage.clear(); location.reload();}" style="background:none; color:var(--red); border-color:rgba(192,57,43,0.3); margin-right:5px;">🔥 Reset local data</button>
         <a href="index.html" class="topbar-back">← Back to Website</a>
         <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
       </div>
@@ -1112,19 +1111,10 @@
         <div class="card">
           <div class="card-hd">
             <h2>🛡️ Review Moderation</h2>
-            <div style="display:flex; gap:10px; align-items:center;">
-               <button class="btn-outline" id="revBulkToggle" onclick="toggleReviewSelectionMode()">📥 Bulk Select</button>
-               <button class="btn-outline" id="revBulkDeleteBtn" style="display:none; color:var(--red); border-color:var(--red);" onclick="deleteSelectedReviews()">🗑 Delete Selected</button>
-               <button class="btn-outline" onclick="clearAllReviews()" style="color:var(--red);">🗑 ALL</button>
-            </div>
-          </div>
-          <div class="card-hd" style="border-top:1px solid var(--bdr); background:rgba(0,0,0,0.02);">
             <div class="sub-filter" style="margin:0;">
               <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
-              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden (Approved)</button>
-              <button id="mod-filter-published" onclick="filterMod(this,'published')">📢 Published (Live)</button>
+              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
             </div>
-            <div style="font-size:0.75rem; color:var(--mut);" id="mod-count"></div>
           </div>
           <div class="card-body">
             <div id="modList"></div>
@@ -1453,15 +1443,14 @@
 
       async function initAdmin() {
         showToast('🔄 Syncing with Sanity.io & Google Sheets...');
-        // Correctly identify all items in trash regardless of their primary key type
-        const trashIds = new Set(trash.map(t => (t.id || t._id || t.date || t.txnId || '').toString()));
+        const trashIds = new Set(trash.map(t => t.id));
 
         try {
           // 1. Fetch Latest Gallery (Sanity)
           if (client) {
             const sanityGallery = await client.fetch(`*[_type == "galleryItem"]{..., "mediaUrl": image.asset->url} | order(_createdAt desc)`);
             gallery = sanityGallery
-              .filter(item => !trashIds.has(item._id.toString())) // Skip items in trash
+              .filter(item => !trashIds.has(item._id)) // Skip items in trash
               .map(item => ({
                 id: item._id,
                 type: item.image ? 'photo' : 'video',
@@ -1476,7 +1465,7 @@
           if (client) {
             const sanityReviews = await client.fetch(`*[_type == "review"]{..., "dpUrl": dp.asset->url} | order(_createdAt desc)`);
             const sReviews = sanityReviews
-              .filter(r => !trashIds.has(r._id.toString())) // Skip reviews in trash
+              .filter(r => !trashIds.has(r._id)) // Skip reviews in trash
               .map(r => ({
                 id: r._id,
                 name: r.authorName,
@@ -1495,48 +1484,31 @@
                 const gsData = await res.json();
                 if (Array.isArray(gsData)) {
                   gsReviews = gsData
-                    .filter(r => r.id && !trashIds.has(r.id.toString())) // Skip reviews in trash
-                    .map(r => ({ ...r, id: r.id.toString() }));
+                    .filter(r => !trashIds.has(r.id)) // Skip reviews in trash
+                    .map(r => ({
+                      id: r.id || 'gs_' + Date.now() + Math.random(),
+                      name: r.name,
+                      role: r.role,
+                      message: r.message,
+                      status: processReviewStatus(sReviews, r.id, r.status || 'pending'),
+                      date: r.date
+                    }));
                 }
-              } catch (e) { console.warn('Sheets reviews offline'); }
+              } catch (e) { console.warn('Google Sheet Sync Error:', e); }
             }
 
             // Merge Strategy: Prefer Sanity > Google Sheets > Local
-            const finalReviews = [];
-            const processedIds = new Set();
-            
-            // 1. Sanity
-            sReviews.forEach(r => {
-                const sid = r.id.toString();
-                if (!trashIds.has(sid)) {
-                    finalReviews.push(r);
-                    processedIds.add(sid);
-                }
-            });
-            
-            // 2. Google Sheets
-            gsReviews.forEach(r => {
-                const gid = r.id.toString();
-                if (!processedIds.has(gid) && !trashIds.has(gid)) {
-                    finalReviews.push(r);
-                    processedIds.add(gid);
-                }
-            });
-            
-            // 3. Local (including new submissions not yet synced)
-            const localReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-            localReviews.forEach(r => {
-                // Ignore corrupted or undefined entries
-                if (!r || r.name === 'undefined' || !r.id) return;
-                
-                const lid = r.id.toString();
-                if (!processedIds.has(lid) && !trashIds.has(lid)) {
-                    finalReviews.push(r);
-                    processedIds.add(lid);
-                }
-            });
+            const existingIds = new Set(sReviews.map(r => r.id));
+            const uniqueGsReviews = gsReviews.filter(r => !existingIds.has(r.id));
 
-            localStorage.setItem('af_reviews', JSON.stringify(finalReviews));
+            existingIds.forEach(id => existingIds.add(id)); // add sanity
+            uniqueGsReviews.forEach(r => existingIds.add(r.id)); // add sheet
+
+            const localReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]')
+              .filter(r => !existingIds.has(r.id) && !trashIds.has(r.id));
+
+            const merged = [...sReviews, ...uniqueGsReviews, ...localReviews];
+            localStorage.setItem('af_reviews', JSON.stringify(merged));
           }
 
           // 3. Fetch remote submissions from Sheets
@@ -1557,19 +1529,8 @@
                  localStorage.setItem('af_contact', JSON.stringify(data));
               }
               if (donateRes.ok) {
-                const sheetDonations = await donateRes.json();
-                const localDonations = JSON.parse(localStorage.getItem('af_donations') || '[]');
-                
-                // Merge by Transaction ID to prevent duplication
-                const donationMap = new Map();
-                localDonations.forEach(d => {
-                   if (d.txnId && !trashIds.has(d.txnId.toString())) donationMap.set(d.txnId.toString(), d);
-                });
-                sheetDonations.forEach(d => {
-                   if (d.txnId && !trashIds.has(d.txnId.toString())) donationMap.set(d.txnId.toString(), d);
-                });
-                
-                localStorage.setItem('af_donations', JSON.stringify(Array.from(donationMap.values())));
+                 const data = (await donateRes.json()).filter(s => !trashIds.has(s.date));
+                 localStorage.setItem('af_donations', JSON.stringify(data));
               }
             } catch (e) { console.warn('Could not sync remote submissions'); }
           }
@@ -2003,81 +1964,21 @@
 
       // ── MODERATION ──
       let currentModFilter = 'pending';
-      let revSelectionMode = false;
-      let selectedReviewIds = new Set();
-
-      function toggleReviewSelectionMode() {
-        revSelectionMode = !revSelectionMode;
-        selectedReviewIds.clear();
-        document.getElementById('revBulkToggle').textContent = revSelectionMode ? '🚫 Cancel' : '📥 Bulk Select';
-        document.getElementById('revBulkDeleteBtn').style.display = revSelectionMode ? 'inline-block' : 'none';
+      function filterMod(btn, status) {
+        currentModFilter = status;
+        document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         renderModeration();
-      }
-
-      function toggleReviewSelection(id) {
-        if (selectedReviewIds.has(id)) selectedReviewIds.delete(id);
-        else selectedReviewIds.add(id);
-        renderModeration();
-      }
-
-      async function deleteSelectedReviews() {
-        if (!selectedReviewIds.size) return;
-        if (!confirm(`Move ${selectedReviewIds.size} selected reviews to Trash?`)) return;
-
-        showToast(`🗑 Deleting ${selectedReviewIds.size} reviews...`);
-        const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-        
-        for (const id of selectedReviewIds) {
-            const review = reviews.find(r => r.id === id);
-            if (review) {
-                // Add to trash if not already there
-                trash.unshift({ ...review, type: 'review', deletedAt: new Date().toISOString() });
-                // Cloud delete if possible
-                if (client && !id.toString().startsWith('rv_') && !id.toString().startsWith('gs_')) {
-                    try { await client.delete(id); } catch(e){}
-                }
-            }
-        }
-
-        const filtered = reviews.filter(r => !selectedReviewIds.has(r.id));
-        localStorage.setItem('af_reviews', JSON.stringify(filtered));
-        localStorage.setItem('af_trash', JSON.stringify(trash));
-        
-        selectedReviewIds.clear();
-        revSelectionMode = false;
-        document.getElementById('revBulkToggle').textContent = '📥 Bulk Select';
-        document.getElementById('revBulkDeleteBtn').style.display = 'none';
-        
-        updateStats();
-        renderModeration();
-        showToast('✅ Selection moved to Trash.');
-      }
-
-      function clearAllReviews() {
-        if (!confirm('Move ALL reviews to Trash? This will clear this moderation queue.')) return;
-        const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-        reviews.forEach(r => {
-            trash.unshift({ ...r, type: 'review', deletedAt: new Date().toISOString() });
-        });
-        localStorage.setItem('af_reviews', '[]');
-        localStorage.setItem('af_trash', JSON.stringify(trash));
-        updateStats();
-        renderModeration();
-        showToast('🗑 Moderation queue cleared.');
       }
 
       function renderModeration() {
         const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
         const filtered = reviews.filter(r => {
           if (currentModFilter === 'all') return true;
-          return (r.status || 'pending') === currentModFilter;
+          return r.status === currentModFilter;
         });
-
         const list = document.getElementById('modList');
-        const countEl = document.getElementById('mod-count');
         if (!list) return;
-        
-        if (countEl) countEl.textContent = `${filtered.length} reviews found`;
         
         if (!filtered.length) {
           list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews found.</p></div>`;
@@ -2085,29 +1986,27 @@
         }
         list.innerHTML = filtered.map(r => {
           const date = new Date(r.date || Date.now()).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-          const userInitials = (r.name && r.name !== 'undefined' ? r.name : 'V').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-          const isSelected = selectedReviewIds.has(r.id);
+          const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 
           let statusLabel = '⏳ Pending';
-          if (r.status === 'approved') statusLabel = '🛡️ Hidden (Approved)';
-          if (r.status === 'published') statusLabel = '📢 Published (Live)';
+          if (r.status === 'approved') statusLabel = '🛡️ Approved (Hidden)';
+          if (r.status === 'published') statusLabel = '📢 Published on Site';
 
-          return `<div class="mod-card ${isSelected ? 'selected' : ''}" style="${isSelected ? 'border-color:var(--or); background:var(--orp);' : ''}">
-          <div class="mod-card-top" onclick="${revSelectionMode ? `toggleReviewSelection('${r.id}')` : ''}" style="${revSelectionMode ? 'cursor:pointer;' : ''}">
+          return `<div class="mod-card">
+          <div class="mod-card-top">
             <div class="mod-author-info">
-              ${revSelectionMode ? `<div class="bulk-check" style="width:20px; height:20px; border:2.5px solid var(--bdr); border-radius:6px; display:flex; align-items:center; justify-content:center; background:#fff; margin-right:5px;">${isSelected ? '✅' : ''}</div>` : ''}
-              <div class="mod-av">${userInitials}</div>
+              <div class="mod-av">${initials}</div>
               <div class="mod-av-info">
-                <h4>${r.name && r.name !== 'undefined' ? r.name : 'Unknown Visitor'}</h4>
-                <p>${r.role && r.role !== 'undefined' ? r.role : 'Visitor'} · ${date}</p>
+                <h4>${r.name}</h4>
+                <p>${r.role || 'Visitor'} · ${date}</p>
               </div>
             </div>
-            <span class="mod-status-badge ${r.status || 'pending'}">${statusLabel}</span>
+            <span class="mod-status-badge ${r.status}">${statusLabel}</span>
           </div>
-          <div class="mod-msg" style="word-break: break-word;">${r.message && r.message !== 'undefined' ? `"${r.message}"` : '<em style="color:var(--mut);">No message content</em>'}</div>
+          <div class="mod-msg">"${r.message}"</div>
           <div class="mod-actions">
-            ${(r.status || 'pending') === 'pending' ? `<button class="btn-approve" onclick="moveReview('${r.id}', 'approved')">✅ Approve</button>` : ''}
-            ${r.status === 'approved' ? `<button class="btn-approve" style="background:var(--pub); color:#fff;" onclick="moveReview('${r.id}', 'published')">📢 Publish to Website</button>` : ''}
+            ${r.status === 'pending' ? `<button class="btn-approve" onclick="moveReview('${r.id}', 'approved')">✅ Approve</button>` : ''}
+            ${r.status === 'approved' ? `<button class="btn-approve" style="background:var(--pub)" onclick="moveReview('${r.id}', 'published')">📢 Publish to Website</button>` : ''}
             ${r.status === 'published' ? `<button class="btn-outline" onclick="moveReview('${r.id}', 'approved')">🙈 Hide from Site</button>` : ''}
             <button class="btn-reject" onclick="deleteReview('${r.id}')">🗑 Delete</button>
           </div>
@@ -2115,8 +2014,8 @@
         }).join('');
       }
 
-      function filterMod(btn, status) {
-        currentModFilter = status;
+      function filterMod(btn, filter) {
+        currentModFilter = filter;
         document.querySelectorAll('#tab-reviews .sub-filter button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderModeration();
@@ -2253,28 +2152,22 @@
         const list = document.getElementById('trashList');
         if (!list) return;
         if (!trash.length) {
-          list.innerHTML = '<div class="empty-state">💨 Trash bin is empty</div>';
+          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
           return;
         }
-        list.innerHTML = trash.map((it, idx) => {
-          const isMedia = it.type === 'photo' || it.type === 'video';
-          const thumb = isMedia && it.media ? `<img src="${it.media}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--bdr);">` : `<div style="width:50px; height:50px; border-radius:8px; background:var(--orp); color:var(--or); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${it.type === 'review' ? '⭐' : '💳'}</div>`;
-          
-          return `<div class="sub-card">
-            <div style="display:flex; gap:15px; align-items:center;">
-              ${thumb}
-              <div>
-                <span class="sub-tag" style="background:var(--orp); color:var(--or); font-size:0.55rem;">${(it.type || 'item').toUpperCase()}</span>
-                <h4 style="margin:2px 0;">${it.title || it.name || it.firstName || 'Deleted Item'}</h4>
-                <p style="font-size:0.7rem; color:var(--mut);">ID: ${it.id || it.txnId || '—'} · Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
-              </div>
+        list.innerHTML = trash.map((it, idx) => `
+          <div class="sub-card">
+            <div>
+              <span class="sub-tag">${it.type || 'item'}</span>
+              <h4>${it.title || it.name || 'Unnamed Item'}</h4>
+              <p style="font-size:0.7rem; color:var(--mut);">Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
             </div>
             <div style="display:flex; gap:8px;">
-               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore to original place" style="color:var(--teal)">🔄</button>
-               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Forever" style="color:var(--red)">🔥</button>
+               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal)">🔄</button>
+               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Permanently" style="color:var(--red)">🔥</button>
             </div>
-          </div>`;
-        }).join('');
+          </div>
+        `).join('');
       }
 
       function restoreFromTrash(idx) {
