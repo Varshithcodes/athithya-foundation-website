@@ -5827,8 +5827,8 @@
       const message = document.getElementById('conv-message').value.trim();
       const dpFile = document.getElementById('conv-dp').files[0];
 
-      if (!name || !message) {
-        alert('Please fill in your name and review.');
+      if (!name || !message || name.length < 2 || message.length < 5) {
+        alert('Please provide a valid name and a detailed review (at least 5 characters).');
         return;
       }
 
