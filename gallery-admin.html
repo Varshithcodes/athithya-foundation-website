@@ -1114,23 +1114,52 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="gal-upload-card">
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                <input type="text" id="newItemTitle" placeholder="Title/Location">
-                <select id="newItemType">
-                  <option value="photo">Photo</option>
-                  <option value="video">Video</option>
-                </select>
-              </div>
-              <textarea id="newItemDesc" placeholder="Caption..." rows="2"
-                style="width:100%; margin-bottom:15px;"></textarea>
+            <div class="impact-form" style="margin-bottom: 30px;">
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px;">
+                <!-- Form Inputs -->
+                <div>
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    📝 <span>Item Details</span>
+                  </h3>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Title or Location</label>
+                    <input type="text" id="newItemTitle" placeholder="e.g., Govt. School, Malleshwaram" style="width: 100%;">
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Content Type</label>
+                    <select id="newItemType" style="width: 100%;">
+                      <option value="photo">📸 Photo</option>
+                      <option value="video">🎬 Video</option>
+                    </select>
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Description / Caption</label>
+                    <textarea id="newItemDesc" placeholder="Describe the impact..." rows="3" style="width: 100%;"></textarea>
+                  </div>
+                </div>
 
-              <div id="uploadZone" onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" hidden accept="image/*,video/*">
-                <div id="uploadIcon" style="font-size:2rem;">📁</div>
-                <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
+                <!-- Upload Zone -->
+                <div style="display: flex; flex-direction: column;">
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    🖼️ <span>Media Upload</span>
+                  </h3>
+                  <div id="uploadZone" class="upload-zone" style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center;"
+                    onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="handleAdminPreview(this)">
+                    <div id="adminPreviewWrap" style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
+                       <img id="adminPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
+                       <video id="adminPreviewVid" style="width:100%; height:100%; object-fit:cover; display:none;" muted loop autoplay></video>
+                       <div onclick="event.stopPropagation(); clearAdminPreview()" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</div>
+                    </div>
+                    <div id="uploadPrompt">
+                      <div class="uz-icon">📁</div>
+                      <h3>Tap to Choose</h3>
+                      <p>Photos or Videos</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
+              <button class="btn-main" style="width: 100%; margin-top: 25px; padding: 18px; font-size: 1rem;" onclick="addImpactItem()">🚀 Publish to Foundation Gallery</button>
             </div>
             <div class="gal-admin-grid" id="adminGalGrid"></div>
           </div>
@@ -1649,15 +1678,48 @@
       // ── FILE UPLOAD ──
       let pendingFile = null;
 
-      document.getElementById('fileInput').addEventListener('change', function (e) {
-        const file = e.target.files[0];
+      function handleAdminPreview(inputOrFile) {
+        let file;
+        if (inputOrFile instanceof File) {
+            file = inputOrFile;
+        } else {
+            file = inputOrFile.files[0];
+        }
         if (!file) return;
         pendingFile = file;
+        
         const isVideo = file.type.startsWith('video/');
-        document.getElementById('uploadIcon').textContent = isVideo ? '🎬' : '📸';
-        document.getElementById('uploadLabel').textContent = file.name;
         document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
-      });
+        
+        const wrap = document.getElementById('adminPreviewWrap');
+        const img = document.getElementById('adminPreviewImg');
+        const vid = document.getElementById('adminPreviewVid');
+        const prompt = document.getElementById('uploadPrompt');
+        
+        prompt.style.display = 'none';
+        wrap.style.display = 'block';
+        
+        const url = URL.createObjectURL(file);
+        if (isVideo) {
+          img.style.display = 'none';
+          vid.style.display = 'block';
+          vid.src = url;
+        } else {
+          vid.style.display = 'none';
+          img.style.display = 'block';
+          img.src = url;
+        }
+      }
+
+      function clearAdminPreview() {
+        pendingFile = null;
+        document.getElementById('fileInput').value = '';
+        document.getElementById('adminPreviewWrap').style.display = 'none';
+        document.getElementById('uploadPrompt').style.display = 'block';
+        const vid = document.getElementById('adminPreviewVid');
+        vid.src = '';
+        if (vid.load) vid.load();
+      }
 
       const zone = document.getElementById('uploadZone');
       zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
@@ -1666,12 +1728,7 @@
         e.preventDefault();
         zone.classList.remove('drag');
         const file = e.dataTransfer.files[0];
-        if (!file) return;
-        pendingFile = file;
-        const isVideo = file.type.startsWith('video/');
-        document.getElementById('uploadIcon').textContent = isVideo ? '🎬' : '📸';
-        document.getElementById('uploadLabel').textContent = file.name;
-        document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
+        if (file) handleAdminPreview(file);
       });
 
       async function addImpactItem() {
@@ -1757,8 +1814,7 @@
       function resetForm() {
         pendingFile = null;
         document.getElementById('fileInput').value = '';
-        document.getElementById('uploadIcon').textContent = '📁';
-        document.getElementById('uploadLabel').textContent = 'Click to upload Photo/Video';
+        clearAdminPreview();
         document.getElementById('newItemTitle').value = '';
         document.getElementById('newItemDesc').value = '';
       }
