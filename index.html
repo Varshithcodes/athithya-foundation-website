@@ -1377,45 +1377,44 @@
     }
 
     .gi-ov {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, .42);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 55;
-      transition: opacity .28s;
-    }
-
-    .gi-ov span {
-      background: var(--or);
-      color: #fff;
-      font-size: .8rem;
-      font-weight: 800;
-      padding: 8px 18px;
-      border-radius: 100px;
+      display: none;
+      /* Removed redundant View Photo badge */
     }
 
     .gi-cap {
-      position: relative;
+      position: absolute;
+      inset: 0;
       z-index: 2;
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(to top, rgba(0, 0, 0, .72), transparent);
-      transform: translateY(6px);
-      transition: transform .28s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 20px;
+      background: linear-gradient(to top, rgba(13, 7, 0, 0.95) 0%, rgba(13, 7, 0, 0.4) 60%, transparent 100%);
+      transform: translateY(0);
+      transition: all .35s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    .gi:hover .gi-cap {
+      background: linear-gradient(to top, rgba(232, 97, 10, 0.85) 0%, rgba(13, 7, 0, 0.3) 100%);
     }
 
     .gi-cap p {
       color: #fff;
-      font-size: .78rem;
-      font-weight: 700;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, .6)
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 5px;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
 
     .gi-cap span {
-      color: rgba(255, 255, 255, .58);
-      font-size: .68rem
+      color: var(--ors);
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
     }
 
     /* lightbox */
@@ -5022,14 +5021,7 @@
     </div>
   </section>
 
-  <!-- Lightbox -->
-  <div class="lbox" id="lightbox" onclick="closeLightbox()">
-    <div class="lbox-inner" onclick="event.stopPropagation()">
-      <button class="lbox-close" onclick="closeLightbox()">✕</button>
-      <div class="lbox-img" id="lbox-img-content">📸</div>
-      <p class="lbox-cap" id="lbox-caption">Photo caption</p>
-    </div>
-  </div>
+
 
   <!-- ═══════════════════════════════════════════
   CSR
@@ -5102,7 +5094,8 @@
             </div>
             <div class="csrb">
               <div class="csrb-ic">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 3v18h18"></path>
                   <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" stroke-width="2.5"></path>
                   <path d="M15 8h4v4" fill="white" fill-opacity="0.3" stroke="none"></path>
@@ -6119,17 +6112,17 @@
       data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'gm-item';
-        div.onclick = () => openLightbox(item.title, item.desc, item.type, item.image || item.videoUrl);
+        div.onclick = () => openLightbox(item.title, item.desc, item.image || item.videoUrl, item.type);
 
         const mediaHtml = item.type === 'video'
-          ? `<video src="${item.image || item.videoUrl}" style="width:100%;" muted playsinline></video>`
+          ? `<video src="${item.image || item.videoUrl}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
           : `<img src="${item.image}" alt="${item.title}" loading="lazy">`;
 
         div.innerHTML = `
           ${mediaHtml}
-          <div class="gm-type">${item.type === 'photo' ? '📷 Photo' : '🎬 Video'}</div>
-          <div class="gm-item-ov">
-            <div class="gm-title">${item.title}</div>
+          <div class="gm-item-ov" style="opacity: 1; transform: none; background: linear-gradient(to top, rgba(13, 7, 0, 0.95) 0%, transparent 50%);">
+            <div class="gm-title" style="margin-bottom: 2px;">${item.title || 'Untitled'}</div>
+            <div class="gm-desc" style="font-size: 0.75rem; color: var(--ors); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${item.desc || ''}</div>
           </div>
         `;
         grid.appendChild(div);

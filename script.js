@@ -159,25 +159,41 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// ── Gallery lightbox ──
-function openLightbox(title, location, imgSrc) {
-  const captionParts = [title, location].filter(Boolean);
-  document.getElementById('lbox-caption').textContent = captionParts.join(' - ');
+// ── Consolidated Lightbox Logic ──
+function openLightbox(title, desc, url, type = 'photo') {
+  const lb = document.getElementById('afLightbox');
+  const container = document.getElementById('aflMedia');
+  if (!lb || !container) return;
 
-  const lboxContent = document.getElementById('lbox-img-content');
-  if (imgSrc) {
-    lboxContent.innerHTML = `<img src="${imgSrc}" style="max-width:100%; max-height:100%; object-fit:contain;" />`;
-  } else {
-    lboxContent.innerHTML = '📸';
-  }
-  document.getElementById('lightbox').classList.add('show');
+  lb.style.display = 'flex';
+  setTimeout(() => lb.classList.add('show'), 10);
   document.body.style.overflow = 'hidden';
+
+  document.getElementById('aflTitle').textContent = title || 'Untitled';
+  document.getElementById('aflDesc').textContent = desc || '';
+
+  if (type === 'video') {
+    container.innerHTML = `<video src="${url}" controls autoplay style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"></video>`;
+  } else {
+    container.innerHTML = `<img src="${url}" style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">`;
+  }
 }
+
 function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('show');
-  document.body.style.overflow = '';
+  const lb = document.getElementById('afLightbox');
+  if (!lb) return;
+  lb.classList.remove('show');
+  setTimeout(() => {
+    lb.style.display = 'none';
+    const media = document.getElementById('aflMedia');
+    if (media) media.innerHTML = '';
+    // Only restore scroll if we are not in another modal
+    const galModal = document.getElementById('galleryModal');
+    if (!galModal || !galModal.classList.contains('open')) {
+      document.body.style.overflow = '';
+    }
+  }, 300);
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 // ── Dynamic Gallery Loader ──
 document.addEventListener('DOMContentLoaded', async () => {
@@ -207,13 +223,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) { }
   }
 
-  // 3. Absolute Fallback
+  // 3. Absolute Fallback (Using real local assets)
   const fallbackData = [
-    { image: "", title: "Smart Classroom Setup", location: "Govt. School, Malleshwaram" },
-    { image: "", title: "Community Welfare", location: "Health & Nutrition Camp" },
-    { image: "", title: "Digital Literacy Session", location: "Student Training" },
-    { image: "", title: "Teacher Training", location: "Pedagogical Development" },
-    { image: "", title: "CSR Partner Visit", location: "Corporate Engagement" }
+    { media: "images/img3 educlassrooms.jpeg", title: "Smart Classroom Setup", desc: "Govt. School, Malleshwaram", type: "photo" },
+    { media: "images/architecture-independence-palace-ho-chi-minh-city.jpg", title: "Community Welfare", desc: "Rural Development Project", type: "photo" },
+    { media: "images/smart class.jpg", title: "Digital Literacy Session", desc: "Skill Development Center", type: "photo" },
+    { media: "images/teacher.jpg", title: "Teacher Training", desc: "Pedagogical Excellence Program", type: "photo" },
+    { media: "images/img3.webp", title: "Women Empowerment", desc: "Livelihood Initiative", type: "photo" }
   ];
   renderData(fallbackData);
 
@@ -223,17 +239,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isTall = index === 0;
       const div = document.createElement('div');
       div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
-      div.onclick = () => openLightbox(item.title, item.location, item.image);
+      
+      // Use the consolidated lightbox
+      const mediaUrl = item.media || '';
+      const mediaType = item.type || (mediaUrl.match(/\.(mp4|webm|ogg)$/i) ? 'video' : 'photo');
+      div.onclick = () => openLightbox(item.title, item.desc, mediaUrl, mediaType);
 
-      const imgHtml = item.image
-        ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`
+      const imgHtml = mediaUrl
+        ? `<img src="${mediaUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`
         : `<div class="gi-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f9f9f9;">📸</div>`;
 
       div.innerHTML = `
         ${imgHtml}
-        <div class="gi-ov" style="z-index:1;position:relative;height:100%;"><span>View Photo</span></div>
-        <div class="gi-cap" style="z-index:2;position:absolute;bottom:0;left:0;right:0;">
-          <p>${item.title}</p><span>${item.location}</span>
+        <div class="gi-cap" style="z-index:2;position:absolute;bottom:0;left:0;right:0; padding: 25px 20px; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);">
+          <p style="font-family:'Playfair Display', serif; font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:4px; text-shadow:0 2px 10px rgba(0,0,0,0.3);">${item.title}</p>
+          <span style="font-size:0.72rem; font-weight:700; color:var(--ors); text-transform:uppercase; letter-spacing:0.05em; opacity:0.9;">${item.desc}</span>
         </div>
       `;
       grid.appendChild(div);
