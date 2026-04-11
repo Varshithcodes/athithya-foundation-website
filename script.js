@@ -541,32 +541,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── Full Logo Viewer Logic (Click/Long Press) ──
+  // ── Full Logo Viewer Logic (Click/Double Click/Long Press) ──
   const logoTrigger = document.getElementById('logoClickTrigger');
   const logoModal = document.getElementById('logoModal');
   let logoTimer;
+  let logoClickCount = 0;
+  let logoClickTimer;
 
   function showFullLogo() {
-    logoModal.classList.add('open');
+    if (logoModal) logoModal.classList.add('open');
   }
 
   if (logoTrigger && logoModal) {
-    // Immediate Click
-    logoTrigger.addEventListener('click', showFullLogo);
+    logoTrigger.addEventListener('click', (e) => {
+      logoClickCount++;
+      if (logoClickCount === 1) {
+        logoClickTimer = setTimeout(() => {
+          logoClickCount = 0;
+          // Single click action: Go to home
+          window.location.href = '#home';
+        }, 300); 
+      } else if (logoClickCount === 2) {
+        clearTimeout(logoClickTimer);
+        logoClickCount = 0;
+        // Double click action: Show full logo
+        showFullLogo();
+      }
+    });
 
     // Long Press (Desktop)
     logoTrigger.addEventListener('mousedown', () => {
-      logoTimer = setTimeout(showFullLogo, 500);
+      logoTimer = setTimeout(() => {
+        clearTimeout(logoClickTimer);
+        logoClickCount = 0;
+        showFullLogo();
+      }, 600);
     });
     logoTrigger.addEventListener('mouseup', () => clearTimeout(logoTimer));
     logoTrigger.addEventListener('mouseleave', () => clearTimeout(logoTimer));
 
     // Long Press (Mobile)
     logoTrigger.addEventListener('touchstart', (e) => {
-      logoTimer = setTimeout(showFullLogo, 500);
-    }, {
-      passive: true
-    });
+      logoTimer = setTimeout(() => {
+        clearTimeout(logoClickTimer);
+        logoClickCount = 0;
+        showFullLogo();
+      }, 600);
+    }, { passive: true });
     logoTrigger.addEventListener('touchend', () => clearTimeout(logoTimer));
   }
 
