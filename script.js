@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!data || data.length === 0) {
       grid.style.display = 'block'; // Avoid grid gaps for empty state
       grid.innerHTML = `
-        <div style="width:100%; height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 2px dashed rgba(218, 101, 23, 0.75); border-radius:18px; background: rgba(232, 99, 10, 0.67);">
+        <div style="width:100%; height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 2px dashed rgba(218, 101, 23, 0.07); border-radius:18px; background: rgba(232, 99, 10, 0.67);">
           <div style="font-size:3rem; margin-bottom:15px; opacity:0.3;">📸</div>
           <p style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:var(--txt); margin-bottom:8px; opacity:0.6;">MEMORIES GALLERY</p>
           <p style="font-size:0.85rem; color:var(--mut); max-width:280px; text-align:center; line-height:1.5;">The images will be visible here once uploaded.</p>
@@ -459,13 +459,13 @@ const popupData = {
   },
   // Guest Reviews
   guest1: {
-    img: 'images/WhatsApp Image 2026-04-02 at 11.19.50 PM.jpeg',
+    img: 'images/Deeya.jpeg',
     role: 'Founder, LOD Malleshwaram',
     title: 'Deeya Chhajed',
     desc: 'I decided to donate to the Athithya Foundation because seeing the smart classroom in action changed everything for these kids. For the first time, they could actually see the world through a screen right in their own school, opening up possibilities they never had before. It is incredibly moving to see that spark of curiosity, and this exactly why I wanted to support them to make sure this next generation of potential engineers gets the start they deserve.'
   },
   guest2: {
-    img: 'images/WhatsApp Image 2026-04-02 at 11.25.30 PM.jpeg',
+    img: 'images/Varshith_Hegde.jpeg',
     role: 'Founder, workINgenes Bengaluru',
     title: 'Varshith Hegde',
     desc: "Athithya Foundation delivered exactly what they had promised, Transparent reporting, visible impact, and genuine dedication. For me, Athithya is the best CSR partner we have worked with in Bengaluru.Their professionalism and on ground execution are unparalleled, and seeing the real world change they create gave us total confidence that our funds were being used perfectly.It is rare that we get to find a partner that combines such heart with such high level efficiency."
