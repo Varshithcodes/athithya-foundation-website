@@ -6130,35 +6130,7 @@
     }
 
     // ── LIGHTBOX LOGIC ──
-    function openLightbox(title, desc, type, url) {
-      const lb = document.getElementById('afLightbox');
-      const container = document.getElementById('aflMedia');
 
-      lb.style.display = 'flex';
-      setTimeout(() => lb.classList.add('show'), 10);
-      document.body.style.overflow = 'hidden';
-
-      document.getElementById('aflTitle').textContent = title || 'Untitiled';
-      document.getElementById('aflDesc').textContent = desc || '';
-
-      if (type === 'video') {
-        container.innerHTML = `<video src="${url}" controls autoplay style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"></video>`;
-      } else {
-        container.innerHTML = `<img src="${url}" style="max-width:100%; max-height:75vh; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">`;
-      }
-    }
-
-    function closeLightbox() {
-      const lb = document.getElementById('afLightbox');
-      lb.classList.remove('show');
-      setTimeout(() => {
-        lb.style.display = 'none';
-        document.getElementById('aflMedia').innerHTML = '';
-        if (!document.getElementById('galleryModal').classList.contains('open')) {
-          document.body.style.overflow = '';
-        }
-      }, 300);
-    }
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {

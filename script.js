@@ -225,9 +225,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 3. Absolute Fallback (Using real local assets)
   const fallbackData = [
-    { media: "images/img3 educlassrooms.jpeg", title: "Smart Classroom Setup", desc: "Govt. School, Malleshwaram", type: "photo" },
-    { media: "images/architecture-independence-palace-ho-chi-minh-city.jpg", title: "Community Welfare", desc: "Rural Development Project", type: "photo" },
-    { media: "images/smart class.jpg", title: "Digital Literacy Session", desc: "Skill Development Center", type: "photo" },
+    { media: "images/img3_educlassrooms.jpeg", title: "Smart Classroom Setup", desc: "Govt. School, Malleshwaram", type: "photo" },
+    { media: "images/architecture_village.jpg", title: "Community Welfare", desc: "Rural Development Project", type: "photo" },
+    { media: "images/smart_class.jpg", title: "Digital Literacy Session", desc: "Skill Development Center", type: "photo" },
     { media: "images/teacher.jpg", title: "Teacher Training", desc: "Pedagogical Excellence Program", type: "photo" },
     { media: "images/img3.webp", title: "Women Empowerment", desc: "Livelihood Initiative", type: "photo" }
   ];
