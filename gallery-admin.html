@@ -1104,7 +1104,7 @@
       <div class="tab-panel active" id="tab-gallery">
         <div class="card">
           <div class="card-hd">
-            <h2>🖼️ Gallery Manager <span id="gal-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
+            <h2>🏞️ Gallery Manager <span id="gal-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" onclick="toggleSelectionMode()" id="bulkToggle">📥 Bulk Select</button>
               <button class="btn-outline" id="bulkDeleteBtn"
@@ -1556,7 +1556,7 @@
                 const raw = await csrRes.json();
                 const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.email || s.firstName || s.lastName);
                 const localData = JSON.parse(localStorage.getItem('af_csr') || '[]');
-                
+
                 // Key-based merge to prevent wiping fresh local entries
                 const map = new Map();
                 // Add local first (priority for local edits)
@@ -1569,7 +1569,7 @@
                   const id = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
                   if (!trashIds.has(id)) map.set(id, item);
                 });
-                
+
                 localStorage.setItem('af_csr', JSON.stringify(Array.from(map.values())));
               }
 
@@ -1577,7 +1577,7 @@
                 const raw = await donateRes.json();
                 const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.txnId || s.amount);
                 const localData = JSON.parse(localStorage.getItem('af_donations') || '[]');
-                
+
                 const map = new Map();
                 localData.forEach(item => {
                   const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
@@ -1587,7 +1587,7 @@
                   const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
                   if (!trashIds.has(id)) map.set(id, item);
                 });
-                
+
                 localStorage.setItem('af_donations', JSON.stringify(Array.from(map.values())));
               }
             } catch (e) { console.warn('Could not sync remote submissions', e); }
@@ -1634,7 +1634,7 @@
         const pending = reviews.filter(r => r.status === 'pending').length;
         const published = reviews.filter(r => r.status === 'published').length;
         const donationsData = JSON.parse(localStorage.getItem('af_donations') || '[]');
-        
+
         // Use total count of active donations
         const totalDonations = donationsData.length;
 

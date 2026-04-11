@@ -54,21 +54,21 @@ const programData = {
     emoji: '',
     tag: 'Education',
     title: 'Government School Adoption',
-    img: 'images/architecture-independence-palace-ho-chi-minh-city.jpg',
+    img: 'images/architecture_village.jpg',
     desc: 'Athithya Foundation® partners with government schools to provide complete infrastructure upgrades from new furniture and sanitation to libraries, computers, and learning resources. We work with school management, parents, and local authorities to create a holistic transformation that lasts well beyond a single academic year. Each adopted school receives dedicated mentoring support, teacher training, and quarterly impact assessments to track progress and celebrate milestones.'
   },
   foundational: {
     emoji: '',
     tag: 'Foundational Learning',
     title: 'Foundational Learning Enhancement',
-    img: 'images/Coalition for foundational learning.jpg.webp',
+    img: 'images/coalition_foundational_learning.webp',
     desc: 'Millions of children in government schools lack basic literacy and numeracy skills by Grade 3. Our Foundational Learning programme deploys trained volunteers and evidence-based materials designed by educational experts to bridge this gap. Through small-group instruction, gamified learning tools, and regular assessments, we ensure every child can read, write, and count by the end of primary school - building the confidence they need for the rest of their academic journey.'
   },
   smart: {
     emoji: '',
     tag: 'Digital Access',
     title: 'Smart Classrooms & Digital Access',
-    img: 'images/img3 educlassrooms.jpeg',
+    img: 'images/img3_educlassrooms.jpeg',
     desc: 'We install interactive projectors, Android learning tablets, and high-speed internet connectivity in government classrooms. Teachers are trained to integrate these tools into their daily lessons using a curated digital content library aligned to the state curriculum. Our Smart Classroom initiative has already transformed learning experiences for thousands of students who had never had access to technology, igniting curiosity and preparing them for a digital future.'
   },
   library: {
@@ -223,14 +223,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) { }
   }
 
-  // 3. Absolute Fallback (Using real local assets)
-  const fallbackData = [
-    { media: "images/img3_educlassrooms.jpeg", title: "Smart Classroom Setup", desc: "Govt. School, Malleshwaram", type: "photo" },
-    { media: "images/architecture_village.jpg", title: "Community Welfare", desc: "Rural Development Project", type: "photo" },
-    { media: "images/smart_class.jpg", title: "Digital Literacy Session", desc: "Skill Development Center", type: "photo" },
-    { media: "images/teacher.jpg", title: "Teacher Training", desc: "Pedagogical Excellence Program", type: "photo" },
-    { media: "images/img3.webp", title: "Women Empowerment", desc: "Livelihood Initiative", type: "photo" }
-  ];
+  // 3. Absolute Fallback (Empty by default per user request)
+  const fallbackData = [];
   renderData(fallbackData);
 
   function renderData(data) {
