@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!data || data.length === 0) {
       grid.style.display = 'block'; // Avoid grid gaps for empty state
       grid.innerHTML = `
-        <div style="width:100%; height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 2px dashed rgba(218, 101, 23, 0.07); border-radius:18px; background: rgba(232, 99, 10, 0.67);">
+        <div style="width:100%; height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 2px dashed rgba(218, 101, 23, 0.26); border-radius:18px; background: rgba(232, 99, 10, 0.09);">
           <div style="font-size:3rem; margin-bottom:15px; opacity:0.3;">📸</div>
           <p style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:var(--txt); margin-bottom:8px; opacity:0.6;">MEMORIES GALLERY</p>
           <p style="font-size:0.85rem; color:var(--mut); max-width:280px; text-align:center; line-height:1.5;">The images will be visible here once uploaded.</p>
@@ -422,6 +422,16 @@ const popupData = {
     img: 'images/class.avif',
     title: 'Learning Without Limits',
     desc: 'Our smart classrooms bring digital learning to children who never had access to technology. With interactive projectors, curated content, and trained teachers, we are bridging the education gap one school at a time.'
+  },
+  tri: {
+    img: 'images/photo_2026-04-02_02-54-33.jpg',
+    title: 'A Community of Change',
+    desc: 'Our volunteers are the backbone of Athithya Foundation. From organizing book drives to mentoring students, they bring energy and passion to our mission of rural education transformation.'
+  },
+  quad: {
+    img: 'images/img3_educlassrooms.jpeg',
+    title: 'Measurable Impact',
+    desc: 'We don\'t just adopt schools; we measure growth. From improved literacy rates to higher attendance, our data-backed approach ensures that every donation creates a tangible difference in a child\'s future.'
   },
   // Founders
   // Founders
