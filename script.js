@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isTall = index === 0;
       const div = document.createElement('div');
       div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
-      
+
       // Use the consolidated lightbox
       const mediaUrl = item.media || '';
       const mediaType = item.type || (mediaUrl.match(/\.(mp4|webm|ogg)$/i) ? 'video' : 'photo');
@@ -472,8 +472,6 @@ const popupData = {
   connect: {
     img: 'Athithya_Foundation_Logo_withoutBG.png',
     role: 'Our Digital Community',
-    icon: '📱',
-    headTitle: 'Stay Updated',
     title: 'Follow Athithya Foundation®',
     desc: 'Join our growing community on social media to see real-time updates of our transformations, school adoptions, and community impact. Your engagement helps us reach more donors and volunteers!'
   }
@@ -580,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
           logoClickCount = 0;
           // Single click action: Go to home
           window.location.href = '#home';
-        }, 300); 
+        }, 300);
       } else if (logoClickCount === 2) {
         clearTimeout(logoClickTimer);
         logoClickCount = 0;
