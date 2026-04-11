@@ -5162,59 +5162,8 @@
         </p>
       </div>
 
-      <!-- 3 Static Featured Reviews -->
-      <div class="testi-grid stagger-reveal">
-        <div class="tc" onclick="openMosaicPopup('guest1')" style="cursor:pointer;">
-          <div class="tc-qt">"</div>
-          <span class="tc-type">CSR Partner</span>
-          <p>Seeing these kids use the smart classroom for the first time was incredible. This is exactly why I donated
-            to
-            help the next generation of engineers get their start right here in their own school. Seeing those happy
-            faces made me feel happy too.</p>
-          <div class="tc-auth">
-            <div class="tc-av">
-              <img src="images/Deeya.jpeg" alt="Deeya Chhajed">
-            </div>
-            <div>
-              <div class="tc-name">Deeya Chhajed</div>
-              <div class="tc-role">Founder, LOD Malleshwaram</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc" onclick="openMosaicPopup('guest2')" style="cursor:pointer;">
-          <div class="tc-qt">"</div>
-          <span class="tc-type">CSR Partner</span>
-          <p>Athithya Foundation delivered exactly what they promised transparent reporting, visible impact, and
-            genuine dedication. For me, Athithya is definitely the best CSR partner we have worked with in Bengaluru.
-            Wonderful experince.
-          </p>
-          <div class="tc-auth">
-            <div class="tc-av tl">
-              <img src="images/Varshith_Hegde.jpeg" alt="Varshith Hegde">
-            </div>
-            <div>
-              <div class="tc-name">Varshith Hegde</div>
-              <div class="tc-role">Founder, workINgenes Bengaluru</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc" onclick="openMosaicPopup('guest3')" style="cursor:pointer;">
-          <div class="tc-qt">"</div>
-          <span class="tc-type">Visitor</span>
-          <p>Walking into this school and seeing how much it has changed from having broken benches and no library is
-            incredible. As someone who reffered this schhol to Athithya, I can really see the dignity and hope they have
-            brought to these students.</p>
-          <div class="tc-auth">
-            <div class="tc-av bl">
-              <img src="images/Gemini_Generated_Image_k25u8gk25u8gk25u.png" alt="Praveen V. Gudi"
-                onerror="this.style.display='none'">
-            </div>
-            <div>
-              <div class="tc-name">Praveen V. Gudi</div>
-              <div class="tc-role">Health Dept., Karnataka</div>
-            </div>
-          </div>
-        </div>
+      <!-- Dynamically loaded reviews only -->
+      <div class="testi-grid stagger-reveal" id="dynamicReviewsGrid" style="display:grid;">
       </div>
 
       <!-- Dynamic approved reviews from admin -->
@@ -5973,10 +5922,10 @@
       const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
       let published = allReviews.filter(r => r.status === 'published').reverse();
 
+      const grid = document.getElementById('dynamicReviewsGrid');
+      const section = document.querySelector('.testi');
+      
       if (published.length > 0) {
-        const section = document.getElementById('dynamicReviewsSection');
-        const grid = document.getElementById('dynamicReviewsGrid');
-        const btnMore = document.getElementById('btnMoreReviews');
         const avatarColors = ['', 'tl', 'bl'];
 
         grid.innerHTML = published.slice(0, 3).map((r, idx) => {
@@ -5997,14 +5946,9 @@
             </div>
           </div>`;
         }).join('');
-
-        if (published.length > 3) {
-          btnMore.style.display = 'block';
-        }
-
         section.style.display = 'block';
       } else {
-        document.getElementById('dynamicReviewsSection').style.display = 'none';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No testimonials shared yet. Be the first!</div>';
       }
     }
 

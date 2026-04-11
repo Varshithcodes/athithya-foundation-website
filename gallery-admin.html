@@ -1188,6 +1188,13 @@
             </div>
           </div>
           <div class="card-body">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+              <button class="btn-outline" id="bulkRevToggle" onclick="toggleRevSelectionMode()">📥 Bulk Select</button>
+              <div id="bulkRevActions" style="display:none; gap:10px;">
+                <button class="btn-approve" onclick="executeRevBulkAction('publish')" style="background:var(--pub); padding:8px 16px;">📢 Bulk Publish</button>
+                <button class="btn-reject" onclick="executeRevBulkAction('delete')" style="padding:8px 16px;">🗑 Bulk Delete</button>
+              </div>
+            </div>
             <div id="modList"></div>
           </div>
         </div>
@@ -1279,7 +1286,7 @@
       const ADMIN_USER = 'Jyothi Gudi';
       const ADMIN_PASS = window.ADMIN_PASSWORD || '2507';
       const SESSION_KEY = 'af_admin_token';
-      const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 Days session persistence
+      const SESSION_DURATION = 0; // Session Only (Expiring when tab is closed)
 
       // SECURE: Replace these with your actual Sanity Project Details
       const SANITY_PROJECT_ID = 'm5wsa8rt';
@@ -1428,6 +1435,10 @@
       let selectionMode = false;
       let selectedIndices = new Set();
       let editingIndex = -1;
+
+      // Review Bulk Selection
+      let revSelectionMode = false;
+      let selectedRevIds = new Set();
 
       function saveAndRefresh(msg) {
         localStorage.setItem('af_gallery', JSON.stringify(gallery));
@@ -2067,17 +2078,20 @@
           list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews found.</p></div>`;
           return;
         }
-        list.innerHTML = filtered.map(r => {
+
+        list.innerHTML = filtered.map((r, idx) => {
           const date = new Date(r.date || Date.now()).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
           const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+          const isSelected = selectedRevIds.has(r.id);
 
           let statusLabel = '⏳ Pending';
           if (r.status === 'approved') statusLabel = '🛡️ Approved (Hidden)';
           if (r.status === 'published') statusLabel = '📢 Published on Site';
 
-          return `<div class="mod-card">
+          return `<div class="mod-card ${isSelected ? 'selected' : ''}" style="${revSelectionMode ? 'cursor:pointer; border-left: 4px solid ' + (isSelected ? 'var(--or)' : 'transparent') : ''}" onclick="${revSelectionMode ? `toggleRevSelection('${r.id}')` : ''}">
           <div class="mod-card-top">
             <div class="mod-author-info">
+              ${revSelectionMode ? `<input type="checkbox" ${isSelected ? 'checked' : ''} style="margin-right:10px; width:18px; height:18px;">` : ''}
               <div class="mod-av">${r.dp ? `<img src="${r.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initials}</div>
               <div class="mod-av-info">
                 <h4>${r.name}</h4>
@@ -2087,14 +2101,53 @@
             <span class="mod-status-badge ${r.status}">${statusLabel}</span>
           </div>
           <div class="mod-msg">"${r.message}"</div>
+          ${!revSelectionMode ? `
           <div class="mod-actions">
             ${r.status === 'pending' ? `<button class="btn-approve" onclick="moveReview('${r.id}', 'approved')">✅ Approve</button>` : ''}
             ${r.status === 'approved' ? `<button class="btn-approve" style="background:var(--pub)" onclick="moveReview('${r.id}', 'published')">📢 Publish to Website</button>` : ''}
             ${r.status === 'published' ? `<button class="btn-outline" onclick="moveReview('${r.id}', 'approved')">🙈 Hide from Site</button>` : ''}
             <button class="btn-reject" onclick="deleteReview('${r.id}')">🗑 Delete</button>
-          </div>
+          </div>` : ''}
         </div>`;
         }).join('');
+      }
+
+      function toggleRevSelectionMode() {
+        revSelectionMode = !revSelectionMode;
+        document.getElementById('bulkRevToggle').textContent = revSelectionMode ? '🚫 Cancel' : '📥 Bulk Select';
+        document.getElementById('bulkRevActions').style.display = revSelectionMode ? 'flex' : 'none';
+        selectedRevIds.clear();
+        renderModeration();
+      }
+
+      function toggleRevSelection(id) {
+        if (selectedRevIds.has(id)) selectedRevIds.delete(id);
+        else selectedRevIds.add(id);
+        renderModeration();
+      }
+
+      async function executeRevBulkAction(type) {
+        if (selectedRevIds.size === 0) { showToast('⚠️ Select at least one review.'); return; }
+        if (type === 'delete' && !confirm(`Move ${selectedRevIds.size} reviews to Trash?`)) return;
+
+        showToast(`⏳ Processing ${selectedRevIds.size} reviews...`);
+        let reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+
+        if (type === 'publish') {
+          reviews = reviews.map(r => selectedRevIds.has(r.id) ? { ...r, status: 'published' } : r);
+        } else if (type === 'delete') {
+          const toDelete = reviews.filter(r => selectedRevIds.has(r.id));
+          toDelete.forEach(r => trash.unshift({ ...r, type: 'review', deletedAt: new Date().toISOString() }));
+          reviews = reviews.filter(r => !selectedRevIds.has(r.id));
+        }
+
+        localStorage.setItem('af_reviews', JSON.stringify(reviews));
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+
+        toggleRevSelectionMode();
+        updateStats();
+        renderModeration();
+        showToast('✅ Bulk action completed.');
       }
 
       async function moveReview(id, newStatus) {
