@@ -43,7 +43,7 @@
       color: var(--txt);
       min-height: 100vh;
       background-image: radial-gradient(circle at 0% 0%, rgba(232, 97, 10, 0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 100% 100%, rgba(10, 123, 110, 0.03) 0%, transparent 50%);
+        radial-gradient(circle at 100% 100%, rgba(10, 123, 110, 0.03) 0%, transparent 50%);
     }
 
     /* ── LOGIN OVERLAY ── */
@@ -534,7 +534,7 @@
       border-radius: 8px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       z-index: 2;
     }
 
@@ -1024,16 +1024,21 @@
       </div>
       <div id="loginError">❌ Invalid username or password. Please try again.</div>
       <button class="btn-login" onclick="doLogin()">🔐 Login to Admin Panel</button>
-      
-      <div id="sanityConfigArea" style="display:none; margin-top:20px; padding-top:15px; border-top:1px solid var(--bdr); text-align:center;">
+
+      <div id="sanityConfigArea"
+        style="display:none; margin-top:20px; padding-top:15px; border-top:1px solid var(--bdr); text-align:center;">
         <p style="font-size:0.65rem; color:var(--mut); margin-bottom:8px;">☁️ Sanity Cloud Token (Advanced)</p>
         <div style="display:flex; gap:5px;">
-          <input type="password" id="sanityTokenInput" placeholder="sk..." style="flex:1; padding:8px 12px; border:1px solid var(--bdr); border-radius:6px; font-size:0.75rem;">
-          <button onclick="saveSanityToken(document.getElementById('sanityTokenInput').value)" style="padding:8px 12px; background:var(--teal); color:#fff; border:none; border-radius:6px; font-size:0.7rem; cursor:pointer; font-weight:700;">Save</button>
+          <input type="password" id="sanityTokenInput" placeholder="sk..."
+            style="flex:1; padding:8px 12px; border:1px solid var(--bdr); border-radius:6px; font-size:0.75rem;">
+          <button onclick="saveSanityToken(document.getElementById('sanityTokenInput').value)"
+            style="padding:8px 12px; background:var(--teal); color:#fff; border:none; border-radius:6px; font-size:0.7rem; cursor:pointer; font-weight:700;">Save</button>
         </div>
       </div>
       <p style="text-align:center; margin-top:15px;">
-        <a href="javascript:void(0)" onclick="document.getElementById('sanityConfigArea').style.display='block';this.style.display='none'" style="font-size:0.65rem; color:var(--mut); text-decoration:underline;">Advanced: Connect Sanity Cloud</a>
+        <a href="javascript:void(0)"
+          onclick="document.getElementById('sanityConfigArea').style.display='block';this.style.display='none'"
+          style="font-size:0.65rem; color:var(--mut); text-decoration:underline;">Advanced: Connect Sanity Cloud</a>
       </p>
     </div>
   </div>
@@ -1050,9 +1055,10 @@
         </div>
       </div>
       <div class="topbar-right">
-        <div id="serverStatus" style="display:none; font-size: 0.72rem; color: var(--mut); align-items: center; gap: 8px; margin-right: 15px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);">
-            <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
-            <span id="serverText">Checking Server...</span>
+        <div id="serverStatus"
+          style="display:none; font-size: 0.72rem; color: var(--mut); align-items: center; gap: 8px; margin-right: 15px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);">
+          <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
+          <span id="serverText">Checking Server...</span>
         </div>
         <a href="index.html" class="topbar-back">← Back to Website</a>
         <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
@@ -1100,28 +1106,31 @@
           <div class="card-hd">
             <h2>🖼️ Gallery Manager <span id="gal-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
             <div style="display:flex;gap:10px;">
-               <button class="btn-outline" onclick="toggleSelectionMode()" id="bulkToggle">📥 Bulk Select</button>
-               <button class="btn-outline" id="bulkDeleteBtn" style="display:none; color:var(--red); border-color:var(--red);" onclick="deleteSelectedItems()">🗑 Delete Selected</button>
-               <button class="btn-outline" onclick="clearGallery()" style="color:var(--red);">🗑 ALL</button>
+              <button class="btn-outline" onclick="toggleSelectionMode()" id="bulkToggle">📥 Bulk Select</button>
+              <button class="btn-outline" id="bulkDeleteBtn"
+                style="display:none; color:var(--red); border-color:var(--red);" onclick="deleteSelectedItems()">🗑
+                Delete Selected</button>
+              <button class="btn-outline" onclick="clearGallery()" style="color:var(--red);">🗑 ALL</button>
             </div>
           </div>
           <div class="card-body">
             <div class="gal-upload-card">
-               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                  <input type="text" id="newItemTitle" placeholder="Title/Location">
-                  <select id="newItemType">
-                    <option value="photo">Photo</option>
-                    <option value="video">Video</option>
-                  </select>
-               </div>
-               <textarea id="newItemDesc" placeholder="Caption..." rows="2" style="width:100%; margin-bottom:15px;"></textarea>
-               
-               <div id="uploadZone" onclick="document.getElementById('fileInput').click()">
-                 <input type="file" id="fileInput" hidden accept="image/*,video/*">
-                 <div id="uploadIcon" style="font-size:2rem;">📁</div>
-                 <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
-               </div>
-               <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                <input type="text" id="newItemTitle" placeholder="Title/Location">
+                <select id="newItemType">
+                  <option value="photo">Photo</option>
+                  <option value="video">Video</option>
+                </select>
+              </div>
+              <textarea id="newItemDesc" placeholder="Caption..." rows="2"
+                style="width:100%; margin-bottom:15px;"></textarea>
+
+              <div id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" hidden accept="image/*,video/*">
+                <div id="uploadIcon" style="font-size:2rem;">📁</div>
+                <p id="uploadLabel" style="font-size:0.75rem;">Click to upload Photo/Video</p>
+              </div>
+              <button class="btn-main" style="width:100%;" onclick="addImpactItem()">➕ Add to Gallery</button>
             </div>
             <div class="gal-admin-grid" id="adminGalGrid"></div>
           </div>
@@ -1132,13 +1141,13 @@
       <div class="tab-panel" id="tab-reviews">
         <div class="card">
           <div class="card-hd">
-            <h2>🛡️ Review Moderation</h2>
-             <div class="sub-filter" style="margin:0;">
-               <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
-               <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
-               <button id="mod-filter-published" onclick="filterMod(this,'published')">📢 Published</button>
-               <button id="mod-filter-all" onclick="filterMod(this,'all')">📋 All</button>
-             </div>
+            <h2>🛡️ Review Manager</h2>
+            <div class="sub-filter" style="margin:0;">
+              <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
+              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
+              <button id="mod-filter-published" onclick="filterMod(this,'published')">📢 Published</button>
+              <button id="mod-filter-all" onclick="filterMod(this,'all')">📋 All</button>
+            </div>
           </div>
           <div class="card-body">
             <div id="modList"></div>
@@ -1186,11 +1195,13 @@
           <div class="card-hd">
             <h2>🗑️ Trash Bin (Recently Deleted)</h2>
             <div style="display:flex;gap:10px;">
-              <button class="btn-outline" onclick="emptyTrash()" style="color:var(--red);border-color:var(--red);">🔥 Empty Trash</button>
+              <button class="btn-outline" onclick="emptyTrash()" style="color:var(--red);border-color:var(--red);">🔥
+                Empty Trash</button>
             </div>
           </div>
           <div class="card-body">
-            <p style="font-size:0.7rem; color:var(--mut); margin-bottom:15px;">Note: Items here are hidden from the website but stored locally for 30 days.</p>
+            <p style="font-size:0.7rem; color:var(--mut); margin-bottom:15px;">Note: Items here are hidden from the
+              website but stored locally for 30 days.</p>
             <div class="sub-list" id="trashList"></div>
           </div>
         </div>
@@ -1198,18 +1209,21 @@
     </div>
 
     <!-- EDIT MODAL -->
-    <div id="editModal" style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; padding:24px;">
-       <div class="card" style="max-width:500px; width:100%;">
-          <div class="card-hd"><h2>✏️ Edit Item</h2></div>
-          <div class="card-body">
-             <input type="text" id="editItemTitle" placeholder="Title" style="width:100%; margin-bottom:15px;">
-             <textarea id="editItemDesc" placeholder="Caption" rows="3" style="width:100%; margin-bottom:15px;"></textarea>
-             <div style="display:flex; gap:10px;">
-                <button class="btn-main" onclick="saveEdit()" style="flex:1;">Save Changes</button>
-                <button class="btn-outline" onclick="closeEdit()" style="flex:1;">Cancel</button>
-             </div>
+    <div id="editModal"
+      style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; padding:24px;">
+      <div class="card" style="max-width:500px; width:100%;">
+        <div class="card-hd">
+          <h2>✏️ Edit Item</h2>
+        </div>
+        <div class="card-body">
+          <input type="text" id="editItemTitle" placeholder="Title" style="width:100%; margin-bottom:15px;">
+          <textarea id="editItemDesc" placeholder="Caption" rows="3" style="width:100%; margin-bottom:15px;"></textarea>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-main" onclick="saveEdit()" style="flex:1;">Save Changes</button>
+            <button class="btn-outline" onclick="closeEdit()" style="flex:1;">Cancel</button>
           </div>
-       </div>
+        </div>
+      </div>
     </div>
 
     <div id="toast"></div>
@@ -1274,7 +1288,7 @@
             return true;
           }
         } catch (e) { }
-        
+
         dot.style.background = '#E67E22';
         dot.style.boxShadow = 'none';
         txt.textContent = 'Static Mode (serve)';
@@ -1304,7 +1318,7 @@
           initSanityClient();
           // If we are already on the dashboard, re-sync
           if (document.getElementById('adminContent').style.display === 'block') {
-             initAdmin();
+            initAdmin();
           }
         }
       });
@@ -1402,9 +1416,9 @@
         if (selectedIndices.size === 0) return;
         if (!confirm(`Move ${selectedIndices.size} items to Trash?`)) return;
 
-        const indices = Array.from(selectedIndices).sort((a,b) => b - a);
+        const indices = Array.from(selectedIndices).sort((a, b) => b - a);
         for (const i of indices) {
-           await deleteGalItem(i, true); // true = silent (don't confirm each)
+          await deleteGalItem(i, true); // true = silent (don't confirm each)
         }
         selectedIndices.clear();
         selectionMode = false;
@@ -1433,14 +1447,14 @@
 
         // 1. Update in Sanity if cloud item
         if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
-           showToast('☁️ Updating Sanity cloud...');
-           try {
-             await client.patch(item.id).set({ title: newTitle, caption: newDesc }).commit();
-             showToast('✅ Cloud Updated!');
-           } catch (e) {
-             console.error('Sanity Update Error:', e);
-             showToast('⚠️ Cloud update failed, but local copy updated.');
-           }
+          showToast('☁️ Updating Sanity cloud...');
+          try {
+            await client.patch(item.id).set({ title: newTitle, caption: newDesc }).commit();
+            showToast('✅ Cloud Updated!');
+          } catch (e) {
+            console.error('Sanity Update Error:', e);
+            showToast('⚠️ Cloud update failed, but local copy updated.');
+          }
         }
 
         item.title = newTitle;
@@ -1494,11 +1508,11 @@
                 if (Array.isArray(gsData)) {
                   gsReviews = gsData
                     .filter(r => {
-                       // CRITICAL: Filter out trash, empty rows, and bot spam
-                       const hasName = (r.name || r.authorName || '').toString().trim().length > 1;
-                       const hasMsg = (r.message || r.reviewText || '').toString().trim().length > 1;
-                       const isSpam = (r.message || '').toString().includes('..'); // Filter out the test dots
-                       return !trashIds.has(r.id) && hasName && hasMsg && !isSpam;
+                      // CRITICAL: Filter out trash, empty rows, and bot spam
+                      const hasName = (r.name || r.authorName || '').toString().trim().length > 1;
+                      const hasMsg = (r.message || r.reviewText || '').toString().trim().length > 1;
+                      const isSpam = (r.message || '').toString().includes('..'); // Filter out the test dots
+                      return !trashIds.has(r.id) && hasName && hasMsg && !isSpam;
                     })
                     .map(r => {
                       const stableId = r.id || ('gs_' + btoa((r.name || '') + (r.message || '') + (r.date || '')).substring(0, 16));
@@ -1538,26 +1552,26 @@
                 fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Payments`)
               ]);
 
-               if (csrRes.ok) {
-                  const raw = await csrRes.json();
-                  const data = (Array.isArray(raw) ? raw : []).filter(s => {
-                    if (!s.email && !s.firstName && !s.lastName) return false; // Skip empty rows
-                    const stableId = 'csr_' + btoa((s.email || '') + (s.date || '')).substring(0, 16);
-                    return !trashIds.has(stableId);
-                  });
-                  localStorage.setItem('af_csr', JSON.stringify(data));
-               }
-               /* CONTACTS SYNC REMOVED */
+              if (csrRes.ok) {
+                const raw = await csrRes.json();
+                const data = (Array.isArray(raw) ? raw : []).filter(s => {
+                  if (!s.email && !s.firstName && !s.lastName) return false; // Skip empty rows
+                  const stableId = 'csr_' + btoa((s.email || '') + (s.date || '')).substring(0, 16);
+                  return !trashIds.has(stableId);
+                });
+                localStorage.setItem('af_csr', JSON.stringify(data));
+              }
+              /* CONTACTS SYNC REMOVED */
 
-               if (donateRes.ok) {
-                  const raw = await donateRes.json();
-                  const data = (Array.isArray(raw) ? raw : []).filter(s => {
-                    if (!s.txnId && !s.amount) return false;
-                    const stableId = s.txnId || ('don_' + btoa((s.name || '') + (s.amount || '') + (s.date || '')).substring(0, 16));
-                    return !trashIds.has(stableId);
-                  });
-                  localStorage.setItem('af_donations', JSON.stringify(data));
-               }
+              if (donateRes.ok) {
+                const raw = await donateRes.json();
+                const data = (Array.isArray(raw) ? raw : []).filter(s => {
+                  if (!s.txnId && !s.amount) return false;
+                  const stableId = s.txnId || ('don_' + btoa((s.name || '') + (s.amount || '') + (s.date || '')).substring(0, 16));
+                  return !trashIds.has(stableId);
+                });
+                localStorage.setItem('af_donations', JSON.stringify(data));
+              }
             } catch (e) { console.warn('Could not sync remote submissions'); }
           }
 
@@ -1646,14 +1660,14 @@
 
         // Sanity client can sometimes load slowly from the CDN. Force initialize if possible.
         if (!client) {
-            initSanityClient();
+          initSanityClient();
         }
 
         // If STILL not ready, wait 500ms and try one last time.
         if (!client && !window.createSanityClient) {
-            showToast('🔄 Preparing cloud connection...');
-            await new Promise(r => setTimeout(r, 800));
-            initSanityClient();
+          showToast('🔄 Preparing cloud connection...');
+          await new Promise(r => setTimeout(r, 800));
+          initSanityClient();
         }
 
         const title = document.getElementById('newItemTitle').value.trim() || pendingFile.name.replace(/\.[^.]+$/, '');
@@ -1683,7 +1697,7 @@
             if (e.message?.includes('CORS')) errMsg = '❌ CORS Error: Add this domain to Sanity Manage API settings.';
             else if (e.message?.includes('token')) errMsg = '❌ Token Error: Your write token is invalid or expired.';
             else errMsg = '❌ Sanity Error: ' + (e.message || 'Check your permissions.');
-            
+
             showToast(errMsg);
             // Don't return here if you want to try local fallback, but usually we want to fix Sanity.
           }
@@ -1701,7 +1715,7 @@
           try {
             const res = await fetch('/api/gallery', { method: 'POST', body: formData });
             if (!res.ok) throw new Error('Local API not responding.');
-            
+
             const result = await res.json();
             if (result.success) {
               gallery.unshift({ id: 'loc_' + Date.now(), type, media: result.image.image, title, desc, addedAt: new Date().toISOString() });
@@ -1716,7 +1730,7 @@
             showToast('❌ Local Server failed. Please check your "node server.js" terminal.');
           }
         } else {
-           showToast('❌ CLOUD SYNC FAILED: High security token or CORS configuration required.');
+          showToast('❌ CLOUD SYNC FAILED: High security token or CORS configuration required.');
         }
       }
 
@@ -1743,7 +1757,7 @@
           const div = document.createElement('div');
           div.className = 'gal-admin-item';
           if (selectedIndices.has(i)) div.style.boxShadow = '0 0 0 3px var(--or)';
-          
+
           const isVideo = item.type === 'video';
           const mediaHtml = isVideo
             ? `<video src="${item.media}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
@@ -1776,23 +1790,23 @@
 
       async function deleteGalItem(i, silent = false) {
         if (!silent && !confirm('Move this item to Trash? It will be removed from the live website.')) return;
-        
+
         const item = gallery[i];
-        
+
         // 1. If it's a Sanity item, we need to delete it from the cloud
         if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
-           if (!silent) showToast('🗑 Removing from Sanity Cloud...');
-           try {
-             await client.delete(item.id);
-           } catch (e) {
-             console.error('Cloud Delete Error:', e);
-           }
+          if (!silent) showToast('🗑 Removing from Sanity Cloud...');
+          try {
+            await client.delete(item.id);
+          } catch (e) {
+            console.error('Cloud Delete Error:', e);
+          }
         }
 
         // 2. Move to local trash
         trash.unshift({ ...item, deletedAt: new Date().toISOString() });
         gallery.splice(i, 1);
-        
+
         saveAndRefresh();
         if (!silent) renderAdminGallery();
       }
@@ -1808,7 +1822,7 @@
           const date = new Date(it.deletedAt || Date.now()).toLocaleString();
           const title = it.title || it.name || it.firstName || 'Unnamed Item';
           const typeLabel = it.type || (it.media ? 'media' : 'item');
-          
+
           return `
           <div class="sub-card">
             <div style="display:flex; gap:12px; align-items:center;">
@@ -1845,7 +1859,7 @@
           data.unshift(item);
           localStorage.setItem('af_donations', JSON.stringify(data));
         }
-        
+
         trash.splice(i, 1);
         saveAndRefresh('✅ Item restored!');
         renderTrash();
@@ -1873,21 +1887,21 @@
         let data = JSON.parse(localStorage.getItem(key) || '[]');
         const itemIndex = data.findIndex(s => s.date === date);
         if (itemIndex === -1) return;
-        
+
         const item = data[itemIndex];
         const stableId = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
-        
+
         trash.unshift({ ...item, id: stableId, type: 'submission', deletedAt: new Date().toISOString() });
         data.splice(itemIndex, 1);
         localStorage.setItem(key, JSON.stringify(data));
-        
+
         saveAndRefresh('🗑 CSR Enquiry moved to Trash.');
         renderCSRList();
       }
 
       function renderCSRList() {
         const csrData = JSON.parse(localStorage.getItem('af_csr') || '[]')
-                        .sort((a, b) => new Date(b.date) - new Date(a.date));
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
         const list = document.getElementById('csrList');
         if (!csrData.length) {
           list.innerHTML = '<div class="empty-state"><div class="es-icon">🏢</div><p>No CSR enquiries yet.</p></div>';
@@ -1964,7 +1978,7 @@
         });
         const list = document.getElementById('modList');
         if (!list) return;
-        
+
         if (!filtered.length) {
           list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews found.</p></div>`;
           return;
@@ -2031,14 +2045,14 @@
 
         // 1. Move to Trash
         trash.unshift({ ...review, type: 'review', deletedAt: new Date().toISOString() });
-        
+
         // 2. Remove locally
         const filtered = reviews.filter(r => r.id !== id);
         localStorage.setItem('af_reviews', JSON.stringify(filtered));
 
         // 3. Delete from Sanity (if cloud)
         if (client && !id.startsWith('rv_') && !id.startsWith('gs_')) {
-          try { await client.delete(id); } catch(e){}
+          try { await client.delete(id); } catch (e) { }
         }
 
         saveAndRefresh();
@@ -2084,7 +2098,7 @@
         trash.unshift({ ...d, id: stableId, type: 'donation', deletedAt: new Date().toISOString() });
         donations = donations.filter(x => x.txnId !== txnId);
         localStorage.setItem('af_donations', JSON.stringify(donations));
-        
+
         saveAndRefresh();
         renderDonations();
         showToast('🗑 Donation moved to Trash.');
@@ -2127,4 +2141,5 @@
       }
     </script>
 </body>
+
 </html>
