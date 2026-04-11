@@ -1066,9 +1066,10 @@
       <!-- Admin Tabs -->
       <div class="tabs">
         <div class="tab active" onclick="switchTab('gallery')">🖼️ Gallery</div>
-        <div class="tab" onclick="switchTab('reviews')">⭐ Reviews</div>
+        <div class="tab" onclick="switchTab('reviews')">⭐ Moderation</div>
         <div class="tab" onclick="switchTab('donations')">💳 Donations</div>
-        <div class="tab" onclick="switchTab('contacts')">📧 CSR Contacts</div>
+        <div class="tab" onclick="switchTab('csr')">🏢 CSR Enquiries</div>
+        <div class="tab" onclick="switchTab('csr')">🏢 CSR Enquiries</div>
         <div class="tab" onclick="switchTab('trash')">🗑️ Trash Bin</div>
       </div>
 
@@ -1111,10 +1112,12 @@
         <div class="card">
           <div class="card-hd">
             <h2>🛡️ Review Moderation</h2>
-            <div class="sub-filter" style="margin:0;">
-              <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
-              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
-            </div>
+             <div class="sub-filter" style="margin:0;">
+               <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
+               <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
+               <button id="mod-filter-published" onclick="filterMod(this,'published')">📢 Published</button>
+               <button id="mod-filter-all" onclick="filterMod(this,'all')">📋 All</button>
+             </div>
           </div>
           <div class="card-body">
             <div id="modList"></div>
@@ -1122,20 +1125,8 @@
         </div>
       </div>
 
-      <!-- ── CONTACTS TAB ── -->
-      <div class="tab-panel" id="tab-contacts">
-        <div class="card">
-          <div class="card-hd">
-            <h2>📧 Contact Submissions</h2>
-            <div style="display:flex;gap:10px;">
-              <button class="btn-outline" onclick="exportCSV()">⬇ Export</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sub-list" id="subList"></div>
-          </div>
-        </div>
-      </div>
+      <!-- CONTACTS TAB REMOVED -->
+
 
       <!-- DONATIONS TAB -->
       <div class="tab-panel" id="tab-donations">
@@ -1297,12 +1288,8 @@
         }
       });
 
-      function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-      }
+      // Using consolidated showToast below
+
 
       // ── CHECK SESSION ON LOAD ──
       (function checkSession() {
@@ -1369,10 +1356,11 @@
       let selectedIndices = new Set();
       let editingIndex = -1;
 
-      function saveAndRefresh() {
+      function saveAndRefresh(msg) {
         localStorage.setItem('af_gallery', JSON.stringify(gallery));
         localStorage.setItem('af_trash', JSON.stringify(trash));
         updateStats();
+        if (msg) showToast(msg);
       }
 
       function toggleSelectionMode() {
@@ -1485,14 +1473,17 @@
                 if (Array.isArray(gsData)) {
                   gsReviews = gsData
                     .filter(r => !trashIds.has(r.id)) // Skip reviews in trash
-                    .map(r => ({
-                      id: r.id || 'gs_' + Date.now() + Math.random(),
-                      name: r.name,
-                      role: r.role,
-                      message: r.message,
-                      status: processReviewStatus(sReviews, r.id, r.status || 'pending'),
-                      date: r.date
-                    }));
+                    .map(r => {
+                      const stableId = r.id || ('gs_' + btoa((r.name || '') + (r.message || '') + (r.date || '')).substring(0, 16));
+                      return {
+                        id: stableId,
+                        name: r.name || r.authorName || 'Guest User',
+                        role: r.role || 'Visitor',
+                        message: r.message || r.reviewText || '',
+                        status: processReviewStatus(sReviews, stableId, r.status || 'pending'),
+                        date: r.date
+                      };
+                    });
                 }
               } catch (e) { console.warn('Google Sheet Sync Error:', e); }
             }
@@ -1520,18 +1511,26 @@
                 fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Payments`)
               ]);
 
-              if (csrRes.ok) {
-                 const data = (await csrRes.json()).filter(s => !trashIds.has(s.date));
-                 localStorage.setItem('af_csr', JSON.stringify(data));
-              }
-              if (contactRes.ok) {
-                 const data = (await contactRes.json()).filter(s => !trashIds.has(s.date));
-                 localStorage.setItem('af_contact', JSON.stringify(data));
-              }
-              if (donateRes.ok) {
-                 const data = (await donateRes.json()).filter(s => !trashIds.has(s.date));
-                 localStorage.setItem('af_donations', JSON.stringify(data));
-              }
+               if (csrRes.ok) {
+                  const raw = await csrRes.json();
+                  const data = (Array.isArray(raw) ? raw : []).filter(s => {
+                    if (!s.email && !s.firstName && !s.lastName) return false; // Skip empty rows
+                    const stableId = 'csr_' + btoa((s.email || '') + (s.date || '')).substring(0, 16);
+                    return !trashIds.has(stableId);
+                  });
+                  localStorage.setItem('af_csr', JSON.stringify(data));
+               }
+               /* CONTACTS SYNC REMOVED */
+
+               if (donateRes.ok) {
+                  const raw = await donateRes.json();
+                  const data = (Array.isArray(raw) ? raw : []).filter(s => {
+                    if (!s.txnId && !s.amount) return false;
+                    const stableId = s.txnId || ('don_' + btoa((s.name || '') + (s.amount || '') + (s.date || '')).substring(0, 16));
+                    return !trashIds.has(stableId);
+                  });
+                  localStorage.setItem('af_donations', JSON.stringify(data));
+               }
             } catch (e) { console.warn('Could not sync remote submissions'); }
           }
 
@@ -1556,7 +1555,7 @@
       }
 
       // ── TABS ──
-      const tabKeys = ['gallery', 'reviews', 'donations', 'contacts', 'csr', 'trash'];
+      const tabKeys = ['gallery', 'reviews', 'donations', 'csr', 'trash'];
       function switchTab(name) {
         document.querySelectorAll('.tab').forEach((t, i) =>
           t.classList.toggle('active', tabKeys[i] === name));
@@ -1566,7 +1565,6 @@
         if (name === 'gallery') renderAdminGallery();
         if (name === 'reviews') renderModeration();
         if (name === 'donations') renderDonations();
-        if (name === 'contacts') renderSubmissions();
         if (name === 'csr') renderCSRList();
         if (name === 'trash') renderTrash();
       }
@@ -1774,50 +1772,63 @@
 
       function renderTrash() {
         const list = document.getElementById('trashList');
+        if (!list) return;
         if (!trash.length) {
-          list.innerHTML = '<div class="empty-state"><div class="es-icon">🗑️</div><p>Trash is empty.</p></div>';
+          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
           return;
         }
-        list.innerHTML = trash.map((item, i) => `
+        list.innerHTML = trash.map((it, idx) => {
+          const date = new Date(it.deletedAt || Date.now()).toLocaleString();
+          const title = it.title || it.name || it.firstName || 'Unnamed Item';
+          const typeLabel = it.type || (it.media ? 'media' : 'item');
+          
+          return `
           <div class="sub-card">
-            <div style="display:flex; gap:15px; align-items:center;">
-               <img src="${item.media}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
-               <div>
-                 <h4 style="margin:0;">${item.title || 'Deleted Item'}</h4>
-                 <small style="color:var(--mut);">Deleted: ${new Date(item.deletedAt).toLocaleString()}</small>
-               </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+              ${it.media ? `<img src="${it.media}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">` : ''}
+              <div>
+                <span class="sub-tag" style="background:#eee; color:#666;">${typeLabel}</span>
+                <h4 style="margin:2px 0;">${title}</h4>
+                <p style="font-size:0.68rem; color:var(--mut);">Deleted: ${date}</p>
+              </div>
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="btn-restore" onclick="restoreFromTrash(${i})" style="padding:6px 12px; font-size:0.7rem; background:var(--teal); color:#fff; border:none; border-radius:6px; cursor:pointer;">↺ Restore</button>
-              <button class="btn-del" onclick="permanentlyDelete(${i})" style="padding:6px; background:none; border:none; cursor:pointer;">🔥</button>
+               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal); font-size:1.1rem;">🔄</button>
+               <button class="sub-del" onclick="permanentlyDelete(${idx})" title="Delete Permanently" style="color:var(--red); font-size:1.1rem;">🔥</button>
             </div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
       }
 
       function restoreFromTrash(i) {
         const item = trash[i];
-        gallery.unshift(item);
+        if (item.type === 'photo' || item.type === 'video') {
+          gallery.unshift(item);
+        } else if (item.type === 'review') {
+          const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+          reviews.unshift(item);
+          localStorage.setItem('af_reviews', JSON.stringify(reviews));
+        } else if (item.type === 'submission') {
+          // Now only CSR uses this type
+          const data = JSON.parse(localStorage.getItem('af_csr') || '[]');
+          data.unshift(item);
+          localStorage.setItem('af_csr', JSON.stringify(data));
+        } else if (item.type === 'donation') {
+          const data = JSON.parse(localStorage.getItem('af_donations') || '[]');
+          data.unshift(item);
+          localStorage.setItem('af_donations', JSON.stringify(data));
+        }
+        
         trash.splice(i, 1);
-        localStorage.setItem('af_trash', JSON.stringify(trash));
-        saveAndRefresh();
-        renderTrash();
-        showToast('✅ Item restored to Gallery (Save & Apply to sync to Cloud).');
-      }
-
-      function permanentlyDelete(i) {
-        if (!confirm('Permanently delete this item? This cannot be undone.')) return;
-        trash.splice(i, 1);
-        localStorage.setItem('af_trash', JSON.stringify(trash));
+        saveAndRefresh('✅ Item restored!');
         renderTrash();
       }
 
       function emptyTrash() {
         if (!confirm('Permanently empty the entire trash bin?')) return;
         trash = [];
-        localStorage.setItem('af_trash', '[]');
+        saveAndRefresh('🔥 Trash emptied.');
         renderTrash();
-        showToast('🔥 Trash emptied.');
       }
 
       function clearGallery() {
@@ -1828,44 +1839,23 @@
         showToast('Gallery cleared.');
       }
 
-      function saveAndRefresh() {
-        localStorage.setItem('af_gallery', JSON.stringify(gallery));
-        showToast('✅ Gallery saved! Refresh the website to see changes.');
-        updateStats();
-      }
-
-      // ── SUBMISSIONS ──
-      function getAllSubmissions() {
-        const contact = JSON.parse(localStorage.getItem('af_contact') || '[]');
-        const csr = JSON.parse(localStorage.getItem('af_csr') || '[]');
-        return [...contact, ...csr].sort((a, b) => new Date(b.date) - new Date(a.date));
-      }
-
-      function renderSubmissions() {
-        // Filter out CSR entries (they have their own tab now)
-        const all = JSON.parse(localStorage.getItem('af_contact') || '[]')
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+      // Helper for CSR delete
+      function deleteSubmission(type, date) {
+        if (!confirm('Move this submission to Trash?')) return;
+        const key = 'af_csr';
+        let data = JSON.parse(localStorage.getItem(key) || '[]');
+        const itemIndex = data.findIndex(s => s.date === date);
+        if (itemIndex === -1) return;
         
-        const list = document.getElementById('subList');
-        if (!all.length) {
-          list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>No contact messages yet.</p></div>';
-          return;
-        }
-        list.innerHTML = all.map(s => {
-          const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-          return `<div class="sub-card">
-          <div>
-            <span class="sub-tag contact">Contact Inquiry</span>
-            <h4>${s.name}</h4>
-            <div class="sub-meta"><span>✉️ ${s.email}</span><span>📞 ${s.phone || '—'}</span></div>
-            ${s.message ? `<div class="sub-msg">${s.message}</div>` : ''}
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-            <span class="sub-date">${date}</span>
-            <button class="sub-del" onclick="deleteSubmission('contact','${s.date}')" title="Delete">🗑</button>
-          </div>
-        </div>`;
-        }).join('');
+        const item = data[itemIndex];
+        const stableId = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+        
+        trash.unshift({ ...item, id: stableId, type: 'submission', deletedAt: new Date().toISOString() });
+        data.splice(itemIndex, 1);
+        localStorage.setItem(key, JSON.stringify(data));
+        
+        saveAndRefresh('🗑 CSR Enquiry moved to Trash.');
+        renderCSRList();
       }
 
       function renderCSRList() {
@@ -1878,10 +1868,11 @@
         }
         list.innerHTML = csrData.map(s => {
           const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const name = (s.firstName || s.lastName) ? `${s.firstName || ''} ${s.lastName || ''}`.trim() : (s.name || 'Anonymous');
           return `<div class="sub-card">
           <div>
             <span class="sub-tag csr">CSR Enquiry</span>
-            <h4>${s.firstName} ${s.lastName}</h4>
+            <h4>${name}</h4>
             <div class="sub-meta">
               <span>🏢 ${s.company || '—'}</span>
               <span>💰 ${s.budget || '—'}</span>
@@ -1901,33 +1892,14 @@
         currentFilter = filter;
         document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        renderSubmissions();
-      }
-
-      function deleteSubmission(type, date) {
-        if (!confirm('Move this submission to Trash?')) return;
-        const key = type === 'csr' ? 'af_csr' : 'af_contact';
-        let data = JSON.parse(localStorage.getItem(key) || '[]');
-        const item = data.find(s => s.date === date);
-        if (!item) return;
-
-        trash.unshift({ ...item, id: date, type: 'submission', deletedAt: new Date().toISOString() });
-        data = data.filter(s => s.date !== date);
-        localStorage.setItem(key, JSON.stringify(data));
-        
-        saveAndRefresh();
-        if (type === 'csr') renderCSRList();
-        else renderSubmissions();
-        showToast('🗑 Submission moved to Trash.');
       }
 
       function clearAllSubmissions() {
-        if (!confirm('Delete ALL submissions? This cannot be undone.')) return;
-        localStorage.removeItem('af_contact');
+        if (!confirm('Delete ALL CSR entries? This cannot be undone.')) return;
         localStorage.removeItem('af_csr');
         updateStats();
-        renderSubmissions();
-        showToast('All submissions cleared.');
+        renderCSRList();
+        showToast('CSR entries cleared.');
       }
 
       function exportCSRCSV() {
@@ -1946,20 +1918,6 @@
         a.click();
         document.body.removeChild(a);
         showToast('CSR CSV exported!');
-      }
-
-      function exportCSV() {
-        const all = JSON.parse(localStorage.getItem('af_contact') || '[]');
-        if (!all.length) { showToast('No contact data to export.'); return; }
-        const headers = ['Name', 'Email', 'Phone', 'Message', 'Date'];
-        const rows = all.map(s => [
-          s.name, s.email, s.phone || '', (s.message || '').replace(/"/g, "'"), s.date
-        ].map(v => `"${v}"`).join(','));
-        const csv = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'athithya_submissions.csv' });
-        a.click();
-        showToast('CSV exported!');
       }
 
       // ── MODERATION ──
@@ -2012,13 +1970,6 @@
           </div>
         </div>`;
         }).join('');
-      }
-
-      function filterMod(btn, filter) {
-        currentModFilter = filter;
-        document.querySelectorAll('#tab-reviews .sub-filter button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderModeration();
       }
 
       async function moveReview(id, newStatus) {
@@ -2102,7 +2053,8 @@
         const d = donations.find(x => x.txnId === txnId);
         if (!d) return;
 
-        trash.unshift({ ...d, id: txnId, type: 'donation', deletedAt: new Date().toISOString() });
+        const stableId = d.txnId || ('don_' + btoa((d.name || '') + (d.amount || '') + (d.date || '')).substring(0, 16));
+        trash.unshift({ ...d, id: stableId, type: 'donation', deletedAt: new Date().toISOString() });
         donations = donations.filter(x => x.txnId !== txnId);
         localStorage.setItem('af_donations', JSON.stringify(donations));
         
@@ -2132,92 +2084,20 @@
       }
 
       // ── TOAST ──
-      function setSyncStatus(status, message) {
-        if (!syncStatus || !syncText) return;
-
-        // We only show critical errors. Minor sync issues use small dots.
-        if (status === 'error') {
-          console.warn('Sync issue:', message);
-          syncStatus.className = 'status-badge status-warning';
-          syncText.textContent = 'Limited Sync';
-          return;
-        }
-
-        syncStatus.className = `status-badge status-${status}`;
-        syncText.textContent = message;
-      }
-
-      // ── TRASH ──
-      function renderTrash() {
-        const list = document.getElementById('trashList');
-        if (!list) return;
-        if (!trash.length) {
-          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
-          return;
-        }
-        list.innerHTML = trash.map((it, idx) => `
-          <div class="sub-card">
-            <div>
-              <span class="sub-tag">${it.type || 'item'}</span>
-              <h4>${it.title || it.name || 'Unnamed Item'}</h4>
-              <p style="font-size:0.7rem; color:var(--mut);">Deleted: ${new Date(it.deletedAt).toLocaleString()}</p>
-            </div>
-            <div style="display:flex; gap:8px;">
-               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal)">🔄</button>
-               <button class="sub-del" onclick="permDelete(${idx})" title="Delete Permanently" style="color:var(--red)">🔥</button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      function restoreFromTrash(idx) {
-        const it = trash[idx];
-        if (it.type === 'photo' || it.type === 'video') {
-           gallery.unshift(it);
-        } else if (it.type === 'review') {
-           const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-           reviews.unshift(it);
-           localStorage.setItem('af_reviews', JSON.stringify(reviews));
-        } else if (it.type === 'submission') {
-           const key = it.company ? 'af_csr' : 'af_contact';
-           const data = JSON.parse(localStorage.getItem(key) || '[]');
-           data.unshift(it);
-           localStorage.setItem(key, JSON.stringify(data));
-        } else if (it.type === 'donation') {
-           const data = JSON.parse(localStorage.getItem('af_donations') || '[]');
-           data.unshift(it);
-           localStorage.setItem('af_donations', JSON.stringify(data));
-        }
-        trash.splice(idx, 1);
-        saveAndRefresh();
-        renderTrash();
-        showToast('♻️ Item Restored!');
-      }
-
-      function permDelete(idx) {
-        if (!confirm('This will be gone forever. Continue?')) return;
-        trash.splice(idx, 1);
-        saveAndRefresh();
-        renderTrash();
-        showToast('🔥 Permanently Deleted.');
-      }
-
-      function emptyTrash() {
-        if (!confirm('Destroy everything in trash permanently?')) return;
-        trash = [];
-        saveAndRefresh();
-        renderTrash();
-        showToast('🗑 Trash Emptied.');
-      }
-
       function showToast(msg) {
         const t = document.getElementById('toast');
         if (!t) return;
-        t.textContent = msg;
+        t.innerText = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
       }
+
+      function permanentlyDelete(idx) {
+        if (!confirm('This will be gone forever. Continue?')) return;
+        trash.splice(idx, 1);
+        saveAndRefresh('🔥 Permanently Deleted.');
+        renderTrash();
+      }
     </script>
 </body>
-
 </html>
