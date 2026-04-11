@@ -1560,7 +1560,6 @@
                         role: r.role || 'Visitor',
                         message: r.message || r.reviewText || '',
                         status: processReviewStatus(sReviews, stableId, r.status || 'pending'),
-                        dp: r.dp,
                         date: r.date
                       };
                     });
@@ -2079,7 +2078,7 @@
           return `<div class="mod-card">
           <div class="mod-card-top">
             <div class="mod-author-info">
-              <div class="mod-av">${initials}</div>
+              <div class="mod-av">${r.dp ? `<img src="${r.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initials}</div>
               <div class="mod-av-info">
                 <h4>${r.name}</h4>
                 <p>${r.role || 'Visitor'} · ${date}</p>

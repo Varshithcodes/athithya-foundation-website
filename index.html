@@ -1045,40 +1045,6 @@
       z-index: 10;
     }
 
-    .mos-tri, .mos-quad {
-      position: absolute;
-      border-radius: 14px;
-      overflow: hidden;
-      cursor: pointer;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      will-change: transform;
-    }
-
-    .mos-tri {
-      top: -25px;
-      right: 120px;
-      width: 180px;
-      height: 130px;
-      background: linear-gradient(145deg, #1A5FAB, #082840);
-      z-index: 2;
-    }
-
-    .mos-quad {
-       bottom: -30px;
-       left: 50px;
-       width: 200px;
-       height: 150px;
-       background: linear-gradient(145deg, #7A2800, #3D1800);
-       z-index: 2;
-    }
-
-    .mos-tri:hover, .mos-quad:hover {
-      transform: scale(1.1) translateY(-5px);
-       z-index: 10;
-       box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    }
-
     .mos-badge {
       position: absolute;
       top: 24px;
@@ -4898,49 +4864,32 @@
         to
         build an empowered and equitable society.</p>
       <div class="about-grid">
-          <div class="mosaic">
-            <!-- Tri Card (New) -->
-            <div class="mos-tri" onclick="openMosaicPopup('tri')">
-               <img src="images/photo_2026-04-02_02-54-33.jpg" alt="Our Volunteers" style="width:100%; height:100%; object-fit:cover;">
-               <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); display:flex; align-items:flex-end; padding:10px;">
-                 <span style="color:#fff; font-size:0.65rem; font-weight:800;">Our Volunteers →</span>
-               </div>
+        <div class="mosaic">
+          <div class="mos-main" onclick="openMosaicPopup('main')" style="cursor:pointer;">
+            <img src="images/IMG_0490.PNG" alt="Athithya Foundation"
+              style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:0;">
+            <div class="mos-main-grad" style="z-index:1;"></div>
+            <div class="mos-main-cap" style="z-index:2;">
+              <p>Athithya Foundation</p><span>Malleshwaram, Bengaluru</span>
             </div>
-
-            <div class="mos-main" onclick="openMosaicPopup('main')" style="cursor:pointer;">
-              <img src="images/IMG_0490.PNG" alt="Athithya Foundation"
-                style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:0;">
-              <div class="mos-main-grad" style="z-index:1;"></div>
-              <div class="mos-main-cap" style="z-index:2;">
-                <p>Athithya Foundation</p><span>Malleshwaram, Bengaluru</span>
-              </div>
-              <div
-                style="position:absolute;top:12px;right:12px;z-index:3;background:rgba(232,97,10,.85);color:#fff;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.08em;">
-                Tap to connect</div>
-            </div>
-
-            <!-- Quad Card (New) -->
-            <div class="mos-quad" onclick="openMosaicPopup('quad')">
-               <img src="images/img3_educlassrooms.jpeg" alt="Impact" style="width:100%; height:100%; object-fit:cover;">
-               <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); display:flex; align-items:flex-end; padding:10px;">
-                 <span style="color:#fff; font-size:0.65rem; font-weight:800;">Real Impact →</span>
-               </div>
-            </div>
-
-            <div class="mos-sec" onclick="openMosaicPopup('sec')"
-              style="overflow:hidden;cursor:pointer;position:relative;">
-              <img src="images/class.avif" alt="Secondary Image"
-                style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">
-              <div
-                style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);border-radius:inherit;display:flex;align-items:flex-end;padding:14px;">
-                <span style="color:#fff;font-size:.72rem;font-weight:800;">Our Classrooms →</span>
-              </div>
-            </div>
-            <div class="mos-badge">
-              <div class="mos-badge-n">5+</div>
-              <div class="mos-badge-l">Years of<br />Impact</div>
+            <div
+              style="position:absolute;top:12px;right:12px;z-index:3;background:rgba(232,97,10,.85);color:#fff;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.08em;">
+              Tap to connect</div>
+          </div>
+          <div class="mos-sec" onclick="openMosaicPopup('sec')"
+            style="overflow:hidden;cursor:pointer;position:relative;">
+            <img src="images/class.avif" alt="Secondary Image"
+              style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">
+            <div
+              style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);border-radius:inherit;display:flex;align-items:flex-end;padding:14px;">
+              <span style="color:#fff;font-size:.72rem;font-weight:800;">Our Classrooms →</span>
             </div>
           </div>
+          <div class="mos-badge">
+            <div class="mos-badge-n">5+</div>
+            <div class="mos-badge-l">Years of<br />Impact</div>
+          </div>
+        </div>
         <div class="about-right stagger-reveal">
           <p class="sec-sub" style="max-width:100%;margin-bottom:26px">We work closely with schools, communities, and
             corporate partners to design scalable, measurable, and sustainable development programs. Quality education
@@ -5961,7 +5910,22 @@
       if (dpFile) {
         dpBase64 = await new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const MAX_SIZE = 150;
+              let w = img.width;
+              let h = img.height;
+              if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
+              else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+              canvas.width = w; canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.src = e.target.result;
+          };
           reader.readAsDataURL(dpFile);
         });
       }
@@ -5971,8 +5935,8 @@
         id: 'rv_' + Date.now(),
         name,
         role,
-        dp: dpBase64,
         message,
+        dp: dpBase64,
         date: new Date().toISOString(),
         status: 'pending'
       };
