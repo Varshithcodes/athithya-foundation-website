@@ -229,12 +229,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderData(data) {
     grid.innerHTML = '';
+    if (!data || data.length === 0) {
+      grid.style.display = 'block'; // Avoid grid gaps for empty state
+      grid.innerHTML = `
+        <div style="width:100%; height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 2px dashed rgba(232,97,10,0.15); border-radius:18px; background: rgba(232,97,10,0.02);">
+          <div style="font-size:3rem; margin-bottom:15px; opacity:0.3;">📸</div>
+          <p style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:var(--txt); margin-bottom:8px; opacity:0.6;">Capturing the Heart of Karnataka</p>
+          <p style="font-size:0.85rem; color:var(--mut); max-width:280px; text-align:center; line-height:1.5;">Your journey's moments will appear here once you upload them through the admin panel.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    grid.style.display = 'grid'; // Restore grid layout
     data.forEach((item, index) => {
       const isTall = index === 0;
       const div = document.createElement('div');
       div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
-
-      // Use the consolidated lightbox
+      
       const mediaUrl = item.media || '';
       const mediaType = item.type || (mediaUrl.match(/\.(mp4|webm|ogg)$/i) ? 'video' : 'photo');
       div.onclick = () => openLightbox(item.title, item.desc, mediaUrl, mediaType);
