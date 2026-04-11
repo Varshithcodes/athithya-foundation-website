@@ -41,6 +41,7 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Athithya Foundation",
+    "alternateName": ["Athithya Foundation", "aathithya", "aatitya"],
     "url": "https://www.athithyafoundation.org"
   }
   </script>
@@ -51,7 +52,7 @@
     "@context": "https://schema.org",
     "@type": "NonProfitOrganization",
     "name": "Athithya Foundation",
-    "alternateName": ["aaathithya", "aathithhya foundation", "Athithya Foundation", "aathithyafoundation"],
+    "alternateName": ["aathithya foundation", "Athithya", "athithyafoundation"],
     "description": "Athithya Foundation is a purpose-driven non-profit transforming education ecosystems and school donations for government schools across Karnataka.",
     "url": "https://www.athithyafoundation.org",
     "logo": "https://www.athithyafoundation.org/images/Athithya_Foundation_Logo_withoutBG.png",
@@ -73,23 +74,16 @@
 ───────────────────────────────────────── */
     :root {
       --or: #E8610A;
-      /* main orange      */
       --orv: #FF7B20;
-      /* vivid orange     */
       --ors: #FFA04D;
-      /* soft orange      */
       --orp: #FFF0E6;
-      /* pale orange bg   */
       --deep: #1A0A00;
-      /* near-black brown */
       --ink: #2C1400;
       --txt: #3D2000;
       --mut: #7A5C40;
       --bdr: #F0D5C0;
       --crm: #FFFAF5;
-      /* cream bg         */
 
-      /* accent palette for program cards */
       --teal: #0A7B6E;
       --blue: #1A5FAB;
       --pur: #6B3FA0;
@@ -97,10 +91,22 @@
       --red: #C0392B;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
     * {
       margin: 0;
       padding: 0;
-      box-sizing: border-box
+      box-sizing: border-box;
     }
 
     html {
@@ -113,7 +119,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--crm);
       color: var(--txt);
-      overflow-x: hidden
+      overflow-x: hidden;
     }
 
     img {
