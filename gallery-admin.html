@@ -1093,8 +1093,8 @@
 
       <!-- Admin Tabs -->
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('gallery')">🖼️ Gallery</div>
-        <div class="tab" onclick="switchTab('reviews')">⭐ Moderation</div>
+        <div class="tab active" onclick="switchTab('gallery')">🏞️ Gallery</div>
+        <div class="tab" onclick="switchTab('reviews')">⭐ Reviews</div>
         <div class="tab" onclick="switchTab('donations')">💳 Donations</div>
         <div class="tab" onclick="switchTab('csr')">🏢 CSR Enquiries</div>
         <div class="tab" onclick="switchTab('trash')">🗑️ Trash Bin</div>
@@ -1554,25 +1554,43 @@
 
               if (csrRes.ok) {
                 const raw = await csrRes.json();
-                const data = (Array.isArray(raw) ? raw : []).filter(s => {
-                  if (!s.email && !s.firstName && !s.lastName) return false; // Skip empty rows
-                  const stableId = 'csr_' + btoa((s.email || '') + (s.date || '')).substring(0, 16);
-                  return !trashIds.has(stableId);
+                const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.email || s.firstName || s.lastName);
+                const localData = JSON.parse(localStorage.getItem('af_csr') || '[]');
+                
+                // Key-based merge to prevent wiping fresh local entries
+                const map = new Map();
+                // Add local first (priority for local edits)
+                localData.forEach(item => {
+                  const id = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+                  map.set(id, item);
                 });
-                localStorage.setItem('af_csr', JSON.stringify(data));
+                // Merge remote (overwrites if ID matches, ensuring we have the cloud version if it exists)
+                remoteData.forEach(item => {
+                  const id = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+                  if (!trashIds.has(id)) map.set(id, item);
+                });
+                
+                localStorage.setItem('af_csr', JSON.stringify(Array.from(map.values())));
               }
-              /* CONTACTS SYNC REMOVED */
 
               if (donateRes.ok) {
                 const raw = await donateRes.json();
-                const data = (Array.isArray(raw) ? raw : []).filter(s => {
-                  if (!s.txnId && !s.amount) return false;
-                  const stableId = s.txnId || ('don_' + btoa((s.name || '') + (s.amount || '') + (s.date || '')).substring(0, 16));
-                  return !trashIds.has(stableId);
+                const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.txnId || s.amount);
+                const localData = JSON.parse(localStorage.getItem('af_donations') || '[]');
+                
+                const map = new Map();
+                localData.forEach(item => {
+                  const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
+                  map.set(id, item);
                 });
-                localStorage.setItem('af_donations', JSON.stringify(data));
+                remoteData.forEach(item => {
+                  const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
+                  if (!trashIds.has(id)) map.set(id, item);
+                });
+                
+                localStorage.setItem('af_donations', JSON.stringify(Array.from(map.values())));
               }
-            } catch (e) { console.warn('Could not sync remote submissions'); }
+            } catch (e) { console.warn('Could not sync remote submissions', e); }
           }
 
           renderAdminGallery();
@@ -1616,14 +1634,15 @@
         const pending = reviews.filter(r => r.status === 'pending').length;
         const published = reviews.filter(r => r.status === 'published').length;
         const donationsData = JSON.parse(localStorage.getItem('af_donations') || '[]');
-        // Fix: Count unique donors by name + email to avoid duplicates
-        const uniqueDonors = new Set(donationsData.map(d => `${(d.name || '').toLowerCase()}|${(d.email || '').toLowerCase()}`)).size;
+        
+        // Use total count of active donations
+        const totalDonations = donationsData.length;
 
         document.getElementById('stat-gal').textContent = gallery.length;
         document.getElementById('stat-total-reviews').textContent = reviews.length;
         document.getElementById('stat-pub').textContent = published;
         document.getElementById('stat-pending').textContent = pending;
-        document.getElementById('stat-donations').textContent = uniqueDonors;
+        document.getElementById('stat-donations').textContent = totalDonations;
         document.getElementById('gal-count').textContent = gallery.length ? `(${gallery.length} items)` : '';
       }
 
