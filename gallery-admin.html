@@ -1123,7 +1123,8 @@
                   </h3>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Title or Location</label>
-                    <input type="text" id="newItemTitle" placeholder="e.g., Govt. School, Malleshwaram" style="width: 100%;">
+                    <input type="text" id="newItemTitle" placeholder="e.g., Govt. School, Malleshwaram"
+                      style="width: 100%;">
                   </div>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Content Type</label>
@@ -1134,32 +1135,40 @@
                   </div>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Description / Caption</label>
-                    <textarea id="newItemDesc" placeholder="Describe the impact..." rows="3" style="width: 100%;"></textarea>
+                    <textarea id="newItemDesc" placeholder="Describe the impact..." rows="3"
+                      style="width: 100%;"></textarea>
                   </div>
                 </div>
 
                 <!-- Upload Zone -->
                 <div style="display: flex; flex-direction: column;">
                   <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
-                    🖼️ <span>Media Upload</span>
+                    🏞️ <span>Media Upload</span>
                   </h3>
-                  <div id="uploadZone" class="upload-zone" style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center;"
+                  <div id="uploadZone" class="upload-zone"
+                    style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center;"
                     onclick="document.getElementById('fileInput').click()">
-                    <input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="handleAdminPreview(this)">
-                    <div id="adminPreviewWrap" style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
-                       <img id="adminPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
-                       <video id="adminPreviewVid" style="width:100%; height:100%; object-fit:cover; display:none;" muted loop autoplay></video>
-                       <div onclick="event.stopPropagation(); clearAdminPreview()" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</div>
+                    <input type="file" id="fileInput" hidden accept="image/*,video/*"
+                      onchange="handleAdminPreview(this)">
+                    <div id="adminPreviewWrap"
+                      style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
+                      <img id="adminPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
+                      <video id="adminPreviewVid" style="width:100%; height:100%; object-fit:cover; display:none;" muted
+                        loop autoplay></video>
+                      <div onclick="event.stopPropagation(); clearAdminPreview()"
+                        style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        ✕</div>
                     </div>
                     <div id="uploadPrompt">
-                      <div class="uz-icon">📁</div>
+                      <div class="uz-icon">🗁</div>
                       <h3>Tap to Choose</h3>
                       <p>Photos or Videos</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <button class="btn-main" style="width: 100%; margin-top: 25px; padding: 18px; font-size: 1rem;" onclick="addImpactItem()">🚀 Publish to Foundation Gallery</button>
+              <button class="btn-main" style="width: 100%; margin-top: 25px; padding: 18px; font-size: 1rem;"
+                onclick="addImpactItem()">🚀 Publish to Foundation Gallery</button>
             </div>
             <div class="gal-admin-grid" id="adminGalGrid"></div>
           </div>
@@ -1681,24 +1690,24 @@
       function handleAdminPreview(inputOrFile) {
         let file;
         if (inputOrFile instanceof File) {
-            file = inputOrFile;
+          file = inputOrFile;
         } else {
-            file = inputOrFile.files[0];
+          file = inputOrFile.files[0];
         }
         if (!file) return;
         pendingFile = file;
-        
+
         const isVideo = file.type.startsWith('video/');
         document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
-        
+
         const wrap = document.getElementById('adminPreviewWrap');
         const img = document.getElementById('adminPreviewImg');
         const vid = document.getElementById('adminPreviewVid');
         const prompt = document.getElementById('uploadPrompt');
-        
+
         prompt.style.display = 'none';
         wrap.style.display = 'block';
-        
+
         const url = URL.createObjectURL(file);
         if (isVideo) {
           img.style.display = 'none';
