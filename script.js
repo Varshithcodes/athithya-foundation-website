@@ -247,19 +247,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       const div = document.createElement('div');
       div.className = isTall ? 'gi tall g1' : `gi g${index + 1}`;
 
-      const mediaUrl = item.media || '';
-      const mediaType = item.type || (mediaUrl.match(/\.(mp4|webm|ogg)$/i) ? 'video' : 'photo');
-      div.onclick = () => openLightbox(item.title, item.desc, mediaUrl, mediaType);
+      const mediaUrl = item.media || item.image || item.videoUrl || '';
+      const mediaType = item.type || (item.videoUrl ? 'video' : (mediaUrl.match(/\.(mp4|webm|ogg)$/i) || mediaUrl.startsWith('data:video') ? 'video' : 'photo'));
+      const itemDesc = item.desc || item.location || '';
+
+      div.onclick = () => openLightbox(item.title, itemDesc, mediaUrl, mediaType);
 
       const imgHtml = mediaUrl
-        ? `<img src="${mediaUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`
+        ? (mediaType === 'video'
+           ? `<video src="${mediaUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0;" muted playsinline loop autoplay></video>`
+           : `<img src="${mediaUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`)
         : `<div class="gi-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f9f9f9;">📸</div>`;
 
       div.innerHTML = `
         ${imgHtml}
         <div class="gi-cap" style="z-index:2;position:absolute;bottom:0;left:0;right:0; padding: 25px 20px; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);">
-          <p style="font-family:'Playfair Display', serif; font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:4px; text-shadow:0 2px 10px rgba(0,0,0,0.3);">${item.title}</p>
-          <span style="font-size:0.72rem; font-weight:700; color:var(--ors); text-transform:uppercase; letter-spacing:0.05em; opacity:0.9;">${item.desc}</span>
+          <p style="font-family:'Playfair Display', serif; font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:4px; text-shadow:0 2px 10px rgba(0,0,0,0.3);">${item.title || 'Untitled'}</p>
+          <span style="font-size:0.72rem; font-weight:700; color:var(--ors); text-transform:uppercase; letter-spacing:0.05em; opacity:0.9;">${itemDesc}</span>
         </div>
       `;
       grid.appendChild(div);
