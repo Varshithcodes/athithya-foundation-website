@@ -472,6 +472,7 @@ const popupData = {
   },
   guest3: {
     img: 'images/Gemini_Generated_Image_k25u8gk25u8gk25u.png',
+    role: 'Health Department / Community Member',
     title: 'Praveen V. Gudi',
     desc: 'I have visited many schools and foundations before, but what Athithya Foundation has achieved here is truly commendable. Transitioning from broken benches and no library to a modern smart classroom and 500 books in just two years is a remarkable feat of on ground execution. As someone in the health department, I know that environment dictates outcomes... by providing these resources, they have brought a renewed sense of dignity and hope to both students and teachers. The transformation is unbelievable, and it is clear that their dedication to the community is genuine'
   },
