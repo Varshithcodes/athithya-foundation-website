@@ -258,8 +258,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const imgHtml = mediaUrl
         ? (mediaType === 'video'
-           ? `<video src="${mediaUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0;" muted playsinline loop autoplay></video>`
-           : `<img src="${mediaUrl}" alt="${itemTitle}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`)
+          ? `<video src="${mediaUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0;" muted playsinline loop autoplay></video>`
+          : `<img src="${mediaUrl}" alt="${itemTitle}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:0">`)
         : `<div class="gi-bg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f9f9f9;">📸</div>`;
 
       div.innerHTML = `
