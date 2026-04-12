@@ -5162,17 +5162,69 @@
         </p>
       </div>
 
-      <!-- Dynamically loaded reviews only -->
+      <!-- Hardcoded Featured Testimonials -->
+      <div class="testi-grid stagger-reveal active" style="display:grid; margin-bottom: 20px;">
+        <!-- Guest 1: Deeya -->
+        <div class="tc">
+          <div class="tc-qt">"</div>
+          <span class="tc-type">Founder, LOD Malleshwaram</span>
+          <p>I decided to donate to the Athithya Foundation because seeing the smart classroom in action changed everything for these kids. For the first time, they could actually see the world through a screen right in their own school, opening up possibilities they never had before. It is incredibly moving to see that spark of curiosity, and this exactly why I wanted to support them to make sure this next generation of potential engineers gets the start they deserve.</p>
+          <div class="tc-auth">
+            <div class="tc-av"><img src="images/Deeya.jpeg" alt="Deeya Chhajed" onerror="this.parentElement.innerHTML='DC'"></div>
+            <div>
+              <div class="tc-name">Deeya Chhajed</div>
+              <div class="tc-role">Founder, LOD Malleshwaram</div>
+            </div>
+          </div>
+        </div>
+        <!-- Guest 2: Varshith -->
+        <div class="tc">
+          <div class="tc-qt">"</div>
+          <span class="tc-type">Founder, workINgenes Bengaluru</span>
+          <p>Athithya Foundation delivered exactly what they had promised, Transparent reporting, visible impact, and genuine dedication. For me, Athithya is the best CSR partner we have worked with in Bengaluru. Their professionalism and on ground execution are unparalleled, and seeing the real world change they create gave us total confidence that our funds were being used perfectly. It is rare that we get to find a partner that combines such heart with such high level efficiency.</p>
+          <div class="tc-auth">
+            <div class="tc-av tl"><img src="images/Varshith_Hegde.jpeg" alt="Varshith Hegde" onerror="this.parentElement.innerHTML='VH'"></div>
+            <div>
+              <div class="tc-name">Varshith Hegde</div>
+              <div class="tc-role">Founder, workINgenes Bengaluru</div>
+            </div>
+          </div>
+        </div>
+        <!-- Guest 3: Praveen -->
+        <div class="tc">
+          <div class="tc-qt">"</div>
+          <span class="tc-type">Health Department</span>
+          <p>I have visited many schools and foundations before, but what Athithya Foundation has achieved here is truly commendable. Transitioning from broken benches and no library to a modern smart classroom and 500 books in just two years is a remarkable feat of on ground execution. As someone in the health department, I know that environment dictates outcomes... by providing these resources, they have brought a renewed sense of dignity and hope to both students and teachers. The transformation is unbelievable, and it is clear that their dedication to the community is genuine.</p>
+          <div class="tc-auth">
+            <div class="tc-av bl"><img src="images/Gemini_Generated_Image_k25u8gk25u8gk25u.png" alt="Praveen V. Gudi" onerror="this.parentElement.innerHTML='PG'"></div>
+            <div>
+              <div class="tc-name">Praveen V. Gudi</div>
+              <div class="tc-role">Community Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamically loaded reviews (for newer ones) -->
       <div class="testi-grid stagger-reveal" id="dynamicReviewsGrid" style="display:grid;">
       </div>
 
-      <!-- Dynamic approved reviews from admin -->
-      <div class="dynamic-reviews" id="dynamicReviewsSection" style="display:none;">
-        <div class="dynamic-reviews-title">⭐ Featured Community Reviews</div>
-        <div class="dynamic-reviews-grid" id="dynamicReviewsGrid"></div>
-        <button class="btn-view-all-reviews" id="btnMoreReviews" onclick="openReviewsModal()" style="display:none;">See
-          More Reviews →</button>
-      </div>
+      <!-- Button for all reviews modal -->
+      <button class="btn-view-all-reviews" id="btnMoreReviews" onclick="openReviewsModal()" style="display:none; margin: 30px auto 0;">See More Reviews →</button>
+
+      <!-- Anti-Inspect Flattening Script -->
+      <script>
+        // Disable Right-Click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        // Disable common Inspection Shortcuts
+        document.addEventListener('keydown', e => {
+          if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+            return false;
+          }
+        });
+      </script>
+
 
       <!-- Conversations / Submit a Review -->
       <div class="conversations-submit">
@@ -5923,7 +5975,7 @@
       let published = allReviews.filter(r => r.status === 'published').reverse();
 
       const grid = document.getElementById('dynamicReviewsGrid');
-      const section = document.querySelector('.testi');
+      const moreBtn = document.getElementById('btnMoreReviews');
       
       if (published.length > 0) {
         const avatarColors = ['', 'tl', 'bl'];
@@ -5946,9 +5998,12 @@
             </div>
           </div>`;
         }).join('');
-        section.style.display = 'block';
+        
+        if (moreBtn) moreBtn.style.display = published.length > 3 ? 'block' : 'none';
       } else {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No testimonials shared yet. Be the first!</div>';
+        // Just empty if no new reviews, since we have hardcoded ones above
+        grid.innerHTML = '';
+        if (moreBtn) moreBtn.style.display = 'none';
       }
     }
 
@@ -5970,17 +6025,34 @@
     // ── REVIEWS MODAL ──
     async function renderAllReviews() {
       const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
-      const published = allReviews.filter(r => r.status === 'published').reverse();
+      let published = allReviews.filter(r => r.status === 'published').reverse();
 
       const grid = document.getElementById('allReviewsGrid');
 
-      if (published.length === 0) {
+      // Static Featured Reviews for the Modal
+      const featured = [];
+      if (typeof popupData !== 'undefined') {
+        [popupData.guest1, popupData.guest2, popupData.guest3].forEach(f => {
+          if (f) featured.push({
+            name: f.title,
+            role: f.role || 'Community Member',
+            message: f.desc,
+            dp: f.img,
+            status: 'published',
+            date: new Date('2026-04-01').toISOString() // Older than dynamic ones
+          });
+        });
+      }
+
+      const totalList = [...published, ...featured];
+
+      if (totalList.length === 0) {
         grid.innerHTML = '<p style="text-align:center;color:var(--mut);padding:20px;">No reviews published yet. Be the first!</p>';
         return;
       }
 
       const avatarColors = ['', 'tl', 'bl'];
-      grid.innerHTML = published.map((r, idx) => {
+      grid.innerHTML = totalList.map((r, idx) => {
         const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
         const color = avatarColors[idx % 3];
         const dpImg = r.dp ? `<img src="${r.dp}" alt="${r.name}" onerror="this.parentElement.innerHTML='${initials}'">` : initials;
