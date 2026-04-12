@@ -447,6 +447,39 @@
 
     /* Mobile menu & hamburger removed in favor of single Quick Sidebar */
 
+    /* Google Translate Custom Styling */
+    #google_translate_element {
+      margin: 0 10px;
+      display: flex;
+      align-items: center;
+      background: var(--orp);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 0px 5px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    #google_translate_element select {
+      border: none;
+      background: transparent;
+      outline: none;
+      color: var(--txt);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Hide the Google Translate Logo to make it fit navigation perfectly */
+    .goog-logo-link {
+        display: none !important;
+    }
+    .goog-te-gadget {
+        color: transparent !important;
+        font-size: 0px;
+    }
+    
     /* ─────────────────────────────────────────
    QUICK SIDEBAR
 ───────────────────────────────────────── */
