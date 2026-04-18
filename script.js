@@ -632,25 +632,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── Strict Security / Anti-Inspect Protocol ──
-(function () {
-  // 1. Prevent Right-Click
-  document.addEventListener('contextmenu', e => e.preventDefault());
 
-  // 2. Prevent Keyboard Shortcuts for DevTools
-  document.addEventListener('keydown', e => {
-    if (e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
-      (e.ctrlKey && e.key.toUpperCase() === 'U')) {
-      e.preventDefault();
-      return false;
-    }
-  });
-
-  // 3. Continuous Debugger Trap
-  // This causes DevTools to pause repeatedly if someone forces it open, making it extremely tedious to use.
-  setInterval(function () {
-    const isDevToolsOpen = new Function("debugger;");
-    isDevToolsOpen();
-  }, 100);
-})();
