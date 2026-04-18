@@ -586,12 +586,10 @@
       transform: translateX(0);
     }
 
-    @media (max-width: 1024px) {
-      .quick-sidebar {
-        display: none;
+    @media (max-width: 768px) {
+      .nav-socials, .nav-cta {
+        display: none !important;
       }
-
-      /* Made right fab container visible on mobile */
     }
 
     /* ─────────────────────────────────────────
@@ -3540,30 +3538,14 @@
         padding-top: 130px;
       }
 
+      /* Hero keeps 2-col layout on landcape tablets */
       .hero-inner {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 60px;
-      }
-
-      .hero-desc,
-      .hero-btns,
-      .hero-socials {
-        justify-content: center;
-        margin-left: auto;
-        margin-right: auto
-      }
-
-      .hero-btns {
-        justify-content: center
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
       }
 
       .about-grid {
         grid-template-columns: 1fr
-      }
-
-      .mosaic {
-        height: 300px
       }
 
       .mos-main {
@@ -3595,14 +3577,6 @@
       .footer-top {
         grid-template-columns: 1fr 1fr
       }
-
-      .nav-socials {
-        display: none
-      }
-
-      .nav-cta {
-        display: none
-      }
     }
 
     @media(max-width:1800px) {
@@ -3620,6 +3594,20 @@
         min-height: 100vh;
       }
 
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+      }
+
+      .hero-desc,
+      .hero-btns,
+      .hero-socials {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto
+      }
+
       .hero-socials {
         display: flex;
         justify-content: center;
@@ -3627,14 +3615,6 @@
         margin-top: 40px;
         position: static;
         width: 100%;
-      }
-
-      .hero-h1 {
-        font-size: 2.1rem
-      }
-
-      .hero-inner {
-        gap: 40px;
       }
 
       .strip {
@@ -3987,17 +3967,9 @@
       padding-top: 40px;
     }
 
-    @media (min-width: 2500px) {
-      .hero-inner {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        text-align: center;
-      }
+    /* Removed ultra-wide 1-column override per user request */
+    /* @media (min-width: 2500px) { ... } */
 
-      .hero-socials {
-        justify-content: center;
-      }
-    }
 
     @media (max-width: 550px) {
       #topnav {
