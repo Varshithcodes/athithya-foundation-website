@@ -2067,7 +2067,8 @@
       backdrop-filter: blur(18px);
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 20px 0;
+      overflow-y: auto; /* Enable outer scrolling for reliability */
     }
 
     #donateModal.open {
@@ -2080,6 +2081,7 @@
       border-radius: 24px;
       width: 100%;
       max-width: 520px;
+      margin: auto; /* Let flex handle centering while allowing growth */
       overflow: hidden;
       box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
       border: 1px solid rgba(232, 97, 10, 0.2);
@@ -2258,6 +2260,21 @@
 
     .dar-logos img:hover {
       transform: translateY(-4px) scale(1.1);
+    }
+
+    @media (max-width: 550px) {
+      .donate-inner { 
+        padding: 20px 15px !important; 
+        border-radius: 20px !important; 
+      }
+      .donate-header { padding: 20px 20px 15px !important; }
+      .donate-header h3 { font-size: 1.2rem !important; }
+      .donate-body { padding: 0 20px 20px !important; }
+      .donate-qr-img { width: 140px !important; height: 140px !important; }
+      .donate-upi-id { padding: 10px !important; font-size: 0.8rem !important; margin-bottom: 15px !important; }
+      .donate-accepted-row { padding: 12px !important; margin-bottom: 15px !important; }
+      .dar-logos img { height: 32px !important; }
+      .donate-step-btn { padding: 12px !important; font-size: 0.9rem !important; }
     }
 
     .donate-simulate {
@@ -4079,19 +4096,31 @@
       .hero-pill {
         justify-content: center;
         width: 95% !important;
-        max-width: none !important;
-        font-size: 0.95rem !important;
-        padding: 16px 20px !important;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 45px !important;
-        border-radius: 100px !important;
-        gap: 14px !important;
-      }
-
       .hero-pill .hero-dot {
         width: 10px !important;
         height: 10px !important;
+      }
+
+      /* Donation Modal Mobile Adjustments */
+      .donate-modal-inner {
+        padding: 20px 18px !important;
+        border-radius: 20px !important;
+      }
+      .dan-ic { font-size: 2rem !important; }
+      .donate-modal-inner h3 { font-size: 1.3rem !important; }
+      .donate-upi-id { 
+        padding: 12px 10px !important; 
+        font-size: 0.8rem !important;
+      }
+      .donate-accepted-row { 
+        padding: 18px 12px !important; 
+        margin-bottom: 20px !important; 
+      }
+      .dar-logos img { height: 35px !important; }
+      .donate-step-btn {
+        padding: 14px !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 10px;
       }
 
       .hero-sanskrit {
