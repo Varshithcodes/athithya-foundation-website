@@ -5213,18 +5213,7 @@
       <!-- Button for all reviews modal -->
       <button class="btn-view-all-reviews" id="btnMoreReviews" onclick="openReviewsModal()" style="display:none; margin: 30px auto 0;">See More Reviews →</button>
 
-      <!-- Anti-Inspect Flattening Script -->
-      <script>
-        // Disable Right-Click
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        // Disable common Inspection Shortcuts
-        document.addEventListener('keydown', e => {
-          if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
-            e.preventDefault();
-            return false;
-          }
-        });
-      </script>
+
 
 
       <!-- Conversations / Submit a Review -->
