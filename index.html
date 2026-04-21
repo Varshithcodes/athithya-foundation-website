@@ -4035,6 +4035,13 @@
 
       .nav-right {
         margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0;
+      }
+
+      .nav-phone, #google_translate_element, .header-contact {
+        display: none !important;
       }
 
       .logo-wrap {
@@ -4111,6 +4118,7 @@
       .hero-pill {
         justify-content: center;
         width: 95% !important;
+      }
       .hero-pill .hero-dot {
         width: 10px !important;
         height: 10px !important;
@@ -4201,8 +4209,12 @@
 
       .fab-btn svg {
         stroke: var(--ink) !important;
-        width: 42px !important;
-        height: 42px !important;
+        width: 32px !important;
+        height: 32px !important;
+      }
+
+      .right-fab-container {
+        margin-left: 0 !important;
       }
     }
 
@@ -4214,8 +4226,8 @@
         left: 0;
         top: 0;
         border-radius: 0;
-        padding: 5px 12px !important;
-        min-height: 55px !important;
+        padding: 5px 10px !important;
+        min-height: 50px !important;
       }
 
       .brand-name {
@@ -4240,8 +4252,12 @@
       }
 
       .fab-btn svg {
-        width: 28px !important;
-        height: 28px !important;
+        width: 30px !important;
+        height: 30px !important;
+      }
+
+      #topnav {
+        padding: 5px 10px !important;
       }
     }
 
@@ -4691,7 +4707,7 @@
         Us</button>
 
       <!-- NAV SIDEBAR TOGGLE -->
-      <div class="right-fab-container au d4" style="margin-left: 15px;">
+      <div class="right-fab-container au d4">
         <button class="fab-btn" onclick="toggleFabMenu()" id="fabBtn" aria-label="Toggle Menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
             stroke-linejoin="round">
