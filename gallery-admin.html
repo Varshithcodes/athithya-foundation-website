@@ -985,13 +985,52 @@
       }
     }
 
-    @media(max-width:600px) {
+    @media(max-width:650px) {
+      .topbar {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+      }
+
+      .topbar-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .topbar-brand {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .topbar-brand-txt h1 {
+        font-size: 1rem;
+      }
+
       .stats-row {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr !important;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        padding-bottom: 5px;
+        justify-content: flex-start;
+      }
+
+      .tab {
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .login-box {
-        padding: 32px 24px;
+        padding: 28px 20px;
+        border-radius: 20px;
+      }
+
+      .login-title {
+        font-size: 1.2rem;
       }
     }
   </style>
