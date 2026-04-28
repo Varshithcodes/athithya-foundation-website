@@ -346,6 +346,15 @@
       display: inline-block;
     }
 
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
     .brand-sub {
       font-size: 10px;
       text-transform: uppercase;
@@ -353,6 +362,19 @@
       color: var(--mut);
       font-weight: 700;
       margin-top: 1px
+    }
+
+    @media (max-width: 1250px) {
+      .brand-name {
+        font-size: 22px;
+      }
+      .logo-wrap {
+        width: 60px;
+        height: 60px;
+      }
+      .nav-phone {
+        display: none !important;
+      }
     }
 
     .nav-links {
@@ -622,8 +644,8 @@
     }
 
     .hero-inner {
-      width: 100%;
-      max-width: clamp(1400px, 85vw, 2200px);
+      width: 90%;
+      max-width: 1400px;
       /* Massive viewport expansion allowed safely */
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -3586,10 +3608,17 @@
         padding-top: 130px;
       }
 
-      /* Hero keeps 2-col layout on landcape tablets */
+      /* Hero switches to 1-column layout on tablets for better readability */
       .hero-inner {
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 60px;
+      }
+
+      .hero-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .about-grid {
@@ -3753,15 +3782,17 @@
 ───────────────────────────────────────── */
     .watermark-overlay {
       position: fixed;
-      top: 60%;
+      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90vw;
-      height: 80vh;
+      transform: translate3d(-50%, -50%, 0);
+      width: 80vw;
+      max-width: 700px;
+      height: auto;
       object-fit: contain;
-      opacity: 40;
+      opacity: 0.04;
       pointer-events: none;
       z-index: -1;
+      filter: grayscale(1);
     }
 
     #loader-wrap {
@@ -4636,8 +4667,7 @@
     </a>
 
     <!-- BRAND TEXT CENTERED -->
-    <div class="nav-center"
-      style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;">
+    <div class="nav-center">
       <div class="brand-name">Athithya Foundation®</div>
       <div class="brand-sub">Vidya Vinayena Shobhite</div>
     </div>
