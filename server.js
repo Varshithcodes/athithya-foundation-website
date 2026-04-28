@@ -103,7 +103,7 @@ app.listen(PORT, () => {
   console.log(`\n🚀 ATHITHYA ADMIN SERVER STARTED`);
   console.log(`----------------------------------`);
   console.log(`📡 API Status: http://localhost:${PORT}/api/status`);
-  console.log(`📂 Web Admin:  http://localhost:${PORT}/admin.html`);
+  console.log(`📂 Web Admin:  http://localhost:${PORT}/gallery-admin.html`);
   console.log(`🎨 Main Site:  http://localhost:${PORT}/index.html\n`);
   console.log(`⚠️  Keep this terminal open to allow local image uploads.\n`);
 });
