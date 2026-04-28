@@ -3140,7 +3140,7 @@
       background: #fff;
       border: 1.5px solid var(--bdr);
       border-radius: 22px;
-      padding: 40px;
+      padding: 30px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
       display: flex;
       flex-direction: column;
@@ -3157,17 +3157,23 @@
 
     .owner-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 32px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
       flex: 1;
-      align-content: space-evenly;
+      align-content: start;
+    }
+
+    @media (max-width: 1150px) {
+      .owner-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .owner-card {
       display: flex;
-      gap: 24px;
+      gap: 12px;
       align-items: center;
-      padding: 24px;
+      padding: 12px 15px;
       background: var(--crm);
       border: 1.5px solid var(--bdr);
       border-radius: 18px;
@@ -3182,8 +3188,8 @@
 
     .owner-pic {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
       background: var(--or);
       display: flex;
@@ -3304,10 +3310,14 @@
     }
 
     .owner-info p {
-      font-size: .78rem;
+      font-size: .74rem;
       color: var(--mut);
-      line-height: 1.5;
+      line-height: 1.4;
       font-style: italic;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     /* ── Reviews Modal ── */
