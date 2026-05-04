@@ -3592,6 +3592,28 @@
         gap: 40px;
       }
 
+      /* Fix Tablet Overflow for Hero Card */
+      .hero-right {
+        transform: scale(0.9);
+        transform-origin: right center;
+      }
+      .hero-card {
+        width: 340px;
+        height: 420px;
+      }
+      .hero-logo-box {
+        width: 220px;
+        height: 220px;
+      }
+      .stat-chip {
+        transform: scale(0.85);
+      }
+      .sc1 { left: -20px; bottom: 120px; }
+      .sc2 { right: -20px; }
+      .sc3 { right: -10px; }
+      .sc4 { right: 180px; top: -20px; }
+      .sc5 { right: 240px; }
+
       .about-grid {
         grid-template-columns: 1fr
       }
@@ -4225,34 +4247,56 @@
         left: 0;
         top: 0;
         border-radius: 0;
-        padding: 5px 12px !important;
-        min-height: 55px !important;
+        padding: 5px 8px !important;
+        min-height: 60px !important;
+        gap: 5px;
+      }
+
+      .nav-logo {
+        gap: 10px !important;
       }
 
       .brand-name {
-        font-size: 18px !important;
+        font-size: 16px !important;
         white-space: nowrap;
       }
 
       .brand-sub {
-        font-size: 8px !important;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
+        display: none !important;
       }
 
       .logo-wrap {
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 8px !important;
       }
 
       .nav-center {
-        margin-left: 8px !important;
+        margin-left: 5px !important;
+        flex: 1;
+      }
+
+      .nav-phone {
+        font-size: 0.7rem !important;
+        margin: 0 4px !important;
+        gap: 3px !important;
+        padding: 5px 8px;
+        background: rgba(232, 97, 10, 0.05);
+        border-radius: 8px;
+      }
+
+      .nav-phone svg {
+        width: 13px !important;
+        height: 13px !important;
       }
 
       .fab-btn svg {
-        width: 28px !important;
-        height: 28px !important;
+        width: 26px !important;
+        height: 26px !important;
+      }
+      
+      .right-fab-container {
+        margin-right: 5px !important;
       }
     }
 
@@ -4559,9 +4603,9 @@
 
     @media (max-width: 1150px) {
       #google_translate_element { display: none !important; }
-      .brand-name { font-size: 26px !important; }
-      .logo-wrap { width: 70px !important; height: 70px !important; }
-      #topnav { min-height: 80px !important; }
+      .brand-name { font-size: 24px !important; }
+      .logo-wrap { width: 60px !important; height: 60px !important; }
+      #topnav { min-height: 75px !important; }
     }
 
     @media (max-width: 1024px) {
@@ -4569,17 +4613,47 @@
         position: static !important;
         transform: none !important;
         text-align: left !important;
-        margin-left: 15px;
+        margin-left: 12px;
         pointer-events: auto;
       }
       .nav-right { margin-left: auto; }
-      #topnav { justify-content: flex-start; }
-      .nav-cta { padding: 9px 18px !important; font-size: 0.8rem !important; }
+      #topnav { justify-content: flex-start; padding: 10px 4% !important; }
+      .nav-cta { padding: 8px 16px !important; font-size: 0.8rem !important; }
+      
+      /* Hero Tablet Fixes */
+      .hero-inner { gap: 30px !important; }
+      .hero-right { 
+        transform: scale(0.85); 
+        transform-origin: right center; 
+        margin-right: -20px;
+      }
+      .stat-chip { transform: scale(0.8) !important; }
+      .sc1 { left: -30px !important; }
+      .sc2 { right: -30px !important; }
+      .sc4 { right: 150px !important; }
     }
 
     @media (max-width: 850px) {
       .nav-cta { display: none !important; }
       .nav-phone { font-size: 0.8rem !important; }
+      .hero-h1 { font-size: 3rem !important; }
+    }
+
+    @media (max-width: 480px) {
+      #topnav { padding: 5px 10px !important; min-height: 60px !important; }
+      .nav-logo { gap: 8px !important; }
+      .logo-wrap { width: 38px !important; height: 38px !important; }
+      .brand-name { font-size: 15px !important; }
+      .brand-sub { display: none !important; }
+      .nav-phone { 
+        font-size: 0.7rem !important; 
+        margin: 0 5px !important;
+        padding: 4px 6px !important;
+      }
+      .nav-phone svg { width: 12px !important; height: 12px !important; }
+      .hero-h1 { font-size: 2.4rem !important; }
+      .hero-desc { font-size: 1rem !important; }
+      .right-fab-container { margin-right: 2px !important; }
     }
 
     /* Fix Hero and Body Overflow */
@@ -4592,13 +4666,6 @@
     .hero-inner {
       max-width: 1400px !important;
       width: 90% !important;
-    }
-
-    @media (max-width: 480px) {
-      .hero-h1 {
-        font-size: 2.8rem !important; /* Reduced for small phones */
-      }
-      .brand-name { font-size: 18px !important; }
     }
 
     @media (min-width: 1800px) {

@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athithya Foundation® — Admin Panel</title>
+  <link rel="icon" type="image/png" href="images/Athithya_Foundation_Logo_withoutBG.png">
+  <link rel="shortcut icon" href="images/Athithya_Foundation_Logo_withoutBG.png">
+  <link rel="apple-touch-icon" href="images/Athithya_Foundation_Logo_withoutBG.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --or: #E8610A;
+      --orv: #FF7B20;
+      --ors: #FFA04D;
+      --orp: #FFF0E6;
+      --ink: #2C1400;
+      --txt: #3D2000;
+      --mut: #7A5C40;
+      --bdr: #F0D5C0;
+      --crm: #FFFAF5;
+      --teal: #0A7B6E;
+      --blue: #1A5FAB;
+      --red: #C0392B;
+      --green: #1a8a5a;
+      --gold: #FFD700;
+      --pub: #27AE60;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #faf8f6;
+      color: var(--txt);
+      min-height: 100vh;
+      background-image: radial-gradient(circle at 0% 0%, rgba(232, 97, 10, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(10, 123, 110, 0.03) 0%, transparent 50%);
+    }
+
+    /* ── LOGIN OVERLAY ── */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: linear-gradient(140deg, #1A0A00 0%, #3D1800 45%, #6B2800 75%, #1A0A00 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    #loginOverlay .login-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 123, 32, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 123, 32, .035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none;
+    }
+
+    .login-box {
+      background: rgba(255, 250, 245, .97);
+      border-radius: 24px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .5);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp .4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .login-logo img {
+      height: 48px;
+      width: auto;
+    }
+
+    .login-logo-txt h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .login-logo-txt p {
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--or);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .login-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--ink);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      text-align: center;
+      font-size: .8rem;
+      color: var(--mut);
+      margin-bottom: 28px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 16px;
+    }
+
+    .login-field label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: .9rem;
+      color: var(--ink);
+      background: var(--crm);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--or);
+      background: #fff;
+    }
+
+    #loginError {
+      background: rgba(192, 57, 43, .1);
+      color: var(--red);
+      border: 1px solid rgba(192, 57, 43, .25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+      margin-top: 4px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(232, 97, 10, .45);
+    }
+
+    /* ── ADMIN CONTENT (hidden until login) ── */
+    #adminContent {
+      display: none;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: linear-gradient(135deg, #1A0A00, #3D1800);
+      padding: 16px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .3);
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-brand img {
+      height: 42px;
+      width: auto;
+    }
+
+    .topbar-brand-txt h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-brand-txt p {
+      font-size: 0.6rem;
+      color: var(--ors);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.9;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-back {
+      color: var(--ors);
+      font-size: .82rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 160, 77, .3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+
+    .topbar-back:hover {
+      background: rgba(255, 160, 77, .15);
+      color: #fff;
+    }
+
+    .btn-logout {
+      background: rgba(192, 57, 43, .2);
+      color: #ff9f9f;
+      border: 1px solid rgba(192, 57, 43, .4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(192, 57, 43, .4);
+      color: #fff;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 5%;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .85rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .2s;
+    }
+
+    .tab.active {
+      background: var(--or);
+      color: #fff;
+      border-color: var(--or);
+    }
+
+    .tab:not(.active) {
+      background: #fff;
+      color: var(--mut);
+      border-color: var(--bdr);
+    }
+
+    .tab:not(.active):hover {
+      border-color: var(--or);
+      color: var(--or);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid var(--bdr);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-hd {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--bdr);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-hd h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .card-hd span {
+      font-size: .78rem;
+      color: var(--mut);
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* ── Upload Zone ── */
+    .upload-zone {
+      border: 2.5px dashed var(--bdr);
+      border-radius: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s;
+      background: var(--crm);
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag {
+      border-color: var(--or);
+      background: var(--orp);
+    }
+
+    .upload-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-zone .uz-icon {
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+    }
+
+    .upload-zone h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .upload-zone p {
+      font-size: .82rem;
+      color: var(--mut);
+    }
+
+    /* ── Impact Item Form ── */
+    .impact-form {
+      background: var(--crm);
+      border: 1.5px solid var(--bdr);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .impact-form h3 {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+
+    .if-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .fg label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .fg input,
+    .fg select,
+    .fg textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .88rem;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .fg input:focus,
+    .fg select:focus,
+    .fg textarea:focus {
+      border-color: var(--or);
+    }
+
+    .fg textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ── Gallery Grid (Admin) ── */
+    .gal-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .gal-admin-item {
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(44, 20, 0, 0.04);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--bdr);
+      position: relative;
+    }
+
+    .gal-admin-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(44, 20, 0, 0.12);
+      border-color: var(--ors);
+    }
+
+    .gal-admin-thumb {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #fdfaf7;
+    }
+
+    .gal-admin-thumb img,
+    .gal-admin-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .gal-admin-item:hover .gal-admin-thumb img,
+    .gal-admin-item:hover .gal-admin-thumb video {
+      transform: scale(1.08);
+    }
+
+    .type-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(5px);
+      color: var(--ink);
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+    }
+
+    .gal-admin-meta {
+      padding: 16px;
+    }
+
+    .gal-admin-meta .gai-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gal-admin-meta .gai-desc {
+      font-size: 0.75rem;
+      color: var(--mut);
+      line-height: 1.5;
+      height: 2.25em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .gal-admin-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+
+    .gal-admin-actions button {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--bdr);
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      background: #fff;
+      color: var(--mut);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .btn-edit:hover {
+      background: var(--orp);
+      color: var(--or);
+      border-color: var(--or);
+    }
+
+    .btn-del:hover {
+      background: #fdf0f0;
+      color: var(--red);
+      border-color: var(--red);
+    }
+
+    /* ── Submissions Table ── */
+    .sub-filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sub-filter button {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--bdr);
+      background: #fff;
+      color: var(--mut);
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .sub-filter button.active,
+    .sub-filter button:hover {
+      background: var(--or);
+      color: #fff;
+      border-color: var(--or);
+    }
+
+    .sub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sub-card {
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+      transition: all 0.2s ease;
+    }
+
+    .sub-card:hover {
+      border-color: var(--ors);
+      box-shadow: 0 5px 15px rgba(44, 20, 0, 0.05);
+    }
+
+    .sub-card .sub-tag {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 6px;
+    }
+
+    .sub-tag.contact {
+      background: rgba(26, 95, 171, .12);
+      color: var(--blue);
+    }
+
+    .sub-tag.csr {
+      background: var(--orp);
+      color: var(--or);
+    }
+
+    .sub-card h4 {
+      font-size: .92rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .sub-card .sub-meta {
+      font-size: .78rem;
+      color: var(--mut);
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .sub-card .sub-msg {
+      font-size: .82rem;
+      color: var(--txt);
+      line-height: 1.6;
+      background: #fff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--bdr);
+    }
+
+    .sub-card .sub-date {
+      font-size: .68rem;
+      color: var(--mut);
+      white-space: nowrap;
+    }
+
+    .sub-del {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      transition: color .2s;
+    }
+
+    .sub-del:hover {
+      color: var(--red);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--mut);
+    }
+
+    .empty-state .es-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    /* ── Moderation Cards ── */
+    .mod-card {
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(44, 20, 0, 0.02);
+    }
+
+    .mod-card:hover {
+      border-color: var(--ors);
+      box-shadow: 0 8px 20px rgba(44, 20, 0, 0.06);
+    }
+
+    .mod-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mod-author-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mod-av {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .mod-av-info h4 {
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .mod-av-info p {
+      font-size: .72rem;
+      color: var(--mut);
+    }
+
+    .mod-status-badge {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .mod-status-badge.pending {
+      background: rgba(232, 97, 10, .12);
+      color: var(--or);
+    }
+
+    .mod-status-badge.approved {
+      background: rgba(10, 123, 110, .12);
+      color: var(--teal);
+    }
+
+    .mod-status-badge.published {
+      background: rgba(39, 174, 96, .12);
+      color: var(--pub);
+      font-weight: 900;
+      border: 1px solid var(--pub);
+    }
+
+    .mod-msg {
+      font-size: .84rem;
+      color: var(--txt);
+      line-height: 1.65;
+      background: #fff;
+      padding: 12px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--bdr);
+      margin-bottom: 14px;
+    }
+
+    .mod-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, var(--teal), #065a50);
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+    }
+
+    .btn-approve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(10, 123, 110, .4);
+    }
+
+    .btn-reject {
+      background: rgba(192, 57, 43, .1);
+      color: var(--red);
+      border: 1.5px solid rgba(192, 57, 43, .25);
+      padding: 9px 20px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .25s;
+    }
+
+    .btn-reject:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(44, 20, 0, 0.03);
+    }
+
+    .stat-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(44, 20, 0, 0.08);
+      border-color: var(--ors);
+    }
+
+    .stat-box .sb-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--or);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .stat-box .sb-l {
+      font-size: 0.65rem;
+      color: var(--mut);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Btn ── */
+    .btn-main {
+      background: linear-gradient(135deg, var(--or), #D95A00);
+      color: #fff;
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: .88rem;
+      border: none;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(232, 97, 10, .4);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--or);
+      border: 2px solid var(--or);
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline:hover {
+      background: var(--or);
+      color: #fff;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1A0A00;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: .85rem;
+      font-weight: 700;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .35s;
+      z-index: 9999;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .3);
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media(max-width:900px) {
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .if-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gal-admin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+
+    @media(max-width:650px) {
+      .topbar {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+      }
+
+      .topbar-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .topbar-brand {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .topbar-brand-txt h1 {
+        font-size: 1rem;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr !important;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        padding-bottom: 5px;
+        justify-content: flex-start;
+      }
+
+      .tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .login-box {
+        padding: 28px 20px;
+        border-radius: 20px;
+      }
+
+      .login-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── LOGIN OVERLAY ── -->
+  <div id="loginOverlay">
+    <div class="login-bg-grid"></div>
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="Athithya_Foundation_Logo_withoutBG.png" alt="Logo">
+        <div class="login-logo-txt">
+          <h2>Admin Panel</h2>
+          <p>Athithya Foundation®</p>
+        </div>
+      </div>
+      <h2 class="login-title">Secure Login</h2>
+      <p class="login-sub">Enter your credentials to access the admin dashboard</p>
+
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div id="loginError">❌ Invalid username or password. Please try again.</div>
+      <button class="btn-login" onclick="doLogin()">🔐 Login to Admin Panel</button>
+
+      <div id="sanityConfigArea"
+        style="display:none; margin-top:20px; padding-top:15px; border-top:1px solid var(--bdr); text-align:center;">
+        <p style="font-size:0.65rem; color:var(--mut); margin-bottom:8px;">☁️ Sanity Cloud Token (Advanced)</p>
+        <div style="display:flex; gap:5px;">
+          <input type="password" id="sanityTokenInput" placeholder="sk..."
+            style="flex:1; padding:8px 12px; border:1px solid var(--bdr); border-radius:6px; font-size:0.75rem;">
+          <button onclick="saveSanityToken(document.getElementById('sanityTokenInput').value)"
+            style="padding:8px 12px; background:var(--teal); color:#fff; border:none; border-radius:6px; font-size:0.7rem; cursor:pointer; font-weight:700;">Save</button>
+        </div>
+      </div>
+      <p style="text-align:center; margin-top:15px;">
+        <a href="javascript:void(0)"
+          onclick="document.getElementById('sanityConfigArea').style.display='block';this.style.display='none'"
+          style="font-size:0.65rem; color:var(--mut); text-decoration:underline;">Advanced: Connect Sanity Cloud</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── ADMIN CONTENT ── -->
+  <div id="adminContent">
+
+    <div class="topbar">
+      <div class="topbar-brand">
+        <img src="Athithya_Foundation_Logo_withoutBG.png" alt="Logo">
+        <div class="topbar-brand-txt">
+          <h1>Admin Panel</h1>
+          <p>Athithya Foundation®</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div id="serverStatus"
+          style="display:none; font-size: 0.72rem; color: var(--mut); align-items: center; gap: 8px; margin-right: 15px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);">
+          <div id="serverDot" style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
+          <span id="serverText">Checking Server...</span>
+        </div>
+        <a href="index.html" class="topbar-back">← Back to Website</a>
+        <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Stats Row -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-box">
+          <div class="sb-n" id="stat-gal">0</div>
+          <div class="sb-l">Gallery Items</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-total-reviews">0</div>
+          <div class="sb-l">Total Reviews</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-pub">0</div>
+          <div class="sb-l">Published</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-pending">0</div>
+          <div class="sb-l">Pending Reviews</div>
+        </div>
+        <div class="stat-box">
+          <div class="sb-n" id="stat-donations">0</div>
+          <div class="sb-l">Donations</div>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('gallery')">🏞️ Gallery</div>
+        <div class="tab" onclick="switchTab('reviews')">⭐ Reviews</div>
+        <div class="tab" onclick="switchTab('donations')">💳 Donations</div>
+        <div class="tab" onclick="switchTab('csr')">🏢 CSR Enquiries</div>
+        <div class="tab" onclick="switchTab('trash')">🗑️ Trash Bin</div>
+      </div>
+
+      <!-- ── GALLERY TAB ── -->
+      <div class="tab-panel active" id="tab-gallery">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🏞️ Gallery Manager <span id="gal-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="toggleSelectionMode()" id="bulkToggle">📥 Bulk Select</button>
+              <button class="btn-outline" id="bulkDeleteBtn"
+                style="display:none; color:var(--red); border-color:var(--red);" onclick="deleteSelectedItems()">🗑
+                Delete Selected</button>
+              <button class="btn-outline" onclick="clearGallery()" style="color:var(--red);">🗑 ALL</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="impact-form" style="margin-bottom: 30px;">
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px;">
+                <!-- Form Inputs -->
+                <div>
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    📝 <span>Item Details</span>
+                  </h3>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Title or Location</label>
+                    <input type="text" id="newItemTitle" placeholder="e.g., Govt. School, Malleshwaram"
+                      style="width: 100%;">
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Content Type</label>
+                    <select id="newItemType" style="width: 100%;">
+                      <option value="photo">📸 Photo</option>
+                      <option value="video">🎬 Video</option>
+                    </select>
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Description / Caption</label>
+                    <textarea id="newItemDesc" placeholder="Describe the impact..." rows="3"
+                      style="width: 100%;"></textarea>
+                  </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div style="display: flex; flex-direction: column;">
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    🏞️ <span>Media Upload</span>
+                  </h3>
+                  <div id="uploadZone" class="upload-zone"
+                    style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center;"
+                    onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" hidden accept="image/*,video/*"
+                      onchange="handleAdminPreview(this)">
+                    <div id="adminPreviewWrap"
+                      style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
+                      <img id="adminPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
+                      <video id="adminPreviewVid" style="width:100%; height:100%; object-fit:cover; display:none;" muted
+                        loop autoplay></video>
+                      <div onclick="event.stopPropagation(); clearAdminPreview()"
+                        style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        ✕</div>
+                    </div>
+                    <div id="uploadPrompt">
+                      <div class="uz-icon">🗁</div>
+                      <h3>Tap to Choose</h3>
+                      <p>Photos or Videos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-main" style="width: 100%; margin-top: 25px; padding: 18px; font-size: 1rem;"
+                onclick="addImpactItem()">🚀 Publish to Foundation Gallery</button>
+            </div>
+            <div class="gal-admin-grid" id="adminGalGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── REVIEWS TAB ── -->
+      <div class="tab-panel" id="tab-reviews">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🛡️ Review Manager</h2>
+            <div class="sub-filter" style="margin:0;">
+              <button class="active" id="mod-filter-pending" onclick="filterMod(this,'pending')">⏳ Pending</button>
+              <button id="mod-filter-approved" onclick="filterMod(this,'approved')">🛡️ Hidden</button>
+              <button id="mod-filter-published" onclick="filterMod(this,'published')">📢 Published</button>
+              <button id="mod-filter-all" onclick="filterMod(this,'all')">📋 All</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+              <button class="btn-outline" id="bulkRevToggle" onclick="toggleRevSelectionMode()">📥 Bulk Select</button>
+              <div id="bulkRevActions" style="display:none; gap:10px;">
+                <button class="btn-approve" onclick="executeRevBulkAction('publish')"
+                  style="background:var(--pub); padding:8px 16px;">📢 Bulk Publish</button>
+                <button class="btn-reject" onclick="executeRevBulkAction('delete')" style="padding:8px 16px;">🗑 Bulk
+                  Delete</button>
+              </div>
+            </div>
+            <div id="modList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACTS TAB REMOVED -->
+
+
+      <!-- DONATIONS TAB -->
+      <div class="tab-panel" id="tab-donations">
+        <div class="card">
+          <div class="card-hd">
+            <h2>💳 Donation Records</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="exportDonationsCSV()">⬇ Export</button>
+              <button class="btn-outline" onclick="clearDonations()" style="color:var(--red);">🗑 Clear</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sub-list" id="donationList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CSR CONTACTS TAB -->
+      <div class="tab-panel" id="tab-csr">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🏢 CSR & Company Enquiries</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="exportCSRCSV()">⬇ Export</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sub-list" id="csrList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRASH BIN TAB -->
+      <div class="tab-panel" id="tab-trash">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🗑️ Trash Bin (Recently Deleted)</h2>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" onclick="emptyTrash()" style="color:var(--red);border-color:var(--red);">🔥
+                Empty Trash</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.7rem; color:var(--mut); margin-bottom:15px;">Note: Items here are hidden from the
+              website but stored locally for 30 days.</p>
+            <div class="sub-list" id="trashList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="editModal"
+      style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; padding:24px;">
+      <div class="card" style="max-width:500px; width:100%;">
+        <div class="card-hd">
+          <h2>✏️ Edit Item</h2>
+        </div>
+        <div class="card-body">
+          <input type="text" id="editItemTitle" placeholder="Title" style="width:100%; margin-bottom:15px;">
+          <textarea id="editItemDesc" placeholder="Caption" rows="3" style="width:100%; margin-bottom:15px;"></textarea>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-main" onclick="saveEdit()" style="flex:1;">Save Changes</button>
+            <button class="btn-outline" onclick="closeEdit()" style="flex:1;">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- Sanity Client SDK -->
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@sanity/client@6.15.10';
+      window.createSanityClient = createClient;
+      // Signal that the client lib is ready
+      window.dispatchEvent(new Event('sanity-client-ready'));
+    </script>
+
+    <script>
+      // ── AUTH & SANITY CONFIG ──
+      const ADMIN_USER = 'Jyothi Gudi';
+      const ADMIN_PASS = window.ADMIN_PASSWORD || '2507';
+      const SESSION_KEY = 'af_admin_token';
+      const SESSION_DURATION = 0; // Session Only (Expiring when tab is closed)
+
+      // SECURE: Replace these with your actual Sanity Project Details
+      const SANITY_PROJECT_ID = 'm5wsa8rt';
+      const SANITY_DATASET = 'production';
+      // This token is required for WRITE operations. 
+      // In production, consider fetching this via a secure Vercel API route.
+      const SANITY_WRITE_TOKEN = 'skacpSe1YADeBSjFRDpXCWdGjxy4uO0jubtTB0Zk7p00Qn55Tgx1SgRfSqJLHHoPBDSNyvB8dx3MYcaChRHb1oyq3NtFNoywoBrCUNlwbSzKTVI8apVjZ8NKgazccUq2kdwurCORlNsEj1LdI3Xz4Voq00Z9KkkmDJ4Wn4chZQXsHh9BHg89';
+
+      function saveSanityToken(val) {
+        if (!val) {
+          showToast('⚠️ Please enter a token.');
+          return;
+        }
+        localStorage.setItem('af_sanity_token', val);
+        showToast('🔑 Sanity Key Saved! Ready to sync.');
+        setTimeout(() => location.reload(), 1000);
+      }
+
+      // Google Apps Script Backend (Ensure this matches the one in script.js)
+      const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynWy0eUcqv6FliR-pKinCOE3bzMDojNvBdEDbKDA3f47rtXlS6zOK3vWP6bZseRb9U/exec';
+
+      let client = null;
+      async function checkServerStatus() {
+        const dot = document.getElementById('serverDot');
+        const txt = document.getElementById('serverText');
+        const statusBox = document.getElementById('serverStatus');
+        if (!dot || !txt || !statusBox) return;
+
+        // Only show Local Server Status on Localhost
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isLocal) {
+          statusBox.style.display = 'none';
+          return false;
+        }
+
+        statusBox.style.display = 'flex';
+        try {
+          // Use relative path locally (works on port 3000)
+          const res = await fetch('/api/status');
+          if (res.ok) {
+            dot.style.background = '#27AE60';
+            dot.style.boxShadow = '0 0 8px #27AE60';
+            txt.textContent = 'Local Server Live';
+            return true;
+          }
+        } catch (e) { }
+
+        dot.style.background = '#E67E22';
+        dot.style.boxShadow = 'none';
+        txt.textContent = 'Static Mode (serve)';
+        return false;
+      }
+
+      function initSanityClient() {
+        if (window.createSanityClient && !client) {
+          try {
+            client = window.createSanityClient({
+              projectId: SANITY_PROJECT_ID,
+              dataset: SANITY_DATASET,
+              useCdn: false,
+              token: SANITY_WRITE_TOKEN,
+              apiVersion: '2023-01-01',
+            });
+            console.log('✅ Sanity Client Initialized');
+          } catch (e) {
+            console.error('Failed to init Sanity:', e);
+          }
+        }
+      }
+
+      // If already logged in, wait for library to load
+      window.addEventListener('sanity-client-ready', () => {
+        if (!client) {
+          initSanityClient();
+          // If we are already on the dashboard, re-sync
+          if (document.getElementById('adminContent').style.display === 'block') {
+            initAdmin();
+          }
+        }
+      });
+
+      // Using consolidated showToast below
+
+
+      // ── CHECK SESSION ON LOAD ──
+      (function checkSession() {
+        const token = localStorage.getItem(SESSION_KEY);
+        if (token) {
+          try {
+            const { expires } = JSON.parse(atob(token));
+            if (Date.now() < expires) {
+              showAdmin();
+              return;
+            }
+          } catch (e) { }
+        }
+        // Show login
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('adminContent').style.display = 'none';
+        // Pre-fill token if exists
+        const savedToken = localStorage.getItem('af_sanity_token');
+        const tokenInput = document.getElementById('sanityTokenInput');
+        if (tokenInput && savedToken) {
+          tokenInput.value = savedToken;
+          document.getElementById('sanityConfigArea').style.display = 'block';
+        }
+      })();
+
+      function doLogin() {
+        const user = document.getElementById('loginUser').value.trim();
+        const pass = document.getElementById('loginPass').value;
+        const errEl = document.getElementById('loginError');
+
+        if (user === ADMIN_USER && pass === ADMIN_PASS) {
+          // Create session token
+          const payload = { user, expires: Date.now() + SESSION_DURATION };
+          const token = btoa(JSON.stringify(payload));
+          localStorage.setItem(SESSION_KEY, token);
+          errEl.style.display = 'none';
+          document.getElementById('loginOverlay').style.display = 'none';
+          showAdmin();
+        } else {
+          errEl.style.display = 'block';
+          document.getElementById('loginPass').value = '';
+          document.getElementById('loginPass').focus();
+        }
+      }
+
+      function doLogout() {
+        if (!confirm('Are you sure you want to log out?')) return;
+        localStorage.removeItem(SESSION_KEY);
+        location.reload();
+      }
+
+      function showAdmin() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        checkServerStatus();
+        initSanityClient();
+        initAdmin();
+      }
+
+      // ── STATE ──
+      let gallery = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+      let trash = JSON.parse(localStorage.getItem('af_trash') || '[]');
+      let selectionMode = false;
+      let selectedIndices = new Set();
+      let editingIndex = -1;
+
+      // Review Bulk Selection
+      let revSelectionMode = false;
+      let selectedRevIds = new Set();
+
+      function saveAndRefresh(msg) {
+        localStorage.setItem('af_gallery', JSON.stringify(gallery));
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+        updateStats();
+        if (msg) showToast(msg);
+      }
+
+      function toggleSelectionMode() {
+        selectionMode = !selectionMode;
+        document.getElementById('bulkToggle').textContent = selectionMode ? '🚫 Cancel' : '📥 Bulk Select';
+        document.getElementById('bulkDeleteBtn').style.display = selectionMode ? 'inline-block' : 'none';
+        selectedIndices.clear();
+        renderAdminGallery();
+      }
+
+      function toggleItemSelection(i) {
+        if (selectedIndices.has(i)) selectedIndices.delete(i);
+        else selectedIndices.add(i);
+        renderAdminGallery();
+      }
+
+      async function deleteSelectedItems() {
+        if (selectedIndices.size === 0) return;
+        if (!confirm(`Move ${selectedIndices.size} items to Trash?`)) return;
+
+        const indices = Array.from(selectedIndices).sort((a, b) => b - a);
+        for (const i of indices) {
+          await deleteGalItem(i, true); // true = silent (don't confirm each)
+        }
+        selectedIndices.clear();
+        selectionMode = false;
+        document.getElementById('bulkToggle').textContent = '📥 Bulk Select';
+        document.getElementById('bulkDeleteBtn').style.display = 'none';
+        renderAdminGallery();
+      }
+
+      function openEdit(i) {
+        editingIndex = i;
+        const item = gallery[i];
+        document.getElementById('editItemTitle').value = item.title || '';
+        document.getElementById('editItemDesc').value = item.desc || '';
+        document.getElementById('editModal').style.display = 'flex';
+      }
+
+      function closeEdit() {
+        document.getElementById('editModal').style.display = 'none';
+      }
+
+      async function saveEdit() {
+        if (editingIndex === -1) return;
+        const item = gallery[editingIndex];
+        const newTitle = document.getElementById('editItemTitle').value.trim();
+        const newDesc = document.getElementById('editItemDesc').value.trim();
+
+        // 1. Update in Sanity if cloud item
+        if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
+          showToast('☁️ Updating Sanity cloud...');
+          try {
+            await client.patch(item.id).set({ title: newTitle, caption: newDesc }).commit();
+            showToast('✅ Cloud Updated!');
+          } catch (e) {
+            console.error('Sanity Update Error:', e);
+            showToast('⚠️ Cloud update failed, but local copy updated.');
+          }
+        }
+
+        item.title = newTitle;
+        item.desc = newDesc;
+        saveAndRefresh();
+        renderAdminGallery();
+        closeEdit();
+      }
+
+      async function initAdmin() {
+        showToast('🔄 Syncing with Sanity.io & Google Sheets...');
+        const trashIds = new Set(trash.map(t => t.id));
+
+        try {
+          // 1. Fetch Latest Gallery (Sanity)
+          if (client) {
+            const sanityGallery = await client.fetch(`*[_type == "galleryItem"]{..., "mediaUrl": image.asset->url} | order(_createdAt desc)`);
+            gallery = sanityGallery
+              .filter(item => !trashIds.has(item._id)) // Skip items in trash
+              .map(item => ({
+                id: item._id,
+                type: item.image ? 'photo' : 'video',
+                media: item.image ? item.mediaUrl : item.videoUrl,
+                title: item.title,
+                desc: item.caption,
+                addedAt: item._createdAt
+              }));
+          }
+
+          // 2. Fetch Latest Reviews and Merge with Local & Google Sheets
+          if (client) {
+            const sanityReviews = await client.fetch(`*[_type == "review"]{..., "dpUrl": dp.asset->url} | order(_createdAt desc)`);
+            const sReviews = sanityReviews
+              .filter(r => !trashIds.has(r._id)) // Skip reviews in trash
+              .map(r => ({
+                id: r._id,
+                name: r.authorName,
+                role: r.role,
+                message: r.reviewText,
+                status: r.status,
+                dp: r.dpUrl,
+                date: r._createdAt
+              }));
+
+            // Fetch from Google Sheets
+            let gsReviews = [];
+            if (GOOGLE_SCRIPT_URL) {
+              try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Reviews`);
+                const gsData = await res.json();
+                if (Array.isArray(gsData)) {
+                  gsReviews = gsData
+                    .filter(r => {
+                      // CRITICAL: Filter out trash, empty rows, and bot spam
+                      const hasName = (r.name || r.authorName || '').toString().trim().length > 1;
+                      const hasMsg = (r.message || r.reviewText || '').toString().trim().length > 1;
+                      const isSpam = (r.message || '').toString().includes('..'); // Filter out the test dots
+                      return !trashIds.has(r.id) && hasName && hasMsg && !isSpam;
+                    })
+                    .map(r => {
+                      const stableId = r.id || ('gs_' + btoa((r.name || '') + (r.message || '') + (r.date || '')).substring(0, 16));
+                      return {
+                        id: stableId,
+                        name: r.name || r.authorName || 'Guest User',
+                        role: r.role || 'Visitor',
+                        message: r.message || r.reviewText || '',
+                        status: processReviewStatus(sReviews, stableId, r.status || 'pending'),
+                        date: r.date
+                      };
+                    });
+                }
+              } catch (e) { console.warn('Google Sheet Sync Error:', e); }
+            }
+
+            // Merge Strategy: Prefer Sanity > Google Sheets > Local
+            const existingIds = new Set(sReviews.map(r => r.id));
+            const uniqueGsReviews = gsReviews.filter(r => !existingIds.has(r.id));
+
+            existingIds.forEach(id => existingIds.add(id)); // add sanity
+            uniqueGsReviews.forEach(r => existingIds.add(r.id)); // add sheet
+
+            const localReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]')
+              .filter(r => !existingIds.has(r.id) && !trashIds.has(r.id));
+
+            const merged = [...sReviews, ...uniqueGsReviews, ...localReviews];
+            localStorage.setItem('af_reviews', JSON.stringify(merged));
+          }
+
+          // 3. Fetch remote submissions from Sheets
+          if (GOOGLE_SCRIPT_URL) {
+            try {
+              const [csrRes, contactRes, donateRes] = await Promise.all([
+                fetch(`${GOOGLE_SCRIPT_URL}?sheetName=CSR_Companies`),
+                fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Sheet1`),
+                fetch(`${GOOGLE_SCRIPT_URL}?sheetName=Payments`)
+              ]);
+
+              if (csrRes.ok) {
+                const raw = await csrRes.json();
+                const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.email || s.firstName || s.lastName);
+                const localData = JSON.parse(localStorage.getItem('af_csr') || '[]');
+
+                // Key-based merge to prevent wiping fresh local entries
+                const map = new Map();
+                // Add local first (priority for local edits)
+                localData.forEach(item => {
+                  const id = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+                  map.set(id, item);
+                });
+                // Merge remote (overwrites if ID matches, ensuring we have the cloud version if it exists)
+                remoteData.forEach(item => {
+                  const id = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+                  if (!trashIds.has(id)) map.set(id, item);
+                });
+
+                localStorage.setItem('af_csr', JSON.stringify(Array.from(map.values())));
+              }
+
+              if (donateRes.ok) {
+                const raw = await donateRes.json();
+                const remoteData = (Array.isArray(raw) ? raw : []).filter(s => s.txnId || s.amount);
+                const localData = JSON.parse(localStorage.getItem('af_donations') || '[]');
+
+                const map = new Map();
+                localData.forEach(item => {
+                  const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
+                  map.set(id, item);
+                });
+                remoteData.forEach(item => {
+                  const id = item.txnId || ('don_' + btoa((item.name || '') + (item.amount || '') + (item.date || '')).substring(0, 16));
+                  if (!trashIds.has(id)) map.set(id, item);
+                });
+
+                localStorage.setItem('af_donations', JSON.stringify(Array.from(map.values())));
+              }
+            } catch (e) { console.warn('Could not sync remote submissions', e); }
+          }
+
+          renderAdminGallery();
+          renderSubmissions();
+          renderModeration();
+          updateStats();
+
+        } catch (err) {
+          console.error('Initial Sync Error:', err);
+          showToast('⚠️ Sync failed. Using local data.');
+          renderAdminGallery();
+          renderSubmissions();
+          renderModeration();
+          updateStats();
+        }
+      }
+
+      function processReviewStatus(sReviews, id, defaultStatus) {
+        const existing = sReviews.find(r => r.id === id);
+        return existing ? existing.status : defaultStatus;
+      }
+
+      // ── TABS ──
+      const tabKeys = ['gallery', 'reviews', 'donations', 'csr', 'trash'];
+      function switchTab(name) {
+        document.querySelectorAll('.tab').forEach((t, i) =>
+          t.classList.toggle('active', tabKeys[i] === name));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+
+        if (name === 'gallery') renderAdminGallery();
+        if (name === 'reviews') renderModeration();
+        if (name === 'donations') renderDonations();
+        if (name === 'csr') renderCSRList();
+        if (name === 'trash') renderTrash();
+      }
+
+      // ── STATS ──
+      function updateStats() {
+        const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+        const pending = reviews.filter(r => r.status === 'pending').length;
+        const published = reviews.filter(r => r.status === 'published').length;
+        const donationsData = JSON.parse(localStorage.getItem('af_donations') || '[]');
+
+        // Use total count of active donations
+        const totalDonations = donationsData.length;
+
+        document.getElementById('stat-gal').textContent = gallery.length;
+        document.getElementById('stat-total-reviews').textContent = reviews.length;
+        document.getElementById('stat-pub').textContent = published;
+        document.getElementById('stat-pending').textContent = pending;
+        document.getElementById('stat-donations').textContent = totalDonations;
+        document.getElementById('gal-count').textContent = gallery.length ? `(${gallery.length} items)` : '';
+      }
+
+      // ── FILE UPLOAD ──
+      let pendingFile = null;
+
+      function handleAdminPreview(inputOrFile) {
+        let file;
+        if (inputOrFile instanceof File) {
+          file = inputOrFile;
+        } else {
+          file = inputOrFile.files[0];
+        }
+        if (!file) return;
+        pendingFile = file;
+
+        const isVideo = file.type.startsWith('video/');
+        document.getElementById('newItemType').value = isVideo ? 'video' : 'photo';
+
+        const wrap = document.getElementById('adminPreviewWrap');
+        const img = document.getElementById('adminPreviewImg');
+        const vid = document.getElementById('adminPreviewVid');
+        const prompt = document.getElementById('uploadPrompt');
+
+        prompt.style.display = 'none';
+        wrap.style.display = 'block';
+
+        const url = URL.createObjectURL(file);
+        if (isVideo) {
+          img.style.display = 'none';
+          vid.style.display = 'block';
+          vid.src = url;
+        } else {
+          vid.style.display = 'none';
+          img.style.display = 'block';
+          img.src = url;
+        }
+      }
+
+      function clearAdminPreview() {
+        pendingFile = null;
+        document.getElementById('fileInput').value = '';
+        document.getElementById('adminPreviewWrap').style.display = 'none';
+        document.getElementById('uploadPrompt').style.display = 'block';
+        const vid = document.getElementById('adminPreviewVid');
+        vid.src = '';
+        if (vid.load) vid.load();
+      }
+
+      const zone = document.getElementById('uploadZone');
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag');
+        const file = e.dataTransfer.files[0];
+        if (file) handleAdminPreview(file);
+      });
+
+      async function addImpactItem() {
+        if (!pendingFile) { showToast('⚠️ Please select a file first.'); return; }
+
+        // Sanity client can sometimes load slowly from the CDN. Force initialize if possible.
+        if (!client) {
+          initSanityClient();
+        }
+
+        // If STILL not ready, wait 500ms and try one last time.
+        if (!client && !window.createSanityClient) {
+          showToast('🔄 Preparing cloud connection...');
+          await new Promise(r => setTimeout(r, 800));
+          initSanityClient();
+        }
+
+        const title = document.getElementById('newItemTitle').value.trim() || pendingFile.name.replace(/\.[^.]+$/, '');
+        const desc = document.getElementById('newItemDesc').value.trim();
+        const type = document.getElementById('newItemType').value;
+
+        // ── OPTION A: Sanity Write (Requires Token) ──
+        if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== '') {
+          showToast('🚀 Uploading to Sanity Cloud...');
+          try {
+            const asset = await client.assets.upload(type === 'video' ? 'file' : 'image', pendingFile, {
+              filename: pendingFile.name
+            });
+            const result = await client.create({
+              _type: 'galleryItem', title, caption: desc,
+              image: type === 'photo' ? { _type: 'image', asset: { _ref: asset._id } } : undefined,
+              videoUrl: type === 'video' ? asset.url : undefined,
+            });
+            gallery.unshift({ id: result._id, type, media: asset.url, title, desc, addedAt: new Date().toISOString() });
+            renderAdminGallery();
+            resetForm();
+            showToast('✅ Sanity Cloud Updated!');
+            return;
+          } catch (e) {
+            console.error('Sanity Error Details:', e);
+            let errMsg = '❌ Sanity Cloud error.';
+            if (e.message?.includes('CORS')) errMsg = '❌ CORS Error: Add this domain to Sanity Manage API settings.';
+            else if (e.message?.includes('token')) errMsg = '❌ Token Error: Your write token is invalid or expired.';
+            else errMsg = '❌ Sanity Error: ' + (e.message || 'Check your permissions.');
+
+            showToast(errMsg);
+            // Don't return here if you want to try local fallback, but usually we want to fix Sanity.
+          }
+        }
+
+        // ── OPTION B: Local Server (Direct Storage) ──
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocal) {
+          showToast('🏢 Attempting Local Server upload...');
+          const formData = new FormData();
+          formData.append('image', pendingFile);
+          formData.append('title', title);
+          formData.append('location', desc);
+
+          try {
+            const res = await fetch('/api/gallery', { method: 'POST', body: formData });
+            if (!res.ok) throw new Error('Local API not responding.');
+
+            const result = await res.json();
+            if (result.success) {
+              gallery.unshift({ id: 'loc_' + Date.now(), type, media: result.image.image, title, desc, addedAt: new Date().toISOString() });
+              renderAdminGallery();
+              saveAndRefresh();
+              resetForm();
+              showToast('✅ Saved to Local Gallery!');
+              return;
+            }
+          } catch (error) {
+            console.error('Local Sync Error:', error);
+            showToast('❌ Local Server failed. Please check your "node server.js" terminal.');
+          }
+        } else {
+          showToast('❌ CLOUD SYNC FAILED: High security token or CORS configuration required.');
+        }
+      }
+
+
+      function resetForm() {
+        pendingFile = null;
+        document.getElementById('fileInput').value = '';
+        clearAdminPreview();
+        document.getElementById('newItemTitle').value = '';
+        document.getElementById('newItemDesc').value = '';
+      }
+
+      // ── GALLERY RENDER ──
+      function renderAdminGallery() {
+        const grid = document.getElementById('adminGalGrid');
+        if (!gallery.length) {
+          grid.innerHTML = '<p style="color:var(--mut);font-size:.85rem;padding:20px 0;">No items yet. Add some above!</p>';
+          updateStats();
+          return;
+        }
+        grid.innerHTML = '';
+        gallery.forEach((item, i) => {
+          const div = document.createElement('div');
+          div.className = 'gal-admin-item';
+          if (selectedIndices.has(i)) div.style.boxShadow = '0 0 0 3px var(--or)';
+
+          const isVideo = item.type === 'video';
+          const mediaHtml = isVideo
+            ? `<video src="${item.media}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
+            : `<img src="${item.media}" alt="${item.title}">`;
+
+          div.innerHTML = `
+          <div class="gal-admin-thumb" onclick="${selectionMode ? `toggleItemSelection(${i})` : `openEdit(${i})`}">
+            ${mediaHtml}
+            <span class="type-badge ${item.type}">${isVideo ? '🎬 Video' : '📷 Photo'}</span>
+            ${selectionMode ? `<div class="sel-check" style="position:absolute; top:10px; left:10px; background:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">${selectedIndices.has(i) ? '✅' : ''}</div>` : ''}
+          </div>
+          <div class="gal-admin-meta">
+            <div class="gai-title">${item.title || 'Untitled'}</div>
+            <div class="gai-desc">${item.desc || 'No description'}</div>
+          </div>
+          <div class="gal-admin-actions">
+            <button class="btn-edit" onclick="openEdit(${i})" style="flex:1;">✏️ Edit</button>
+            <button class="btn-del" onclick="deleteGalItem(${i})">🗑</button>
+          </div>`;
+          grid.appendChild(div);
+        });
+        updateStats();
+      }
+
+      function moveUp(i) {
+        if (i === 0) return;
+        [gallery[i - 1], gallery[i]] = [gallery[i], gallery[i - 1]];
+        renderAdminGallery();
+      }
+
+      async function deleteGalItem(i, silent = false) {
+        if (!silent && !confirm('Move this item to Trash? It will be removed from the live website.')) return;
+
+        const item = gallery[i];
+
+        // 1. If it's a Sanity item, we need to delete it from the cloud
+        if (item.id && !item.id.toString().startsWith('loc_') && client && SANITY_WRITE_TOKEN) {
+          if (!silent) showToast('🗑 Removing from Sanity Cloud...');
+          try {
+            await client.delete(item.id);
+          } catch (e) {
+            console.error('Cloud Delete Error:', e);
+          }
+        }
+
+        // 2. Move to local trash
+        trash.unshift({ ...item, deletedAt: new Date().toISOString() });
+        gallery.splice(i, 1);
+
+        saveAndRefresh();
+        if (!silent) renderAdminGallery();
+      }
+
+      function renderTrash() {
+        const list = document.getElementById('trashList');
+        if (!list) return;
+        if (!trash.length) {
+          list.innerHTML = '<div class="empty-state">💨 Trash is empty</div>';
+          return;
+        }
+        list.innerHTML = trash.map((it, idx) => {
+          const date = new Date(it.deletedAt || Date.now()).toLocaleString();
+          const title = it.title || it.name || it.firstName || 'Unnamed Item';
+          const typeLabel = it.type || (it.media ? 'media' : 'item');
+
+          return `
+          <div class="sub-card">
+            <div style="display:flex; gap:12px; align-items:center;">
+              ${it.media ? `<img src="${it.media}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">` : ''}
+              <div>
+                <span class="sub-tag" style="background:#eee; color:#666;">${typeLabel}</span>
+                <h4 style="margin:2px 0;">${title}</h4>
+                <p style="font-size:0.68rem; color:var(--mut);">Deleted: ${date}</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+               <button class="sub-del" onclick="restoreFromTrash(${idx})" title="Restore" style="color:var(--teal); font-size:1.1rem;">🔄</button>
+               <button class="sub-del" onclick="permanentlyDelete(${idx})" title="Delete Permanently" style="color:var(--red); font-size:1.1rem;">🔥</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      function restoreFromTrash(i) {
+        const item = trash[i];
+        if (item.type === 'photo' || item.type === 'video') {
+          gallery.unshift(item);
+        } else if (item.type === 'review') {
+          const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+          reviews.unshift(item);
+          localStorage.setItem('af_reviews', JSON.stringify(reviews));
+        } else if (item.type === 'submission') {
+          // Now only CSR uses this type
+          const data = JSON.parse(localStorage.getItem('af_csr') || '[]');
+          data.unshift(item);
+          localStorage.setItem('af_csr', JSON.stringify(data));
+        } else if (item.type === 'donation') {
+          const data = JSON.parse(localStorage.getItem('af_donations') || '[]');
+          data.unshift(item);
+          localStorage.setItem('af_donations', JSON.stringify(data));
+        }
+
+        trash.splice(i, 1);
+        saveAndRefresh('✅ Item restored!');
+        renderTrash();
+      }
+
+      function emptyTrash() {
+        if (!confirm('Permanently empty the entire trash bin?')) return;
+        trash = [];
+        saveAndRefresh('🔥 Trash emptied.');
+        renderTrash();
+      }
+
+      function clearGallery() {
+        if (!confirm('Remove all gallery items? This cannot be undone.')) return;
+        gallery = [];
+        localStorage.setItem('af_gallery', '[]');
+        renderAdminGallery();
+        showToast('Gallery cleared.');
+      }
+
+      // Helper for CSR delete
+      function deleteSubmission(type, date) {
+        if (!confirm('Move this submission to Trash?')) return;
+        const key = 'af_csr';
+        let data = JSON.parse(localStorage.getItem(key) || '[]');
+        const itemIndex = data.findIndex(s => s.date === date);
+        if (itemIndex === -1) return;
+
+        const item = data[itemIndex];
+        const stableId = 'csr_' + btoa((item.email || '') + (item.date || '')).substring(0, 16);
+
+        trash.unshift({ ...item, id: stableId, type: 'submission', deletedAt: new Date().toISOString() });
+        data.splice(itemIndex, 1);
+        localStorage.setItem(key, JSON.stringify(data));
+
+        saveAndRefresh('🗑 CSR Enquiry moved to Trash.');
+        renderCSRList();
+      }
+
+      function renderCSRList() {
+        const csrData = JSON.parse(localStorage.getItem('af_csr') || '[]')
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+        const list = document.getElementById('csrList');
+        if (!csrData.length) {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">🏢</div><p>No CSR enquiries yet.</p></div>';
+          return;
+        }
+        list.innerHTML = csrData.map(s => {
+          const date = new Date(s.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const name = (s.firstName || s.lastName) ? `${s.firstName || ''} ${s.lastName || ''}`.trim() : (s.name || 'Anonymous');
+          return `<div class="sub-card">
+          <div>
+            <span class="sub-tag csr">CSR Enquiry</span>
+            <h4>${name}</h4>
+            <div class="sub-meta">
+              <span>🏢 ${s.company || '—'}</span>
+              <span>💰 ${s.budget || '—'}</span>
+              <span>✉️ ${s.email}</span>
+            </div>
+            ${s.message ? `<div class="sub-msg">${s.message}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+            <span class="sub-date">${date}</span>
+            <button class="sub-del" onclick="deleteSubmission('csr','${s.date}')" title="Delete">🗑</button>
+          </div>
+        </div>`;
+        }).join('');
+      }
+
+      function filterSubs(btn, filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      function clearAllSubmissions() {
+        if (!confirm('Delete ALL CSR entries? This cannot be undone.')) return;
+        localStorage.removeItem('af_csr');
+        updateStats();
+        renderCSRList();
+        showToast('CSR entries cleared.');
+      }
+
+      function exportCSRCSV() {
+        const csrData = JSON.parse(localStorage.getItem('af_csr') || '[]');
+        if (!csrData.length) { showToast('No CSR data found.'); return; }
+        const headers = ['First Name', 'Last Name', 'Email', 'Company', 'Budget', 'Message', 'Date'];
+        const rows = csrData.map(s => [
+          s.firstName, s.lastName, s.email, s.company || '', s.budget || '', (s.message || '').replace(/"/g, "'"), s.date
+        ].map(v => `"${v}"`).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = Object.create(document.createElement('a'));
+        a.href = URL.createObjectURL(blob);
+        a.download = 'athithya_csr_submissions.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('CSR CSV exported!');
+      }
+
+      // ── MODERATION ──
+      let currentModFilter = 'pending';
+      function filterMod(btn, status) {
+        currentModFilter = status;
+        document.querySelectorAll('.sub-filter button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderModeration();
+      }
+
+      function renderModeration() {
+        const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+        const filtered = reviews.filter(r => {
+          if (currentModFilter === 'all') return true;
+          return r.status === currentModFilter;
+        });
+        const list = document.getElementById('modList');
+        if (!list) return;
+
+        if (!filtered.length) {
+          list.innerHTML = `<div class="empty-state"><div class="es-icon">${currentModFilter === 'pending' ? '📭' : '📋'}</div><p>No ${currentModFilter} reviews found.</p></div>`;
+          return;
+        }
+
+        list.innerHTML = filtered.map((r, idx) => {
+          const date = new Date(r.date || Date.now()).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+          const isSelected = selectedRevIds.has(r.id);
+
+          let statusLabel = '⏳ Pending';
+          if (r.status === 'approved') statusLabel = '🛡️ Approved (Hidden)';
+          if (r.status === 'published') statusLabel = '📢 Published on Site';
+
+          return `<div class="mod-card ${isSelected ? 'selected' : ''}" style="${revSelectionMode ? 'cursor:pointer; border-left: 4px solid ' + (isSelected ? 'var(--or)' : 'transparent') : ''}" onclick="${revSelectionMode ? `toggleRevSelection('${r.id}')` : ''}">
+          <div class="mod-card-top">
+            <div class="mod-author-info">
+              ${revSelectionMode ? `<input type="checkbox" ${isSelected ? 'checked' : ''} style="margin-right:10px; width:18px; height:18px;">` : ''}
+              <div class="mod-av">${r.dp ? `<img src="${r.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initials}</div>
+              <div class="mod-av-info">
+                <h4>${r.name}</h4>
+                <p>${r.role || 'Visitor'} · ${date}</p>
+              </div>
+            </div>
+            <span class="mod-status-badge ${r.status}">${statusLabel}</span>
+          </div>
+          <div class="mod-msg">"${r.message}"</div>
+          ${!revSelectionMode ? `
+          <div class="mod-actions">
+            ${r.status === 'pending' ? `<button class="btn-approve" onclick="moveReview('${r.id}', 'approved')">✅ Approve</button>` : ''}
+            ${r.status === 'approved' ? `<button class="btn-approve" style="background:var(--pub)" onclick="moveReview('${r.id}', 'published')">📢 Publish to Website</button>` : ''}
+            ${r.status === 'published' ? `<button class="btn-outline" onclick="moveReview('${r.id}', 'approved')">🙈 Hide from Site</button>` : ''}
+            <button class="btn-reject" onclick="deleteReview('${r.id}')">🗑 Delete</button>
+          </div>` : ''}
+        </div>`;
+        }).join('');
+      }
+
+      function toggleRevSelectionMode() {
+        revSelectionMode = !revSelectionMode;
+        document.getElementById('bulkRevToggle').textContent = revSelectionMode ? '🚫 Cancel' : '📥 Bulk Select';
+        document.getElementById('bulkRevActions').style.display = revSelectionMode ? 'flex' : 'none';
+        selectedRevIds.clear();
+        renderModeration();
+      }
+
+      function toggleRevSelection(id) {
+        if (selectedRevIds.has(id)) selectedRevIds.delete(id);
+        else selectedRevIds.add(id);
+        renderModeration();
+      }
+
+      async function executeRevBulkAction(type) {
+        if (selectedRevIds.size === 0) { showToast('⚠️ Select at least one review.'); return; }
+        if (type === 'delete' && !confirm(`Move ${selectedRevIds.size} reviews to Trash?`)) return;
+
+        showToast(`⏳ Processing ${selectedRevIds.size} reviews...`);
+        let reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+
+        if (type === 'publish') {
+          reviews = reviews.map(r => selectedRevIds.has(r.id) ? { ...r, status: 'published' } : r);
+        } else if (type === 'delete') {
+          const toDelete = reviews.filter(r => selectedRevIds.has(r.id));
+          toDelete.forEach(r => trash.unshift({ ...r, type: 'review', deletedAt: new Date().toISOString() }));
+          reviews = reviews.filter(r => !selectedRevIds.has(r.id));
+        }
+
+        localStorage.setItem('af_reviews', JSON.stringify(reviews));
+        localStorage.setItem('af_trash', JSON.stringify(trash));
+
+        toggleRevSelectionMode();
+        updateStats();
+        renderModeration();
+        showToast('✅ Bulk action completed.');
+      }
+
+      async function moveReview(id, newStatus) {
+        showToast('⏳ Updating review status...');
+
+        // 1. Update on Sanity (if possible and starts with a Sanity ID)
+        if (client && !id.startsWith('rv_')) {
+          try {
+            await client.patch(id).set({ status: newStatus }).commit();
+          } catch (err) {
+            console.error('Sanity Update Error:', err);
+            // Continue to local update anyway
+          }
+        }
+
+        // 2. Always update local state
+        let reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+        reviews = reviews.map(r => r.id === id ? { ...r, status: newStatus } : r);
+        localStorage.setItem('af_reviews', JSON.stringify(reviews));
+
+        updateStats();
+        renderModeration();
+        showToast(newStatus === 'published' ? '📢 Published!' : '✅ Status Updated');
+      }
+
+      async function deleteReview(id) {
+        if (!confirm('Move this review to Trash?')) return;
+
+        const reviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+        const review = reviews.find(r => r.id === id);
+        if (!review) return;
+
+        // 1. Move to Trash
+        trash.unshift({ ...review, type: 'review', deletedAt: new Date().toISOString() });
+
+        // 2. Remove locally
+        const filtered = reviews.filter(r => r.id !== id);
+        localStorage.setItem('af_reviews', JSON.stringify(filtered));
+
+        // 3. Delete from Sanity (if cloud)
+        if (client && !id.startsWith('rv_') && !id.startsWith('gs_')) {
+          try { await client.delete(id); } catch (e) { }
+        }
+
+        saveAndRefresh();
+        renderModeration();
+        showToast('🗑 Review moved to Trash.');
+      }
+
+      // ── DONATIONS ──
+      function renderDonations() {
+        const donations = JSON.parse(localStorage.getItem('af_donations') || '[]').reverse();
+        const list = document.getElementById('donationList');
+        if (!donations.length) {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">💳</div><p>No donations recorded yet.</p></div>';
+          return;
+        }
+        list.innerHTML = donations.map(d => {
+          const date = new Date(d.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          return `<div class="sub-card">
+          <div>
+            <span class="sub-tag csr">Donation</span>
+            <h4>${d.name || 'Anonymous'}</h4>
+            <div class="sub-meta">
+              <span>💰 ₹${d.amount || '—'}</span>
+              <span>🆔 ${d.txnId}</span>
+              ${d.email ? `<span>✉️ ${d.email}</span>` : ''}
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            <span class="sub-date">${date}</span>
+            <button class="sub-del" onclick="deleteDonation('${d.txnId}')" title="Delete">🗑</button>
+          </div>
+        </div>`;
+        }).join('');
+      }
+
+      function deleteDonation(txnId) {
+        if (!confirm('Move this donation record to Trash?')) return;
+        let donations = JSON.parse(localStorage.getItem('af_donations') || '[]');
+        const d = donations.find(x => x.txnId === txnId);
+        if (!d) return;
+
+        const stableId = d.txnId || ('don_' + btoa((d.name || '') + (d.amount || '') + (d.date || '')).substring(0, 16));
+        trash.unshift({ ...d, id: stableId, type: 'donation', deletedAt: new Date().toISOString() });
+        donations = donations.filter(x => x.txnId !== txnId);
+        localStorage.setItem('af_donations', JSON.stringify(donations));
+
+        saveAndRefresh();
+        renderDonations();
+        showToast('🗑 Donation moved to Trash.');
+      }
+
+      function clearDonations() {
+        if (!confirm('Clear all donation records?')) return;
+        localStorage.removeItem('af_donations');
+        updateStats();
+        renderDonations();
+        showToast('Donation records cleared.');
+      }
+
+      function exportDonationsCSV() {
+        const donations = JSON.parse(localStorage.getItem('af_donations') || '[]');
+        if (!donations.length) { showToast('No donations to export.'); return; }
+        const headers = ['Name', 'Email', 'Amount', 'TransactionID', 'Date'];
+        const rows = donations.map(d => [d.name || '', d.email || '', d.amount || '', d.txnId || '', d.date].map(v => `"${v}"`).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'athithya_donations.csv' });
+        a.click();
+        showToast('Donations CSV exported!');
+      }
+
+      // ── TOAST ──
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+
+      function permanentlyDelete(idx) {
+        if (!confirm('This will be gone forever. Continue?')) return;
+        trash.splice(idx, 1);
+        saveAndRefresh('🔥 Permanently Deleted.');
+        renderTrash();
+      }
+    </script>
+</body>
+
+</html>
