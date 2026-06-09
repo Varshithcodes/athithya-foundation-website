@@ -223,7 +223,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) { }
   }
 
-  // 3. Absolute Fallback (Empty by default per user request)
+  // 3. Fallback to static data.json (for static/online deployments)
+  try {
+    const res = await fetch('/data.json');
+    if (res.ok) {
+      const staticData = await res.json();
+      if (staticData.gallery && staticData.gallery.length > 0) {
+        renderData(staticData.gallery);
+        return;
+      }
+    }
+  } catch (_) {}
+
+  // 4. Absolute Fallback (Empty by default per user request)
   const fallbackData = [];
   renderData(fallbackData);
 
@@ -675,13 +687,33 @@ const PLACEHOLDER_PROJECTS = [
 
 // ── Fetch & render initial 3 cards ──
 async function fetchAndRenderProjects() {
+  const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '3000'
+    ? 'http://localhost:3000'
+    : '';
+
   try {
     let projects = [];
     try {
-      const res = await fetch('/api/projects');
-      if (res.ok) projects = await res.json();
+      const res = await fetch(`${API_BASE}/api/projects`);
+      if (res.ok) {
+        projects = await res.json();
+      } else {
+        // Fallback to static data.json for static hosts / Vercel
+        const staticRes = await fetch('/data.json');
+        if (staticRes.ok) {
+          const staticData = await staticRes.json();
+          projects = staticData.projects || [];
+        }
+      }
     } catch (netErr) {
-      console.warn('Could not reach /api/projects, using empty slots.');
+      // Fallback on network error (e.g. backend server not running)
+      try {
+        const staticRes = await fetch('/data.json');
+        if (staticRes.ok) {
+          const staticData = await staticRes.json();
+          projects = staticData.projects || [];
+        }
+      } catch (_) {}
     }
     allProjects = projects || [];
 

@@ -1385,6 +1385,9 @@
     <script>
       // ── AUTH & SANITY CONFIG ──
       const ADMIN_USER = 'Jyothi Gudi';
+      const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '3000'
+        ? 'http://localhost:3000'
+        : '';
       const ADMIN_PASS = window.ADMIN_PASSWORD || '2507';
       const SESSION_KEY = 'af_admin_token';
       const SESSION_DURATION = 0; // Session Only (Expiring when tab is closed)
@@ -1426,7 +1429,7 @@
         statusBox.style.display = 'flex';
         try {
           // Use relative path locally (works on port 3000)
-          const res = await fetch('/api/status');
+          const res = await fetch(`${API_BASE}/api/status`);
           if (res.ok) {
             dot.style.background = '#27AE60';
             dot.style.boxShadow = '0 0 8px #27AE60';
@@ -1965,7 +1968,7 @@
           formData.append('location', desc);
 
           try {
-            const res = await fetch('/api/gallery', { method: 'POST', body: formData });
+            const res = await fetch(`${API_BASE}/api/gallery`, { method: 'POST', body: formData });
             if (!res.ok) throw new Error('Local API not responding.');
 
             const result = await res.json();
@@ -2420,7 +2423,7 @@
       // ── PROJECTS MANAGER ──
       async function fetchAdminProjects() {
         try {
-          const res = await fetch('/api/projects');
+          const res = await fetch(`${API_BASE}/api/projects`);
           if (res.ok) {
             adminProjects = await res.json();
             renderAdminProjects();
@@ -2473,7 +2476,7 @@
       async function toggleProjectVisibility(id, currentVal) {
         showToast('⏳ Updating visibility...');
         try {
-          const res = await fetch(`/api/projects/${id}`, {
+          const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ showOnFront: !currentVal })
@@ -2511,7 +2514,7 @@
         formData.append('detailedContent', detailedContent);
 
         try {
-          const res = await fetch('/api/projects', {
+          const res = await fetch(`${API_BASE}/api/projects`, {
             method: 'POST',
             body: formData
           });
@@ -2543,7 +2546,7 @@
         showToast('🗑 Deleting project...');
 
         try {
-          const res = await fetch(`/api/projects/${id}`, {
+          const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'DELETE'
           });
 
