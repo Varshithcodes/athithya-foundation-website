@@ -693,27 +693,50 @@ async function fetchAndRenderProjects() {
 
   try {
     let projects = [];
+
+    // 1. Try to fetch from Sanity.io first
     try {
-      const res = await fetch(`${API_BASE}/api/projects`);
-      if (res.ok) {
-        projects = await res.json();
-      } else {
-        // Fallback to static data.json for static hosts / Vercel
-        const staticRes = await fetch('/data.json');
-        if (staticRes.ok) {
-          const staticData = await staticRes.json();
-          projects = staticData.projects || [];
-        }
+      const sanityQuery = `*[_type == "project"] | order(date desc, _createdAt desc)`;
+      const sanityProjects = await sanityFetch(sanityQuery);
+      if (sanityProjects && sanityProjects.length > 0) {
+        projects = sanityProjects.map(proj => ({
+          id: proj._id,
+          title: proj.title || 'Untitled Project',
+          shortDesc: proj.shortDesc || '',
+          detailedContent: proj.detailedContent || '',
+          image: urlFor(proj.image),
+          showOnFront: !!proj.showOnFront,
+          date: proj.date || proj._createdAt
+        }));
       }
-    } catch (netErr) {
-      // Fallback on network error (e.g. backend server not running)
+    } catch (sanityErr) {
+      console.warn('Could not fetch projects from Sanity, falling back to local server.', sanityErr);
+    }
+
+    // 2. Fallback to local server or data.json if Sanity is empty/failed
+    if (projects.length === 0) {
       try {
-        const staticRes = await fetch('/data.json');
-        if (staticRes.ok) {
-          const staticData = await staticRes.json();
-          projects = staticData.projects || [];
+        const res = await fetch(`${API_BASE}/api/projects`);
+        if (res.ok) {
+          projects = await res.json();
+        } else {
+          // Fallback to static data.json for static hosts / Vercel
+          const staticRes = await fetch('/data.json');
+          if (staticRes.ok) {
+            const staticData = await staticRes.json();
+            projects = staticData.projects || [];
+          }
         }
-      } catch (_) {}
+      } catch (netErr) {
+        // Fallback on network error (e.g. backend server not running)
+        try {
+          const staticRes = await fetch('/data.json');
+          if (staticRes.ok) {
+            const staticData = await staticRes.json();
+            projects = staticData.projects || [];
+          }
+        } catch (_) {}
+      }
     }
     allProjects = projects || [];
 

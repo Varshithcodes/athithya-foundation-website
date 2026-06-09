@@ -2422,15 +2422,43 @@
 
       // ── PROJECTS MANAGER ──
       async function fetchAdminProjects() {
+        let projects = [];
+        
+        // 1. Try to fetch from Sanity
+        if (client) {
+          try {
+            const sanityProjects = await client.fetch(`*[_type == "project"]{..., "imageUrl": image.asset->url} | order(date desc, _createdAt desc)`);
+            projects = sanityProjects.map(proj => ({
+              id: proj._id,
+              title: proj.title || 'Untitled Project',
+              shortDesc: proj.shortDesc || '',
+              detailedContent: proj.detailedContent || '',
+              image: proj.imageUrl || '',
+              showOnFront: !!proj.showOnFront,
+              date: proj.date || proj._createdAt
+            }));
+          } catch (err) {
+            console.error('Error fetching projects from Sanity:', err);
+          }
+        }
+
+        // 2. Fetch from Local Server
         try {
           const res = await fetch(`${API_BASE}/api/projects`);
           if (res.ok) {
-            adminProjects = await res.json();
-            renderAdminProjects();
+            const localProj = await res.json();
+            // Merge local projects
+            const existingIds = new Set(projects.map(p => p.id));
+            localProj.forEach(lp => {
+              if (!existingIds.has(lp.id)) projects.push(lp);
+            });
           }
         } catch (err) {
           console.error('Error fetching admin projects:', err);
         }
+
+        adminProjects = projects;
+        renderAdminProjects();
       }
 
       function renderAdminProjects() {
@@ -2475,6 +2503,20 @@
 
       async function toggleProjectVisibility(id, currentVal) {
         showToast('⏳ Updating visibility...');
+
+        // ── OPTION A: Sanity Update ──
+        if (client && !id.startsWith('proj_') && SANITY_WRITE_TOKEN) {
+          try {
+            await client.patch(id).set({ showOnFront: !currentVal }).commit();
+            showToast('✅ Visibility updated on Sanity Cloud!');
+            await fetchAdminProjects();
+            return;
+          } catch (err) {
+            console.error('Sanity Project Update Error:', err);
+          }
+        }
+
+        // ── OPTION B: Local Server ──
         try {
           const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'PATCH',
@@ -2506,6 +2548,40 @@
         if (!shortDesc) { showToast('⚠️ Please enter a short description.'); return; }
         if (!pendingProjFile) { showToast('⚠️ Please select an image first.'); return; }
 
+        if (!client) initSanityClient();
+
+        // ── OPTION A: Sanity Write ──
+        if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== '') {
+          showToast('🚀 Uploading to Sanity Cloud...');
+          try {
+            const asset = await client.assets.upload('image', pendingProjFile, {
+              filename: pendingProjFile.name
+            });
+            const result = await client.create({
+              _type: 'project',
+              title,
+              shortDesc,
+              detailedContent,
+              image: { _type: 'image', asset: { _ref: asset._id } },
+              showOnFront: false,
+              date: new Date().toISOString()
+            });
+            showToast('✅ Project saved to Sanity Cloud!');
+            // Reset form
+            document.getElementById('newProjTitle').value = '';
+            document.getElementById('newProjShortDesc').value = '';
+            document.getElementById('newProjDetailed').value = '';
+            clearProjPreview();
+
+            await fetchAdminProjects();
+            return;
+          } catch (e) {
+            console.error('Sanity Project Upload Error:', e);
+            showToast('❌ Sanity Upload failed, attempting local...');
+          }
+        }
+
+        // ── OPTION B: Local Server ──
         showToast('🚀 Uploading project...');
         const formData = new FormData();
         formData.append('image', pendingProjFile);
@@ -2545,6 +2621,19 @@
         if (!confirm('Are you sure you want to delete this project?')) return;
         showToast('🗑 Deleting project...');
 
+        // ── OPTION A: Sanity Delete ──
+        if (client && !id.startsWith('proj_') && SANITY_WRITE_TOKEN) {
+          try {
+            await client.delete(id);
+            showToast('🗑 Project removed from Sanity Cloud.');
+            await fetchAdminProjects();
+            return;
+          } catch (err) {
+            console.error('Sanity Delete Error:', err);
+          }
+        }
+
+        // ── OPTION B: Local Server ──
         try {
           const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'DELETE'
