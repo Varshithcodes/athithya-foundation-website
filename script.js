@@ -283,14 +283,21 @@ async function loadSanityReviews() {
 
 
 // ── Navbar: add shadow on scroll ──
+let isNavShadow = false;
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('topnav');
-  if (window.scrollY > 40) {
-    nav.style.boxShadow = '0 4px 24px rgba(232,97,10,0.12)';
-  } else {
-    nav.style.boxShadow = '0 2px 18px rgba(232,97,10,0.07)';
+  if (nav) {
+    const shouldHaveShadow = window.scrollY > 40;
+    if (shouldHaveShadow !== isNavShadow) {
+      isNavShadow = shouldHaveShadow;
+      if (shouldHaveShadow) {
+        nav.classList.add('nav-shadow');
+      } else {
+        nav.classList.remove('nav-shadow');
+      }
+    }
   }
-});
+}, { passive: true });
 
 // ── Form: Save Contact Message to localStorage & Google Sheets ──
 function saveContactForm(e) {
@@ -371,7 +378,7 @@ function saveCsrForm(e) {
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const target = document.querySelector(a.getAttribute('href'));
-    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    if (target) { e.preventDefault(); target.scrollIntoView(); }
   });
 });
 
@@ -541,8 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
-      } else {
-        entry.target.classList.remove('active');
+        revealObserver.unobserve(entry.target);
       }
     });
   }, observerOptions);
@@ -623,7 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
     logoTrigger.addEventListener('touchend', () => clearTimeout(logoTimer));
   }
 
-  // ── Social Icons: Reveal color on click ──
+  // 💬 Social Icons: Reveal color on click 💬
   const socBtns = document.querySelectorAll('.soc-btn-v');
   socBtns.forEach(btn => {
     btn.addEventListener('click', function (e) {
@@ -632,4 +638,393 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+/* ─────────────────────────────────────────
+   PROJECTS & TINDER SWIPE LOGIC
+───────────────────────────────────────── */
+let allProjects = [];
+let currentSwipeIndex = 0;
+let _swipeLocked = false;
 
+// Placeholder projects shown when no real projects are uploaded yet
+const PLACEHOLDER_PROJECTS = [
+  {
+    id: '__placeholder_1',
+    title: 'Smart Classroom Initiative',
+    shortDesc: 'Bringing interactive digital classrooms to government schools across Karnataka, equipped with projectors and curated learning content.',
+    detailedContent: 'Our Smart Classroom Initiative transforms bare government school rooms into vibrant digital learning hubs. We install projectors, interactive whiteboards, and curated educational content aligned to the state curriculum. This project has already impacted thousands of students.',
+    image: 'images/img3_educlassrooms.jpeg',
+    isPlaceholder: true
+  },
+  {
+    id: '__placeholder_2',
+    title: 'Library & Reading Programme',
+    shortDesc: 'Stocking school libraries with 500+ age-appropriate books in Kannada and English, with weekly reading circles and storytelling sessions.',
+    detailedContent: 'A love for reading is one of the greatest gifts we can give a child. We set up fully-stocked, beautifully designed libraries inside government schools. Weekly reading circles, storytelling sessions, and book-of-the-month clubs are run by trained facilitators.',
+    image: 'images/lib.avif',
+    isPlaceholder: true
+  },
+  {
+    id: '__placeholder_3',
+    title: 'Teacher Capacity Building',
+    shortDesc: 'Weekend workshops empowering government school teachers with modern pedagogy, digital tools, and subject-matter expertise.',
+    detailedContent: 'Great teachers are the backbone of great schools. Our intensive Teacher Capacity Building workshops run over weekends covering modern pedagogy, classroom management, digital tool integration, and emotional intelligence.',
+    image: 'images/teacher.jpg',
+    isPlaceholder: true
+  }
+];
+
+// ── Fetch & render initial 3 cards ──
+async function fetchAndRenderProjects() {
+  try {
+    let projects = [];
+    try {
+      const res = await fetch('/api/projects');
+      if (res.ok) projects = await res.json();
+    } catch (netErr) {
+      console.warn('Could not reach /api/projects, using empty slots.');
+    }
+    allProjects = projects || [];
+
+    const grid = document.getElementById('projGrid');
+    if (!grid) return;
+
+    // Filter projects that are explicitly marked for front page
+    const shownProjects = allProjects.filter(p => p.showOnFront);
+
+    // Always render 3 slots. Fill with shown projects first, remaining are empty slots
+    const initialProjects = [null, null, null];
+    for (let i = 0; i < 3; i++) {
+      if (i < shownProjects.length) {
+        initialProjects[i] = shownProjects[i];
+      }
+    }
+
+    const frag = document.createDocumentFragment();
+    initialProjects.forEach((proj, idx) => {
+      const card = document.createElement('div');
+      if (proj) {
+        card.className = 'proj-card';
+        card.onclick = () => openWikiModal(proj.id, allProjects);
+        card.innerHTML = `
+          <img src="${proj.image}" alt="${proj.title}" class="proj-img" loading="lazy">
+          <div class="proj-info">
+            <h3>${proj.title}</h3>
+            <p>${proj.shortDesc}</p>
+            <div style="margin-top:14px; color:var(--or); font-weight:800; font-size:0.8rem; letter-spacing:0.04em;">
+              READ MORE →
+            </div>
+          </div>
+        `;
+      } else {
+        // Render a beautiful, premium blank/placeholder card
+        card.className = 'proj-card placeholder-card';
+        card.innerHTML = `
+          <div class="proj-info" style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 290px; border: 2px dashed rgba(255,255,255,0.15); border-radius: 20px; text-align: center; color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.01); margin: 5px;">
+            <div style="padding: 20px;">
+              <div style="font-size: 1.8rem; margin-bottom: 12px; color: rgba(232, 97, 10, 0.4);">✦</div>
+              <h4 style="font-family:'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 6px; color: rgba(255,255,255,0.4); font-weight:700;">Project Slot ${idx + 1}</h4>
+              <p style="font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; color: rgba(255,255,255,0.2);">Awaiting Project Details</p>
+            </div>
+          </div>
+        `;
+      }
+      frag.appendChild(card);
+    });
+    grid.innerHTML = '';
+    grid.appendChild(frag);
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
+}
+document.addEventListener('DOMContentLoaded', fetchAndRenderProjects);
+
+// ── Open View All Modal (all projects, newest first) ──
+function openViewAllModal() {
+  const projects = [...allProjects];
+  if (projects.length === 0) {
+    alert('No projects have been added yet. Check back soon!');
+    return;
+  }
+
+  // Sort newest first — use createdAt / date / id as fallback
+  projects.sort((a, b) => {
+    const dateA = new Date(a.createdAt || a.date || 0).getTime();
+    const dateB = new Date(b.createdAt || b.date || 0).getTime();
+    if (dateB !== dateA) return dateB - dateA;
+    // Fallback: higher id = newer
+    return String(b.id).localeCompare(String(a.id));
+  });
+
+  const modal = document.getElementById('viewAllModal');
+  const grid = document.getElementById('vaGrid');
+  const count = document.getElementById('vaCount');
+
+  if (count) count.textContent = `${projects.length} Project${projects.length !== 1 ? 's' : ''}`;
+
+  const frag = document.createDocumentFragment();
+  projects.forEach(proj => {
+    const card = document.createElement('div');
+    card.className = 'va-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+
+    // Format date label
+    let dateLabel = '';
+    if (proj.createdAt || proj.date) {
+      try {
+        dateLabel = new Date(proj.createdAt || proj.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
+      } catch(_) {}
+    }
+
+    const imgSrc = proj.image || '';
+    const imgHtml = imgSrc
+      ? `<div class="va-card-img-wrap"><img src="${imgSrc}" alt="${proj.title}" loading="lazy"></div>`
+      : `<div class="va-card-img-wrap" style="height:200px;background:rgba(232,97,10,0.08);display:flex;align-items:center;justify-content:center;"><span style="font-size:2.5rem;opacity:0.3;">✦</span></div>`;
+
+    card.innerHTML = `
+      ${imgHtml}
+      <div class="va-card-body">
+        ${dateLabel ? `<div class="va-card-date">${dateLabel}</div>` : ''}
+        <div class="va-card-title">${proj.title}</div>
+        <div class="va-card-desc">${proj.shortDesc || ''}</div>
+      </div>
+      <div class="va-card-footer">
+        <span class="va-card-cta">Read Full Story</span>
+        <span class="va-card-arrow">→</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openWikiModal(proj.id, projects));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openWikiModal(proj.id, projects); });
+    frag.appendChild(card);
+  });
+
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViewAllModal() {
+  document.getElementById('viewAllModal').classList.remove('open');
+  if (document.getElementById('wikiModal').style.display !== 'block') {
+    document.body.style.overflow = '';
+  }
+}
+
+// ── Render the full card stack ──
+function renderSwipeStack() {
+  const projects = window._swipeProjects || [];
+  const container = document.getElementById('swipeContainer');
+
+  // Update counter
+  const counter = document.getElementById('swipeCounter');
+  if (counter) {
+    counter.textContent = currentSwipeIndex < projects.length
+      ? `${currentSwipeIndex + 1} / ${projects.length}`
+      : '';
+  }
+
+  if (currentSwipeIndex >= projects.length) {
+    container.innerHTML = `
+      <div style="color:#fff;text-align:center;padding:30px 20px;">
+        <div style="font-size:3rem;margin-bottom:16px;">🎉</div>
+        <h3 style="font-size:1.5rem;font-weight:900;margin-bottom:10px;font-family:'Playfair Display',serif;">You've seen them all!</h3>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:24px;">Want to revisit?</p>
+        <button class="btn-main" onclick="currentSwipeIndex=0;_swipeLocked=false;renderSwipeStack();">Start Over</button>
+      </div>`;
+    return;
+  }
+
+  // Render up to 3 stacked cards (back to front)
+  const frag = document.createDocumentFragment();
+  const stackDepth = Math.min(3, projects.length - currentSwipeIndex);
+  for (let offset = stackDepth - 1; offset >= 0; offset--) {
+    const idx = currentSwipeIndex + offset;
+    if (idx >= projects.length) continue;
+    const proj = projects[idx];
+    const isTop = offset === 0;
+
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.dataset.projId = proj.id;
+    card.dataset.isTop = isTop ? '1' : '0';
+
+    // Stack visual offset
+    const scale = 1 - offset * 0.04;
+    const yShift = offset * 16;
+    card.style.cssText = `
+      transform: scale(${scale}) translateY(${yShift}px);
+      z-index: ${10 - offset};
+      transition: transform 0.3s ease;
+    `;
+
+    card.innerHTML = `
+      <img src="${proj.image}" alt="${proj.title}" loading="${isTop ? 'eager' : 'lazy'}" style="width:100%;height:52%;object-fit:cover;display:block;">
+      <div class="sc-content">
+        <h3>${proj.title}</h3>
+        <p>${proj.shortDesc}</p>
+        <div class="sc-btn">Tap to read full story →</div>
+      </div>
+      <div class="swipe-like-label" style="position:absolute;top:28px;left:20px;background:#27AE60;color:#fff;padding:6px 16px;border-radius:8px;font-weight:900;font-size:1.1rem;border:3px solid #fff;opacity:0;transform:rotate(-15deg);transition:opacity 0.15s;">LIKE ♥</div>
+      <div class="swipe-skip-label" style="position:absolute;top:28px;right:20px;background:#E74C3C;color:#fff;padding:6px 16px;border-radius:8px;font-weight:900;font-size:1.1rem;border:3px solid #fff;opacity:0;transform:rotate(15deg);transition:opacity 0.15s;">SKIP ✕</div>
+    `;
+
+    if (isTop) attachDragToCard(card, proj, projects);
+    frag.appendChild(card);
+  }
+
+  container.innerHTML = '';
+  container.appendChild(frag);
+}
+
+// ── Tinder drag logic ──
+function attachDragToCard(card, proj, projects) {
+  let startX = 0, startY = 0, currentX = 0;
+  let isDragging = false;
+  let didDrag = false; // Track whether user actually dragged
+
+  const SWIPE_THRESHOLD = 90; // px to trigger swipe
+
+  function onStart(e) {
+    if (_swipeLocked) return;
+    isDragging = true;
+    didDrag = false;
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX;
+    startY = point.clientY;
+    currentX = 0;
+    card.style.transition = 'none';
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    const point = e.touches ? e.touches[0] : e;
+    currentX = point.clientX - startX;
+    const currentY = point.clientY - startY;
+
+    // Only treat as drag if horizontal movement dominates
+    if (Math.abs(currentX) < 5 && Math.abs(currentY) < 5) return;
+    didDrag = true;
+    if (e.cancelable) e.preventDefault();
+
+    const rotate = currentX * 0.08;
+    card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+
+    // Show like/skip labels
+    const likeLabel = card.querySelector('.swipe-like-label');
+    const skipLabel = card.querySelector('.swipe-skip-label');
+    const ratio = Math.min(Math.abs(currentX) / SWIPE_THRESHOLD, 1);
+    if (currentX > 0) {
+      likeLabel.style.opacity = ratio;
+      skipLabel.style.opacity = 0;
+    } else {
+      skipLabel.style.opacity = ratio;
+      likeLabel.style.opacity = 0;
+    }
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+
+    if (!didDrag) {
+      // Pure tap — open wiki
+      openWikiModal(proj.id, projects);
+      return;
+    }
+
+    if (Math.abs(currentX) >= SWIPE_THRESHOLD) {
+      // Commit swipe
+      triggerSwipe(card, currentX > 0 ? 'right' : 'left');
+    } else {
+      // Snap back
+      card.style.transition = 'transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+      card.style.transform = 'translateX(0) rotate(0deg)';
+      card.querySelector('.swipe-like-label').style.opacity = 0;
+      card.querySelector('.swipe-skip-label').style.opacity = 0;
+    }
+  }
+
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('mousemove', onMove);
+  card.addEventListener('mouseup', onEnd);
+  card.addEventListener('mouseleave', onEnd);
+  card.addEventListener('touchstart', onStart, { passive: true });
+  card.addEventListener('touchmove', onMove, { passive: false });
+  card.addEventListener('touchend', onEnd);
+}
+
+// ── Trigger programmatic swipe (buttons or drag) ──
+function triggerSwipe(card, direction) {
+  if (_swipeLocked) return;
+  _swipeLocked = true;
+
+  const xFly = direction === 'right' ? window.innerWidth + 100 : -(window.innerWidth + 100);
+  card.style.transition = 'transform 0.38s ease, opacity 0.38s ease';
+  card.style.transform = `translateX(${xFly}px) rotate(${xFly * 0.04}deg)`;
+  card.style.opacity = '0';
+
+  // Animate next card up
+  const container = document.getElementById('swipeContainer');
+  const nextCard = container.querySelector('.swipe-card:not([data-is-top="1"])');
+  if (nextCard) {
+    nextCard.style.transition = 'transform 0.38s ease';
+    nextCard.style.transform = 'scale(1) translateY(0)';
+  }
+
+  setTimeout(() => {
+    currentSwipeIndex++;
+    _swipeLocked = false;
+    renderSwipeStack();
+  }, 380);
+}
+
+// Button swipe (← Skip / Next →)
+function swipeCard(direction) {
+  const container = document.getElementById('swipeContainer');
+  const topCard = container.querySelector('.swipe-card[data-is-top="1"]');
+  if (!topCard || _swipeLocked) return;
+  triggerSwipe(topCard, direction === 'left' ? 'left' : 'right');
+}
+
+
+// ── Wiki (full project detail) modal ──
+function openWikiModal(projId, projectsArr) {
+  const pool = projectsArr || allProjects;
+  const proj = pool.find(p => p.id === projId);
+  if (!proj) return;
+
+  document.getElementById('wikiImg').src = proj.image || '';
+  document.getElementById('wikiTitle').textContent = proj.title;
+  document.getElementById('wikiText').textContent = proj.detailedContent || proj.shortDesc || '';
+
+  document.getElementById('wikiModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWikiModal() {
+  document.getElementById('wikiModal').style.display = 'none';
+  // Only restore scroll if the View All modal is also closed
+  const vaModal = document.getElementById('viewAllModal');
+  if (!vaModal || !vaModal.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+// ── Scroll-To-Top Button ──
+(function initScrollTop() {
+  let ticking = false;
+  const btn = document.getElementById('scrollTopBtn');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+})();

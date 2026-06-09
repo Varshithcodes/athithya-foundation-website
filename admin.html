@@ -1136,6 +1136,7 @@
         <div class="tab" onclick="switchTab('reviews')">⭐ Reviews</div>
         <div class="tab" onclick="switchTab('donations')">💳 Donations</div>
         <div class="tab" onclick="switchTab('csr')">🏢 CSR Enquiries</div>
+        <div class="tab" onclick="switchTab('projects')">🚀 Projects</div>
         <div class="tab" onclick="switchTab('trash')">🗑️ Trash Bin</div>
       </div>
 
@@ -1271,6 +1272,65 @@
           </div>
           <div class="card-body">
             <div class="sub-list" id="csrList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROJECTS TAB ── -->
+      <div class="tab-panel" id="tab-projects">
+        <div class="card">
+          <div class="card-hd">
+            <h2>🚀 Projects Manager <span id="proj-count" style="font-size:0.8rem; color:var(--mut);"></span></h2>
+          </div>
+          <div class="card-body">
+            <div class="impact-form" style="margin-bottom: 30px;">
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px;">
+                <!-- Form Inputs -->
+                <div>
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    📝 <span>Project Details</span>
+                  </h3>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Project Title</label>
+                    <input type="text" id="newProjTitle" placeholder="e.g., Smart Classroom Initiative" style="width: 100%;">
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Short Description (for card)</label>
+                    <input type="text" id="newProjShortDesc" placeholder="e.g., Bringing interactive digital classrooms..." style="width: 100%;">
+                  </div>
+                  <div class="fg" style="margin-bottom: 15px;">
+                    <label>Detailed Content (for wiki)</label>
+                    <textarea id="newProjDetailed" placeholder="Describe the full story of the project..." rows="5" style="width: 100%;"></textarea>
+                  </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div style="display: flex; flex-direction: column;">
+                  <h3 style="margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    🖼️ <span>Project Image</span>
+                  </h3>
+                  <div id="projUploadZone" class="upload-zone"
+                    style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center; position: relative;"
+                    onclick="document.getElementById('projFileInput').click()">
+                    <input type="file" id="projFileInput" hidden accept="image/*" onchange="handleProjPreview(this)">
+                    <div id="projPreviewWrap" style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
+                      <img id="projPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
+                      <div onclick="event.stopPropagation(); clearProjPreview()"
+                        style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        ✕</div>
+                    </div>
+                    <div id="projUploadPrompt">
+                      <div class="uz-icon">🗁</div>
+                      <h3>Tap to Choose</h3>
+                      <p>Image File</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-main" style="width: 100%; margin-top: 25px; padding: 18px; font-size: 1rem;"
+                onclick="addProjectItem()">🚀 Publish Project</button>
+            </div>
+            <div class="gal-admin-grid" id="adminProjGrid"></div>
           </div>
         </div>
       </div>
@@ -1481,6 +1541,40 @@
       let revSelectionMode = false;
       let selectedRevIds = new Set();
 
+      // Projects State & Preview Logic
+      let adminProjects = [];
+      let pendingProjFile = null;
+
+      function handleProjPreview(inputOrFile) {
+        let file;
+        if (inputOrFile instanceof File) {
+          file = inputOrFile;
+        } else {
+          file = inputOrFile.files[0];
+        }
+        if (!file) return;
+        pendingProjFile = file;
+
+        const wrap = document.getElementById('projPreviewWrap');
+        const img = document.getElementById('projPreviewImg');
+        const prompt = document.getElementById('projUploadPrompt');
+
+        prompt.style.display = 'none';
+        wrap.style.display = 'block';
+
+        const url = URL.createObjectURL(file);
+        img.style.display = 'block';
+        img.src = url;
+      }
+
+      function clearProjPreview() {
+        pendingProjFile = null;
+        document.getElementById('projFileInput').value = '';
+        document.getElementById('projPreviewWrap').style.display = 'none';
+        document.getElementById('projUploadPrompt').style.display = 'block';
+        document.getElementById('projPreviewImg').src = '';
+      }
+
       function saveAndRefresh(msg) {
         localStorage.setItem('af_gallery', JSON.stringify(gallery));
         localStorage.setItem('af_trash', JSON.stringify(trash));
@@ -1686,6 +1780,7 @@
           renderAdminGallery();
           renderSubmissions();
           renderModeration();
+          try { await fetchAdminProjects(); } catch (e) { console.error(e); }
           updateStats();
 
         } catch (err) {
@@ -1694,6 +1789,7 @@
           renderAdminGallery();
           renderSubmissions();
           renderModeration();
+          try { await fetchAdminProjects(); } catch (e) { console.error(e); }
           updateStats();
         }
       }
@@ -1703,8 +1799,13 @@
         return existing ? existing.status : defaultStatus;
       }
 
+      function renderSubmissions() {
+        if (typeof renderCSRList === 'function') renderCSRList();
+        if (typeof renderDonations === 'function') renderDonations();
+      }
+
       // ── TABS ──
-      const tabKeys = ['gallery', 'reviews', 'donations', 'csr', 'trash'];
+      const tabKeys = ['gallery', 'reviews', 'donations', 'csr', 'projects', 'trash'];
       function switchTab(name) {
         document.querySelectorAll('.tab').forEach((t, i) =>
           t.classList.toggle('active', tabKeys[i] === name));
@@ -1715,6 +1816,7 @@
         if (name === 'reviews') renderModeration();
         if (name === 'donations') renderDonations();
         if (name === 'csr') renderCSRList();
+        if (name === 'projects') renderAdminProjects();
         if (name === 'trash') renderTrash();
       }
 
@@ -1791,6 +1893,19 @@
         const file = e.dataTransfer.files[0];
         if (file) handleAdminPreview(file);
       });
+
+      // Project Upload Zone Drag & Drop
+      const projZone = document.getElementById('projUploadZone');
+      if (projZone) {
+        projZone.addEventListener('dragover', e => { e.preventDefault(); projZone.classList.add('drag'); });
+        projZone.addEventListener('dragleave', () => projZone.classList.remove('drag'));
+        projZone.addEventListener('drop', e => {
+          e.preventDefault();
+          projZone.classList.remove('drag');
+          const file = e.dataTransfer.files[0];
+          if (file) handleProjPreview(file);
+        });
+      }
 
       async function addImpactItem() {
         if (!pendingFile) { showToast('⚠️ Please select a file first.'); return; }
@@ -2300,6 +2415,148 @@
         const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'athithya_donations.csv' });
         a.click();
         showToast('Donations CSV exported!');
+      }
+
+      // ── PROJECTS MANAGER ──
+      async function fetchAdminProjects() {
+        try {
+          const res = await fetch('/api/projects');
+          if (res.ok) {
+            adminProjects = await res.json();
+            renderAdminProjects();
+          }
+        } catch (err) {
+          console.error('Error fetching admin projects:', err);
+        }
+      }
+
+      function renderAdminProjects() {
+        const grid = document.getElementById('adminProjGrid');
+        if (!grid) return;
+        const countSpan = document.getElementById('proj-count');
+        if (countSpan) countSpan.textContent = adminProjects.length ? `(${adminProjects.length} projects)` : '';
+
+        if (!adminProjects.length) {
+          grid.innerHTML = '<p style="color:var(--mut);font-size:.85rem;padding:20px 0;">No projects uploaded yet. Add one above!</p>';
+          return;
+        }
+
+        grid.innerHTML = '';
+        adminProjects.forEach((proj, idx) => {
+          const div = document.createElement('div');
+          div.className = 'gal-admin-item';
+          const isShown = !!proj.showOnFront;
+          const statusBadge = isShown ? '<span class="mod-status-badge published">📢 Front Page</span>' : '<span class="mod-status-badge pending">🙈 Hidden</span>';
+          
+          div.innerHTML = `
+            <div class="gal-admin-thumb">
+              <img src="${proj.image}" alt="${proj.title}" style="width:100%;height:100%;object-fit:cover;">
+              ${statusBadge}
+            </div>
+            <div class="gal-admin-meta">
+              <div class="gai-title">${proj.title || 'Untitled Project'}</div>
+              <div class="gai-desc" style="font-size: 0.75rem; color: var(--mut); margin-bottom: 4px;">${proj.shortDesc || 'No short description'}</div>
+              <div class="gai-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.7rem; color: #666;">${proj.detailedContent || 'No details'}</div>
+              <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--txt);">
+                <input type="checkbox" id="chk-proj-${proj.id}" ${isShown ? 'checked' : ''} onchange="toggleProjectVisibility('${proj.id}', ${isShown})" style="cursor: pointer; width: 16px; height: 16px;">
+                <label for="chk-proj-${proj.id}" style="cursor: pointer; font-weight: 600;">Show on Front Page</label>
+              </div>
+            </div>
+            <div class="gal-admin-actions">
+              <button class="btn-del" onclick="deleteProjectItem('${proj.id}')" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">🗑 Delete</button>
+            </div>
+          `;
+          grid.appendChild(div);
+        });
+      }
+
+      async function toggleProjectVisibility(id, currentVal) {
+        showToast('⏳ Updating visibility...');
+        try {
+          const res = await fetch(`/api/projects/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ showOnFront: !currentVal })
+          });
+          const result = await res.json();
+          if (res.ok && result.success) {
+            showToast('✅ Visibility updated!');
+            await fetchAdminProjects();
+          } else {
+            showToast(result.message || '❌ Failed to update visibility.');
+            // Re-render to reset checkbox state
+            await fetchAdminProjects();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('❌ Error connecting to server.');
+          await fetchAdminProjects();
+        }
+      }
+
+      async function addProjectItem() {
+        const title = document.getElementById('newProjTitle').value.trim();
+        const shortDesc = document.getElementById('newProjShortDesc').value.trim();
+        const detailedContent = document.getElementById('newProjDetailed').value.trim();
+
+        if (!title) { showToast('⚠️ Please enter a title.'); return; }
+        if (!shortDesc) { showToast('⚠️ Please enter a short description.'); return; }
+        if (!pendingProjFile) { showToast('⚠️ Please select an image first.'); return; }
+
+        showToast('🚀 Uploading project...');
+        const formData = new FormData();
+        formData.append('image', pendingProjFile);
+        formData.append('title', title);
+        formData.append('shortDesc', shortDesc);
+        formData.append('detailedContent', detailedContent);
+
+        try {
+          const res = await fetch('/api/projects', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!res.ok) throw new Error('API server returned error');
+          const result = await res.json();
+
+          if (result.success) {
+            showToast('✅ Project published successfully!');
+            // Reset form
+            document.getElementById('newProjTitle').value = '';
+            document.getElementById('newProjShortDesc').value = '';
+            document.getElementById('newProjDetailed').value = '';
+            clearProjPreview();
+
+            // Refresh
+            await fetchAdminProjects();
+          } else {
+            showToast('❌ Failed to publish project.');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('❌ Error connecting to backend server.');
+        }
+      }
+
+      async function deleteProjectItem(id) {
+        if (!confirm('Are you sure you want to delete this project?')) return;
+        showToast('🗑 Deleting project...');
+
+        try {
+          const res = await fetch(`/api/projects/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (res.ok) {
+            showToast('🗑 Project deleted.');
+            await fetchAdminProjects();
+          } else {
+            showToast('❌ Failed to delete project.');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('❌ Error connecting to backend.');
+        }
       }
 
       // ── TOAST ──

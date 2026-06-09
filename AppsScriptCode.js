@@ -39,7 +39,7 @@ function doPost(e) {
       const headerRange = sheet.getRange(1, 1, 1, headers.length);
       headerRange.setFontWeight('bold');
       headerRange.setBackground('#E8610A');
-      headerRange.setFontColor('#ffffff');
+      headerRange.setFontColor('#ffffffff');
     }
 
     // Build the row in the exact column order
