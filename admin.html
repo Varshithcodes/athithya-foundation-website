@@ -2503,6 +2503,7 @@
 
       async function toggleProjectVisibility(id, currentVal) {
         showToast('⏳ Updating visibility...');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
         // ── OPTION A: Sanity Update ──
         if (client && !id.startsWith('proj_') && SANITY_WRITE_TOKEN) {
@@ -2513,10 +2514,18 @@
             return;
           } catch (err) {
             console.error('Sanity Project Update Error:', err);
+            showToast('❌ Sanity error: ' + (err.message || 'Could not update.'));
+            await fetchAdminProjects();
+            return;
           }
         }
 
-        // ── OPTION B: Local Server ──
+        // ── OPTION B: Local Server only (localhost) ──
+        if (!isLocal) {
+          showToast('⚠️ Sanity not connected. Cannot update visibility online.');
+          await fetchAdminProjects();
+          return;
+        }
         try {
           const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'PATCH',
@@ -2529,12 +2538,11 @@
             await fetchAdminProjects();
           } else {
             showToast(result.message || '❌ Failed to update visibility.');
-            // Re-render to reset checkbox state
             await fetchAdminProjects();
           }
         } catch (err) {
           console.error(err);
-          showToast('❌ Error connecting to server.');
+          showToast('❌ Local server error. Is node server.js running?');
           await fetchAdminProjects();
         }
       }
@@ -2543,6 +2551,7 @@
         const title = document.getElementById('newProjTitle').value.trim();
         const shortDesc = document.getElementById('newProjShortDesc').value.trim();
         const detailedContent = document.getElementById('newProjDetailed').value.trim();
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
         if (!title) { showToast('⚠️ Please enter a title.'); return; }
         if (!shortDesc) { showToast('⚠️ Please enter a short description.'); return; }
@@ -2550,14 +2559,14 @@
 
         if (!client) initSanityClient();
 
-        // ── OPTION A: Sanity Write ──
+        // ── OPTION A: Sanity Write (primary path) ──
         if (client && SANITY_WRITE_TOKEN && SANITY_WRITE_TOKEN !== '') {
           showToast('🚀 Uploading to Sanity Cloud...');
           try {
             const asset = await client.assets.upload('image', pendingProjFile, {
               filename: pendingProjFile.name
             });
-            const result = await client.create({
+            await client.create({
               _type: 'project',
               title,
               shortDesc,
@@ -2567,22 +2576,30 @@
               date: new Date().toISOString()
             });
             showToast('✅ Project saved to Sanity Cloud!');
-            // Reset form
             document.getElementById('newProjTitle').value = '';
             document.getElementById('newProjShortDesc').value = '';
             document.getElementById('newProjDetailed').value = '';
             clearProjPreview();
-
             await fetchAdminProjects();
             return;
           } catch (e) {
             console.error('Sanity Project Upload Error:', e);
-            showToast('❌ Sanity Upload failed, attempting local...');
+            // Only fall through to local server if we are on localhost
+            if (!isLocal) {
+              showToast('❌ Sanity upload failed: ' + (e.message || 'Check your token or CORS settings.'));
+              return;
+            }
+            showToast('❌ Sanity failed, trying local server...');
           }
         }
 
-        // ── OPTION B: Local Server ──
-        showToast('🚀 Uploading project...');
+        // ── OPTION B: Local Server (localhost only) ──
+        if (!isLocal) {
+          showToast('⚠️ Sanity not connected. Cannot upload projects online without Sanity.');
+          return;
+        }
+
+        showToast('🚀 Uploading via local server...');
         const formData = new FormData();
         formData.append('image', pendingProjFile);
         formData.append('title', title);
@@ -2599,27 +2616,25 @@
           const result = await res.json();
 
           if (result.success) {
-            showToast('✅ Project published successfully!');
-            // Reset form
+            showToast('✅ Project published via local server!');
             document.getElementById('newProjTitle').value = '';
             document.getElementById('newProjShortDesc').value = '';
             document.getElementById('newProjDetailed').value = '';
             clearProjPreview();
-
-            // Refresh
             await fetchAdminProjects();
           } else {
             showToast('❌ Failed to publish project.');
           }
         } catch (err) {
           console.error(err);
-          showToast('❌ Error connecting to backend server.');
+          showToast('❌ Local server not running. Start with: node server.js');
         }
       }
 
       async function deleteProjectItem(id) {
         if (!confirm('Are you sure you want to delete this project?')) return;
         showToast('🗑 Deleting project...');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
         // ── OPTION A: Sanity Delete ──
         if (client && !id.startsWith('proj_') && SANITY_WRITE_TOKEN) {
@@ -2630,15 +2645,22 @@
             return;
           } catch (err) {
             console.error('Sanity Delete Error:', err);
+            if (!isLocal) {
+              showToast('❌ Sanity delete failed: ' + (err.message || 'Check permissions.'));
+              return;
+            }
           }
         }
 
-        // ── OPTION B: Local Server ──
+        // ── OPTION B: Local Server (localhost only) ──
+        if (!isLocal) {
+          showToast('⚠️ Cannot delete — Sanity not connected.');
+          return;
+        }
         try {
           const res = await fetch(`${API_BASE}/api/projects/${id}`, {
             method: 'DELETE'
           });
-
           if (res.ok) {
             showToast('🗑 Project deleted.');
             await fetchAdminProjects();
@@ -2647,7 +2669,7 @@
           }
         } catch (err) {
           console.error(err);
-          showToast('❌ Error connecting to backend.');
+          showToast('❌ Local server not running. Start with: node server.js');
         }
       }
 

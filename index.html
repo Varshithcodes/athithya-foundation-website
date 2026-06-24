@@ -71,7 +71,7 @@
     "@context": "https://schema.org",
     "@type": "NonProfitOrganization",
     "name": "Athithya Foundation",
-    "alternateName": ["Athithya", "Atitya", "Aatitya", "Aathithya", "Aditya", "aathithya foundation", "aditya foundation", "Athithya NGO"],
+    "alternateName: ["Athithya", "Atitya", "Aatitya", "Aathithya", "Aditya", "aathithya foundation", "aditya foundation", "Athithya NGO"],
     "description": "Athithya Foundation is a purpose-driven non-profit transforming education ecosystems and school donations for government schools across Karnataka.",
     "url": "https://www.athithyafoundation.org/",
     "logo": "https://www.athithyafoundation.org/images/Athithya_Foundation_Logo_withoutBG.png",
@@ -131,7 +131,6 @@
     }
 
     html {
-      scroll-behavior: smooth;
       font-size: clamp(13px, 0.6vw + 9px, 22px);
       /* Fully adaptive fluid typography */
     }
@@ -703,11 +702,12 @@
     }
 
     .hero-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--orv);
-      border-radius: 50%;
-      animation: pulse 2s infinite
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     @keyframes pulse {
@@ -1217,8 +1217,11 @@
     }
 
     .vm-ico {
-      font-size: 1.5rem;
-      margin-bottom: 8px
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+      color: var(--or);
     }
 
     .vm h4 {
@@ -3024,29 +3027,6 @@
       fill: #25D366 !important;
     }
 
-    /* LinkedIn: dark navy blue glow */
-    [title="LinkedIn"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    [title="LinkedIn"]:hover,
-    .soc-btn-v.revealed[title="LinkedIn"] {
-      background: rgba(10, 102, 194, 0.12) !important;
-      border-color: #0A66C2 !important;
-      color: #0A66C2 !important;
-      box-shadow: 0 10px 30px rgba(10, 102, 194, 0.35) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
-    }
-
-    [title="LinkedIn"]:hover svg rect,
-    [title="LinkedIn"]:hover svg path,
-    .soc-btn-v.revealed[title="LinkedIn"] svg rect,
-    .soc-btn-v.revealed[title="LinkedIn"] svg path {
-      stroke: #0A66C2 !important;
-      fill: none !important;
-    }
 
     /* Facebook: blue-to-white glow */
     [title="Facebook"] {
@@ -3078,10 +3058,6 @@
       color: #C13584;
     }
 
-    .soc-btn[title="LinkedIn"] {
-      border-color: rgba(10, 102, 194, 0.45);
-      color: #0A66C2;
-    }
 
     .soc-btn[title="Facebook"] {
       border-color: rgba(24, 119, 242, 0.45);
@@ -3098,39 +3074,7 @@
       border-color: rgba(193, 53, 132, 0.5);
     }
 
-    .f-soc[title="LinkedIn"] {
-      border-color: rgba(10, 102, 194, 0.5);
-    }
 
-    /* ── New Social Platforms ── */
-    [title="Twitter"] {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      will-change: transform;
-    }
-
-    [title="Twitter"]:hover {
-      background: rgba(0, 0, 0, 0.08) !important;
-      border-color: #000000 !important;
-      color: #000000 !important;
-      box-shadow: 0 10px 30px rgba(29, 155, 240, 0.4) !important;
-      transform: translateY(-10px) scale(1.05) rotateX(5deg) !important;
-      z-index: 10;
-    }
-
-    [title="Twitter"]:hover svg path {
-      fill: #000000 !important;
-      stroke: none !important;
-    }
-
-    /* Override for Hero Section (Dark background) */
-    .h-soc[title="Twitter"]:hover {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border-color: #FFFFFF !important;
-    }
-
-    .h-soc[title="Twitter"]:hover svg path {
-      fill: #FFFFFF !important;
-    }
 
     [title="YouTube"] {
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
@@ -3171,11 +3115,6 @@
       color: var(--ink) !important;
     }
 
-    /* Branded Border Colors for Contact row */
-    .soc-btn[title="Twitter"] {
-      border-color: rgba(0, 0, 0, 0.3);
-      color: #000;
-    }
 
     .soc-btn[title="YouTube"] {
       border-color: rgba(255, 0, 0, 0.3);
@@ -3187,15 +3126,6 @@
       color: var(--or);
     }
 
-    /* Branded footer icons */
-    .f-soc[title="Twitter"] {
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .f-soc[title="Twitter"]:hover {
-      background: #000 !important;
-      border-color: #000 !important;
-    }
 
     .f-soc[title="YouTube"] {
       border-color: rgba(255, 255, 255, 0.2);
@@ -4748,33 +4678,32 @@
     ───────────────────────────────────────── */
     .reveal {
       opacity: 0;
-      transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-      will-change: transform, opacity;
+      transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     .reveal-up {
-      transform: translateY(40px);
+      /* No translation to prevent scroll-sapping layout shifts */
     }
 
     .reveal-down {
-      transform: translateY(-40px);
+      /* No translation to prevent scroll-sapping layout shifts */
     }
 
     .reveal-left {
-      transform: translateX(-40px);
+      /* No translation to prevent scroll-sapping layout shifts */
     }
 
     .reveal-right {
-      transform: translateX(40px);
+      /* No translation to prevent scroll-sapping layout shifts */
     }
 
     .reveal-scale {
-      transform: scale(0.9);
+      transform: scale(0.97);
     }
 
     .reveal.active {
       opacity: 1;
-      transform: translate(0, 0) scale(1);
+      transform: scale(1);
     }
 
     /* Staggered children */
@@ -5420,12 +5349,7 @@
 
     <!-- RIGHT SIDE -->
     <div class="nav-right">
-      <!-- ══ SOCIAL ICONS IN NAVBAR ══
-         Change the href="#" to your actual URLs:
-         Instagram → href="https://instagram.com/athithyafoundation"
-         LinkedIn  → href="https://linkedin.com/company/athithya-foundation"
-         Facebook  → href="https://facebook.com/athithyafoundation"
-    -->
+
       <div class="nav-socials">
         <a href="https://www.instagram.com/athithyafoundation?igsh=dnMwc3R0ejhxbjdi" class="nav-soc" title="Instagram"
           target="_blank" rel="noopener">
@@ -5435,27 +5359,12 @@
             <circle cx="17.5" cy="6.5" r="1.2" fill="#E8610A" />
           </svg>
         </a>
-        <a href="#" class="nav-soc" title="LinkedIn" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="2" y="2" width="20" height="20" rx="4" stroke="#E8610A" stroke-width="2" />
-            <path d="M7 10v7M7 7v.5" stroke="#E8610A" stroke-width="2" stroke-linecap="round" />
-            <path d="M11 17v-4c0-1.5 1-2 2-2s2 .5 2 2v4" stroke="#E8610A" stroke-width="2" stroke-linecap="round" />
-            <path d="M11 10v7" stroke="#E8610A" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        </a>
         <a href="https://www.facebook.com/share/17LC7DZdVY/?mibextid=wwXIfr" class="nav-soc" title="Facebook"
           target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none">
             <rect x="2" y="2" width="20" height="20" rx="5" stroke="#E8610A" stroke-width="2" />
             <path d="M13 21v-8h2.5l.5-3H13V8.5c0-.83.67-1.5 1.5-1.5H16V4h-2a4 4 0 0 0-4 4v2H8v3h2v8" stroke="#E8610A"
               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </a>
-        <a href="#" class="nav-soc" title="Twitter" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-              fill="#E8610A" />
           </svg>
         </a>
         <a href="https://www.youtube.com/@AthithyaFoundation" class="nav-soc" title="YouTube" target="_blank"
@@ -5557,18 +5466,25 @@
 
     <div class="hero-inner">
       <div class="hero-left au">
-        <div class="hero-pill"><span class="hero-dot"></span> Education · Social Impact · Bengaluru</div>
+        <div class="hero-pill"><span class="hero-dot"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="var(--orv)" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M6 3h12l4 6-10 12L2 9Z" />
+              <path d="M11 3 8 9l4 12 4-12-3-6" />
+              <path d="M2 9h20" />
+            </svg></span> MISSION FOR EDUCATION</div>
         <h1 class="hero-h1">
           Redefining Education.
           <em>Strengthening Society.</em>
         </h1>
-        <p class="hero-sanskrit"> "✦ Vidya Vinayena Shobhite ✦" - Knowledge Shines Through Humility</p>
-        <p class="hero-desc">A purpose driven non-profit transforming education ecosystems and delivering impactful
+        <p class="hero-sanskrit"> "Vidya Vinayena Shobhite" - Knowledge Shines Through Humility</p>
+        <p class="hero-desc">A purpose driven non-profit orgna transforming education ecosystems and delivering
+          impactful
           social
           services that uplift communities across Karnataka.</p>
         <div class="hero-btns">
           <a href="#programs" class="btn-main">Explore Programs</a>
-          <a href="#csr" class="btn-ghost">CSR Partnerships →</a>
+          <a href="#csr" class="btn-ghost">CSR Partnerships </a>
         </div>
 
         <!-- HERO SOCIAL LINKS
@@ -5584,28 +5500,12 @@
                 <circle cx="17.5" cy="6.5" r="1.2" fill="rgba(255,255,255,0.6)" />
               </svg>
             </a>
-            <a href="https://linkedin.com/company/athithya-foundation" class="h-soc" title="LinkedIn" target="_blank"
-              rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="2" width="20" height="20" rx="4" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
-                <path d="M7 10v7M7 7v.5" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" />
-                <path d="M11 17v-4c0-1.5 1-2 2-2s2 .5 2 2v4M11 10v7" stroke="rgba(255,255,255,0.6)" stroke-width="2"
-                  stroke-linecap="round" />
-              </svg>
-            </a>
             <a href="https://www.facebook.com/share/17LC7DZdVY/?mibextid=wwXIfr" class="h-soc" title="Facebook"
               target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none">
                 <rect x="2" y="2" width="20" height="20" rx="5" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
                 <path d="M13 21v-8h2.5l.5-3H13V8.5c0-.83.67-1.5 1.5-1.5H16V4h-2a4 4 0 0 0-4 4v2H8v3h2v8"
                   stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </a>
-            <a href="#" class="h-soc" title="Twitter" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-                  fill="rgba(255,255,255,0.6)" />
               </svg>
             </a>
             <a href="https://www.youtube.com/@AthithyaFoundation" class="h-soc" title="YouTube" target="_blank"
@@ -5639,19 +5539,19 @@
             <div class="hero-logo-tag">Malleshwaram, Bengaluru-560003</div>
           </div>
           <div class="stat-chip sc1">
-            <div class="sn">10k+</div>
+            <div class="sn">5k+</div>
             <div class="sl">Students Reached</div>
           </div>
           <div class="stat-chip sc2">
-            <div class="sn">50+</div>
+            <div class="sn">4</div>
             <div class="sl">Schools Adopted</div>
           </div>
           <div class="stat-chip sc3">
-            <div class="sn">500+</div>
+            <div class="sn">15+</div>
             <div class="sl">CSR Partners</div>
           </div>
           <div class="stat-chip sc4">
-            <div class="sn">500+</div>
+            <div class="sn">5+</div>
             <div class="sl">Fundings Partners</div>
           </div>
           <div class="stat-chip sc5">
@@ -5667,15 +5567,15 @@
   <div class="strip">
     <div class="reveal reveal-up" style="display:flex; width:100%; justify-content: space-around; flex-wrap: inherit;">
       <div class="strip-item">
-        <div class="strip-n">10,000+</div>
+        <div class="strip-n">5000+</div>
         <div class="strip-l">Students Impacted</div>
       </div>
       <div class="strip-item">
-        <div class="strip-n">50+</div>
+        <div class="strip-n">4+</div>
         <div class="strip-l">Schools Adopted</div>
       </div>
       <div class="strip-item">
-        <div class="strip-n">100+</div>
+        <div class="strip-n">50+</div>
         <div class="strip-l">Volunteers</div>
       </div>
       <div class="strip-item">
@@ -5683,7 +5583,7 @@
         <div class="strip-l">CSR Partners</div>
       </div>
       <div class="strip-item">
-        <div class="strip-n">12+</div>
+        <div class="strip-n">3</div>
         <div class="strip-l">Districts Covered</div>
       </div>
     </div>
@@ -5719,7 +5619,7 @@
               style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">
             <div
               style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);border-radius:inherit;display:flex;align-items:flex-end;padding:14px;">
-              <span style="color:#fff;font-size:.72rem;font-weight:800;">Our Classrooms →</span>
+              <span style="color:#fff;font-size:.72rem;font-weight:800;">Our Classrooms </span>
             </div>
           </div>
           <div class="mos-badge">
@@ -5733,17 +5633,30 @@
             combined with strong values creates lasting social change.</p>
           <div class="vm-grid">
             <div class="vm">
-              <div class="vm-ico">🔭</div>
+              <div class="vm-ico"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                  fill="none" stroke="var(--or)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6L15 17H9l-.8-2C6.3 13.7 5 11.5 5 9a7 7 0 0 1 7-7z" />
+                  <line x1="12" y1="13" x2="12" y2="17" />
+                  <line x1="9.5" y1="13" x2="14.5" y2="13" />
+                </svg></div>
               <h4>Our Vision</h4>
               <p>An inclusive society where every child has access to quality education, dignity, and opportunity.</p>
             </div>
             <div class="vm">
-              <div class="vm-ico">🎯</div>
+              <div class="vm-ico"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                  fill="none" stroke="var(--or)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <circle cx="12" cy="12" r="7" />
+                  <circle cx="12" cy="12" r="11" />
+                  <line x1="12" y1="12" x2="19" y2="5" />
+                  <polyline points="16 5 19 5 19 8" />
+                </svg></div>
               <h4>Our Mission</h4>
               <p>Redefine education through innovative, value based learning and responsible citizenship.</p>
             </div>
           </div>
-          <div class="about-quote">"✦ Vidya Vinayena Shobhite ✦" - Knowledge shines brightest when paired with humility
+          <div class="about-quote">"Vidya Vinayena Shobhite" - Knowledge shines brightest when paired with humility
             and service to society.</div>
         </div>
       </div>
@@ -5826,7 +5739,7 @@
             <h3>Government School Adoption</h3>
             <p>Infrastructure, resources, and mentoring for government schools to reach their full potential.</p>
             <a href="#" class="pcard-arrow" style="color:var(--or)"
-              onclick="showProgramInfo('school');return false;">Learn more →</a>
+              onclick="showProgramInfo('school');return false;">Learn more</a>
           </div>
         </div>
         <div class="pcard">
@@ -5837,7 +5750,7 @@
             <h3>Foundational Learning Enhancement</h3>
             <p>Literacy and numeracy programs ensuring no child is left behind in early education years.</p>
             <a href="#" class="pcard-arrow" style="color:var(--teal)"
-              onclick="showProgramInfo('foundational');return false;">Learn more →</a>
+              onclick="showProgramInfo('foundational');return false;">Learn more</a>
           </div>
         </div>
         <div class="pcard">
@@ -5847,7 +5760,7 @@
             <h3>Smart Classrooms & Digital Access</h3>
             <p>Smart classrooms with projectors, digital content, and internet access in government schools.</p>
             <a href="#" class="pcard-arrow" style="color:var(--blue)"
-              onclick="showProgramInfo('smart');return false;">Learn more →</a>
+              onclick="showProgramInfo('smart');return false;">Learn more</a>
           </div>
         </div>
         <div class="pcard">
@@ -5857,7 +5770,7 @@
             <h3>Library & Reading Initiatives</h3>
             <p>Vibrant libraries and curated reading programs fostering a love for books in every school.</p>
             <a href="#" class="pcard-arrow" style="color:var(--pur)"
-              onclick="showProgramInfo('library');return false;">Learn more →</a>
+              onclick="showProgramInfo('library');return false;">Learn more</a>
           </div>
         </div>
         <div class="pcard">
@@ -5867,7 +5780,7 @@
             <h3>Teacher Capacity Building</h3>
             <p>Training teachers with modern pedagogy, digital tools, and subject-matter expertise workshops.</p>
             <a href="#" class="pcard-arrow" style="color:var(--grn)"
-              onclick="showProgramInfo('teacher');return false;">Learn more →</a>
+              onclick="showProgramInfo('teacher');return false;">Learn more</a>
           </div>
         </div>
         <div class="pcard">
@@ -5877,7 +5790,7 @@
             <h3>Women & Youth Empowerment</h3>
             <p>Skills, awareness, and leadership programs empowering women and youth from underserved communities.</p>
             <a href="#" class="pcard-arrow" style="color:var(--red)"
-              onclick="showProgramInfo('women');return false;">Learn more →</a>
+              onclick="showProgramInfo('women');return false;">Learn more</a>
           </div>
         </div>
       </div>
@@ -5892,8 +5805,7 @@
       <div class="gal-head">
         <div class="eyebrow">Our Impact in Pictures</div>
         <h2 class="sec-title">Moments That <span>Tell Our Story</span></h2>
-        <p class="sec-sub">Every image is a testimony to the change we're building - one school, one child, one
-          community at a time.</p>
+        <p class="sec-sub">Every image is a testimony to the change we're building.</p>
       </div>
 
       <!-- GALLERY GRID
@@ -5908,14 +5820,14 @@
       <div class="gal-cta">
         <a href="https://www.instagram.com/athithyafoundation?igsh=dnMwc3R0ejhxbjdi" class="btn-or-out"
           target="_blank">View on Instagram
-          →</a>
+        </a>
         <a href="javascript:void(0)" class="btn-gallery-full" onclick="openGalleryModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
             <circle cx="12" cy="13" r="4"></circle>
           </svg>
-          View Full Gallery →
+          View Full Gallery
         </a>
       </div>
     </div>
@@ -5929,7 +5841,7 @@
   <section class="csr" id="csr">
     <div class="wrap reveal reveal-up">
       <div class="eyebrow">For Corporates</div>
-      <h2 class="sec-title">Partner With <span>Athithya Foundation®</span></h2>
+      <h2 class="sec-title">Partner With <span>Athithya Foundation</span></h2>
       <p class="sec-sub">Structured CSR engagement models for corporates seeking meaningful, measurable, and ESG-aligned
         impact.</p>
       <div class="csr-grid">
@@ -6003,20 +5915,20 @@
               </div>
               <div>
                 <h4>Scalable Multi-Location Programs</h4>
-                <p>Programs can scale across multiple cities as your CSR mandate grows over the years.</p>
+                <p>We plan to scale across multiple cities as Athithya grows over the years.</p>
               </div>
             </div>
           </div>
         </div>
         <div class="csr-form">
-          <h3>Start your journey with us</h3>
+          <h3>Join us and be a part of Athithya</h3>
           <p>Tell us about your CSR goals. We usually respond within 24 hours.</p>
           <div class="fgrow">
             <div class="fg"><label>First Name</label><input id="csr-fname" type="text" placeholder="Jyothi" /></div>
             <div class="fg"><label>Last Name</label><input id="csr-lname" type="text" placeholder="Gudi" /></div>
           </div>
           <div class="fg"><label>Company Name</label><input id="csr-company" type="text"
-              placeholder="Athithya Foundation®" /></div>
+              placeholder="Athithya Foundation" /></div>
           <div class="fg"><label>Work Email</label><input id="csr-email" type="email"
               placeholder="jyothi@company.com" /></div>
           <div class="fg"><label>CSR Budget Range</label>
@@ -6031,8 +5943,8 @@
           <div class="fg"><label>Message</label><textarea id="csr-message"
               placeholder="Tell us about your CSR priorities..."></textarea>
           </div>
-          <button class="btn-csr-sub" onclick="saveCsrForm(event)">Send Enquiry →</button>
-          <button class="btn-donate-now" onclick="openDonateModal()"> Donate Now — Make an Impact
+          <button class="btn-csr-sub" onclick="saveCsrForm(event)">Send Enquiry </button>
+          <button class="btn-donate-now" onclick="openDonateModal()"> Donate Now and Make an Impact
             (Non-CSR)</button>
         </div>
       </div>
@@ -6102,7 +6014,7 @@
                 style="color:var(--or); font-size:0.8rem; font-weight:700;">Read more</span></p>
           </div>
           <div class="tc-auth">
-            <div class="tc-av bl"><img src="images/Gemini_Generated_Image_k25u8gk25u8gk25u.png" alt="Praveen V. Gudi"
+            <div class="tc-av bl"><img src="images/Praveen1.png" alt="Praveen V. Gudi"
                 onerror="this.parentElement.innerHTML='PG'"></div>
             <div>
               <div class="tc-name">Praveen V. Gudi</div>
@@ -6118,7 +6030,7 @@
 
       <!-- Button for all reviews modal -->
       <button class="btn-view-all-reviews" id="btnMoreReviews" onclick="openReviewsModal()"
-        style="display:none; margin: 30px auto 0;">See More Reviews →</button>
+        style="display:none; margin: 30px auto 0;">See More Reviews </button>
 
 
 
@@ -6158,7 +6070,7 @@
             <label>Your Review / Opinion</label>
             <textarea id="conv-message" placeholder="Share your experience with Athithya Foundation..."></textarea>
           </div>
-          <button class="btn-conv-sub" onclick="submitConversation()">Submit Review →</button>
+          <button class="btn-conv-sub" onclick="submitConversation()">Submit Review </button>
           <button class="btn-check-reviews" onclick="openReviewsModal()"> Check Reviews</button>
         </div>
       </div>
@@ -6196,7 +6108,7 @@
             <div class="owner-card" onclick="openMosaicPopup('jyothi')">
               <div class="owner-pic">
                 <div class="owner-pic-img-wrap">
-                  <img src="images/Gemini_Generated_Image_sxbckxsxbckxsxbc.png" alt="Jyothi Gudi"
+                  <img src="images/Jyothigudi1.png" alt="Jyothi Gudi"
                     onerror="this.parentElement.querySelector('img').style.display='none'">
                 </div>
                 <span>J</span>
@@ -6211,7 +6123,7 @@
             <div class="owner-card" onclick="openMosaicPopup('nityashree')">
               <div class="owner-pic">
                 <div class="owner-pic-img-wrap">
-                  <img src="images/Gemini_Generated_Image_wdh84hwdh84hwdh8.png" alt="Nityashree.J"
+                  <img src="images/Nitya1.png" alt="Nityashree.J"
                     onerror="this.parentElement.querySelector('img').style.display='none'">
                 </div>
                 <span>N</span>
@@ -6226,7 +6138,7 @@
             <div class="owner-card" onclick="openMosaicPopup('shridevi')">
               <div class="owner-pic">
                 <div class="owner-pic-img-wrap">
-                  <img src="images/Gemini_Generated_Image_svf4ursvf4ursvf4.png" alt="Shridevi"
+                  <img src="images/Sridevi2.png" alt="Shridevi"
                     onerror="this.parentElement.querySelector('img').style.display='none'">
                 </div>
                 <span>S</span>
@@ -6331,18 +6243,7 @@
                   <span>Instagram</span>
                 </div>
               </a>
-              <a href="https://linkedin.com/company/athithya-foundation" class="soc-btn-v" title="LinkedIn"
-                target="_blank" rel="noopener">
-                <div class="soc-btn-wrap">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="2" width="20" height="20" rx="4" stroke="var(--or)" stroke-width="2" />
-                    <path d="M7 10v7M7 7v.5" stroke="var(--or)" stroke-width="2" stroke-linecap="round" />
-                    <path d="M11 17v-4c0-1.5 1-2 2-2s2 .5 2 2v4M11 10v7" stroke="var(--or)" stroke-width="2"
-                      stroke-linecap="round" />
-                  </svg>
-                  <span>LinkedIn</span>
-                </div>
-              </a>
+
               <a href="https://www.youtube.com/@AthithyaFoundation" class="soc-btn-v" title="YouTube" target="_blank"
                 rel="noopener">
                 <div class="soc-btn-wrap">
@@ -6396,7 +6297,8 @@
               <div class="fbl-tag">Vidya Vinayena Shobhite</div>
             </div>
           </div>
-          <p class="fb-desc">A purpose driven non-profit transforming education ecosystems and delivering social
+          <p class="fb-desc">A purpose driven non-profit orgnaisation transforming education ecosystems and delivering
+            social
             services
             that uplift communities across Karnataka since 2026.</p>
         </div>
@@ -6442,7 +6344,7 @@
 
       <div class="footer-bottom">
         <p style="font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 8px;">
-          Athithya Foundation (athithya) is a premier non-profit foundation and charity in Karnataka.
+          Athithya Foundation (athithya) is a non-profit foundation and charity in Karnataka.
           We specialize in school donations, smart classroom development, and educational upliftment for government
           schools.
         </p>
@@ -6475,7 +6377,7 @@
           <div id="donateStep1">
             <!-- Dynamic QR Code -->
             <div class="donate-qr-wrap">
-              <div class="donate-qr-label">📱 Scan to Pay via Any UPI App</div>
+              <div class="donate-qr-label"> Scan to Pay via Any UPI App</div>
               <img src="images/Donation QR.jpeg" alt="UPI QR Code" class="donate-qr-img" id="donateQRImg">
               <div class="donate-qr-caption">Works with Google Pay, PhonePe, Paytm & all UPI apps</div>
             </div>
@@ -6512,7 +6414,7 @@
 
             <button class="donate-step-btn" onclick="showDonateStep(2)"
               style="width:100%; background:var(--or); color:#fff; border:none; padding:15px; border-radius:12px; font-weight:800; cursor:pointer; font-size:1rem; box-shadow:0 8px 24px rgba(232, 97, 10, 0.35);">I
-              Have Completed My Payment →</button>
+              Have Completed My Payment </button>
           </div>
 
           <!-- STEP 2: RECORD FORM -->
@@ -6585,7 +6487,7 @@
         <h2 class="prog-modal-title" id="progModalTitle"></h2>
         <p class="prog-modal-desc" id="progModalDesc"></p>
         <a href="javascript:void(0)" class="btn-main" onclick="closeProgramModal(); openDonateModal()"
-          style="margin-top:18px;display:inline-block">Get Involved →</a>
+          style="margin-top:18px;display:inline-block">Get Involved </a>
       </div>
     </div>
   </div>
@@ -6633,7 +6535,7 @@
         <p id="mosaicModalDesc" style="color:var(--mut);font-size:.87rem;line-height:1.7;margin-bottom:20px;"></p>
         <div style="display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;">
           <a href="#csr" onclick="closeMosaicModal()" class="btn-main" style="width:100%;text-align:center;">Donate Now
-            →</a>
+          </a>
         </div>
       </div>
     </div>
@@ -6657,8 +6559,8 @@
         <div class="gm-brand">
           <img src="Athithya_Foundation_Logo_withoutBG.png" alt="Logo">
           <div class="gm-brand-txt">
-            <h2>Our Gallery</h2>
-            <p>Athithya Foundation®</p>
+            <h2> Gallery</h2>
+            <p>Athithya Foundation</p>
           </div>
         </div>
         <button class="gm-close" onclick="closeGalleryModal()">✕</button>

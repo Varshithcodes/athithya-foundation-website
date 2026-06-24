@@ -55,7 +55,7 @@ const programData = {
     tag: 'Education',
     title: 'Government School Adoption',
     img: 'images/architecture_village.jpg',
-    desc: 'Athithya Foundation® partners with government schools to provide complete infrastructure upgrades from new furniture and sanitation to libraries, computers, and learning resources. We work with school management, parents, and local authorities to create a holistic transformation that lasts well beyond a single academic year. Each adopted school receives dedicated mentoring support, teacher training, and quarterly impact assessments to track progress and celebrate milestones.'
+    desc: 'Athithya Foundation partners with government schools to provide complete infrastructure upgrades from new furniture and sanitation to libraries, computers, and learning resources. We work with school management, parents, and local authorities to create a holistic transformation that lasts well beyond a single academic year. Each adopted school receives dedicated mentoring support, teacher training, and quarterly impact assessments to track progress and celebrate milestones.'
   },
   foundational: {
     emoji: '',
@@ -90,7 +90,7 @@ const programData = {
     tag: 'Social Impact',
     title: 'Women & Youth Empowerment',
     img: 'images/img3.webp',
-    desc: 'Beyond the classroom, Athithya Foundation® runs targeted programmes for women and youth from underserved communities. Our Women\'s Empowerment cohorts offer vocational skill training, financial literacy, legal awareness, and entrepreneurship mentoring. Our Youth Leadership Camps help adolescent boys and girls develop communication, civic responsibility, and career readiness skills. We believe that an empowered generation of women and youth is the surest path to a more equitable and prosperous Karnataka.'
+    desc: 'Beyond the classroom, Athithya Foundation runs targeted programmes for women and youth from underserved communities. Our Women\'s Empowerment cohorts offer vocational skill training, financial literacy, legal awareness, and entrepreneurship mentoring. Our Youth Leadership Camps help adolescent boys and girls develop communication, civic responsibility, and career readiness skills. We believe that an empowered generation of women and youth is the surest path to a more equitable and prosperous Karnataka.'
   }
 };
 
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
     }
-  } catch (_) {}
+  } catch (_) { }
 
   // 4. Absolute Fallback (Empty by default per user request)
   const fallbackData = [];
@@ -390,7 +390,7 @@ function saveCsrForm(e) {
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const target = document.querySelector(a.getAttribute('href'));
-    if (target) { e.preventDefault(); target.scrollIntoView(); }
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
 
@@ -399,7 +399,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 const docData = {
   privacy: {
     title: 'Privacy Policy',
-    content: '<p style="margin-bottom:12px;"><strong>Athithya Foundation®</strong> respects your privacy and is committed to protecting your personal data. We collect minimal information required to process donations and communicate our impact. We do not sell or share your personal data with third parties.</p><p style="margin-bottom:12px;">The information we collect is solely used to send updates, newsletters, and donation receipts. We implement appropriate security measures to prevent unauthorized access or disclosure of your information.</p><p>For any privacy-related queries, please contact us at foundationathithya@gmail.com.</p>'
+    content: '<p style="margin-bottom:12px;"><strong>Athithya Foundation</strong> respects your privacy and is committed to protecting your personal data. We collect minimal information required to process donations and communicate our impact. We do not sell or share your personal data with third parties.</p><p style="margin-bottom:12px;">The information we collect is solely used to send updates, newsletters, and donation receipts. We implement appropriate security measures to prevent unauthorized access or disclosure of your information.</p><p>For any privacy-related queries, please contact us at foundationathithya@gmail.com.</p>'
   },
   terms: {
     title: 'Terms & Conditions',
@@ -407,7 +407,7 @@ const docData = {
   },
   certificate: {
     title: '80G Certificate',
-    content: '<p style="margin-bottom:12px;">Athithya Foundation® is a registered non-profit organization. All donations made to us are eligible for tax deduction under Section 80G of the Income Tax Act, 1961.</p><p style="margin-bottom:12px;">When making a donation, please ensure you provide your full name, PAN, and address to facilitate the generation of an 80G receipt.</p><p>Your 80G receipt and acknowledgment will be emailed to you within 7-10 working days of your successful donation processing.</p>'
+    content: '<p style="margin-bottom:12px;">Athithya Foundation is a registered non-profit organization. All donations made to us are eligible for tax deduction under Section 80G of the Income Tax Act, 1961.</p><p style="margin-bottom:12px;">When making a donation, please ensure you provide your full name, PAN, and address to facilitate the generation of an 80G receipt.</p><p>Your 80G receipt and acknowledgment will be emailed to you within 7-10 working days of your successful donation processing.</p>'
   }
 };
 
@@ -442,7 +442,7 @@ const popupData = {
   main: {
     img: 'images/IMG_0490.PNG',
     title: 'Our Work in Action',
-    desc: 'Athithya Foundation® has transformed over 50 government schools across Karnataka. We provide infrastructure upgrades, smart classrooms, libraries, and ongoing mentoring - giving every child the environment they deserve to learn and grow.'
+    desc: 'Began in 2026, We atAthithya Foundation have transformed over 3 government schools across Karnataka. We provide infrastructure upgrades, smart classrooms, libraries, and ongoing mentoring.. giving every child the environment they deserve to learn and grow. Our main moto has always been education is the future '
   },
   sec: {
     img: 'images/class.avif',
@@ -460,7 +460,7 @@ const popupData = {
     desc: 'Optimizing the resources for the benefit of the students is and will always be our priority. We are committed to redefining education through innovative systems.'
   },
   jyothi: {
-    img: 'images/Gemini_Generated_Image_sm9dlcsm9dlcsm9d.png',
+    img: 'images/Jyothi2.png',
     role: 'Secretary & Co-Founder',
     icon: '',
     headTitle: '',
@@ -468,7 +468,7 @@ const popupData = {
     desc: 'We started Athithya to ensure that every rural student has access to equal learning opportunities. Our goal is to level the playing field for the next generation.'
   },
   nityashree: {
-    img: 'images/Gemini_Generated_Image_863s7e863s7e863s.png',
+    img: 'images/Nitya2.png',
     role: 'Vice President',
     icon: '',
     headTitle: '',
@@ -476,7 +476,7 @@ const popupData = {
     desc: 'Technology should never be a luxury. We\'re bridging the gap between desire and reality for young minds by integrating modern digital tools into rural education ecosystems.'
   },
   shridevi: {
-    img: 'images/Gemini_Generated_Image_rv1aqorv1aqorv1a.png',
+    img: 'images/Sridevi1.png',
     role: 'Trustee',
     icon: '',
     headTitle: '',
@@ -497,7 +497,7 @@ const popupData = {
     desc: "Athithya Foundation delivered exactly what they had promised, Transparent reporting, visible impact, and genuine dedication. For me, Athithya is the best CSR partner we have worked with in Bengaluru.Their professionalism and on ground execution are unparalleled, and seeing the real world change they create gave us total confidence that our funds were being used perfectly.It is rare that we get to find a partner that combines such heart with such high level efficiency."
   },
   guest3: {
-    img: 'images/Gemini_Generated_Image_k25u8gk25u8gk25u.png',
+    img: 'images/Praveen1.png',
     role: 'Health Department / Community Member',
     title: 'Praveen V. Gudi',
     desc: 'I have visited many schools and foundations before, but what Athithya Foundation has achieved here is truly commendable. Transitioning from broken benches and no library to a modern smart classroom and 500 books in just two years is a remarkable feat of on ground execution. As someone in the health department, I know that environment dictates outcomes... by providing these resources, they have brought a renewed sense of dignity and hope to both students and teachers. The transformation is unbelievable, and it is clear that their dedication to the community is genuine'
@@ -735,7 +735,7 @@ async function fetchAndRenderProjects() {
             const staticData = await staticRes.json();
             projects = staticData.projects || [];
           }
-        } catch (_) {}
+        } catch (_) { }
       }
     }
     allProjects = projects || [];
@@ -776,9 +776,9 @@ async function fetchAndRenderProjects() {
         card.innerHTML = `
           <div class="proj-info" style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 290px; border: 2px dashed rgba(255,255,255,0.15); border-radius: 20px; text-align: center; color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.01); margin: 5px;">
             <div style="padding: 20px;">
-              <div style="font-size: 1.8rem; margin-bottom: 12px; color: rgba(232, 97, 10, 0.4);">✦</div>
+              <div style="font-size: 1.8rem; margin-bottom: 12px; color: rgba(232, 97, 10, 0.4);"></div>
               <h4 style="font-family:'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 6px; color: rgba(255,255,255,0.4); font-weight:700;">Project Slot ${idx + 1}</h4>
-              <p style="font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; color: rgba(255,255,255,0.2);">Awaiting Project Details</p>
+              <p style="font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; color: rgba(255,255,255,0.2);">Not uploaded yet</p>
             </div>
           </div>
         `;
@@ -828,13 +828,13 @@ function openViewAllModal() {
     if (proj.createdAt || proj.date) {
       try {
         dateLabel = new Date(proj.createdAt || proj.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
-      } catch(_) {}
+      } catch (_) { }
     }
 
     const imgSrc = proj.image || '';
     const imgHtml = imgSrc
       ? `<div class="va-card-img-wrap"><img src="${imgSrc}" alt="${proj.title}" loading="lazy"></div>`
-      : `<div class="va-card-img-wrap" style="height:200px;background:rgba(232,97,10,0.08);display:flex;align-items:center;justify-content:center;"><span style="font-size:2.5rem;opacity:0.3;">✦</span></div>`;
+      : `<div class="va-card-img-wrap" style="height:200px;background:rgba(232,97,10,0.08);display:flex;align-items:center;justify-content:center;"><span style="font-size:2.5rem;opacity:0.3;"></span></div>`;
 
     card.innerHTML = `
       ${imgHtml}
@@ -960,6 +960,13 @@ function attachDragToCard(card, proj, projects) {
 
     // Only treat as drag if horizontal movement dominates
     if (Math.abs(currentX) < 5 && Math.abs(currentY) < 5) return;
+
+    // If vertical movement dominates, allow native vertical scrolling
+    if (Math.abs(currentY) > Math.abs(currentX)) {
+      isDragging = false;
+      return;
+    }
+
     didDrag = true;
     if (e.cancelable) e.preventDefault();
 
