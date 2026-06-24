@@ -603,7 +603,17 @@
       transform: translateX(-4px) scale(1.08);
     }
 
+    @media (max-width: 450px) {
+      .fab-menu {
+        right: 0;
+        left: auto;
+        transform: translateY(-10px) scale(0.95);
+      }
 
+      .fab-menu.open {
+        transform: translateY(0) scale(1);
+      }
+    }
 
     /* ─────────────────────────────────────────
    HERO
