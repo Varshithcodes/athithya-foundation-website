@@ -5218,3 +5218,71 @@
       line-height: 1.8;
       white-space: pre-wrap;
     }
+
+    /* ─────────────────────────────────────────
+       PRIVACY & SCREENSHOT PROTECTION
+    ───────────────────────────────────────── */
+    .privacy-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      z-index: 100000;
+      color: #ffffff;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    
+    .privacy-overlay h2 {
+      font-size: 2.2rem;
+      color: var(--or);
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+    
+    .privacy-overlay p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+      max-width: 450px;
+      line-height: 1.6;
+    }
+
+    /* Obfuscate images and video elements on window blur / screenshot trigger */
+    body.obfuscated img,
+    body.obfuscated video,
+    body.obfuscated iframe,
+    body.obfuscated canvas {
+      filter: brightness(0) contrast(0) !important;
+      background: #000000 !important;
+      transition: filter 0.1s ease;
+    }
+
+    /* Print Protection */
+    @media print {
+      body {
+        background: #000000 !important;
+        color: #000000 !important;
+      }
+      img, video, iframe, canvas, .tc-av, .pcard-img, .wiki-hero, .donate-qr-wrap {
+        display: none !important;
+      }
+      body::before {
+        content: "SCREENSHOTS & PRINTING RESTRICTED FOR PRIVACY";
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 28px;
+        font-weight: 800;
+        color: #ffffff;
+        background: #000000;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+      }
+    }
