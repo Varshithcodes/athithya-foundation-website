@@ -1,51 +1,38 @@
 (function () {
   const overlay = document.getElementById('privacyOverlay');
-  let isKeyTriggered = false;
+  let isLocked = false;
 
   function enableProtection() {
+    isLocked = true;
     document.body.classList.add('obfuscated');
-    if (overlay) overlay.style.display = 'flex';
+    if (overlay) {
+      overlay.style.display = 'flex';
+      const desc = overlay.querySelector('p');
+      if (desc && !desc.innerText.includes("Please reload")) {
+        desc.innerHTML += "<br><br><strong style='color:var(--or); font-size:1.2rem; display:block; margin-top:15px;'>Please reload the page to restore access.</strong>";
+      }
+    }
   }
 
-  function disableProtection() {
-    if (isKeyTriggered) return;
-    document.body.classList.remove('obfuscated');
-    if (overlay) overlay.style.display = 'none';
-  }
-
-  // 1. Aggressive focus polling (detects focus loss from screenshot tools/os overlays)
-  setInterval(function () {
-    if (!document.hasFocus()) {
-      enableProtection();
-    } else if (!isKeyTriggered) {
-      disableProtection();
-    }
-  }, 30);
-
-  // 2. Multitasking/Tab visibility detection (hides content in app switcher)
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) {
-      enableProtection();
-    } else {
-      disableProtection();
-    }
-  });
-
-  // 3. Desktop Screenshot/Print key combination interceptors
+  // 1. Desktop Screenshot/Print key combination interceptors -> Permanent Lock
   window.addEventListener('keydown', function (e) {
     if (e.key === 'PrintScreen' || e.keyCode === 44 ||
       (e.shiftKey && (e.metaKey || e.ctrlKey) && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5'))) {
-      isKeyTriggered = true;
       enableProtection();
-      navigator.clipboard.writeText("Screenshots are restricted.").catch(() => { });
-
-      setTimeout(function () {
-        isKeyTriggered = false;
-        if (document.hasFocus()) {
-          disableProtection();
-        }
-      }, 3000);
+      navigator.clipboard.writeText("Screenshots are restricted on this platform.").catch(() => { });
     }
+  });
+
+  // 2. Multitasking/Tab visibility detection (hides content in app switcher) -> Permanent Lock
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      enableProtection();
+    }
+  });
+
+  // 3. Blur detection (e.g., when Snipping Tool or PrintScreen overlay takes focus) -> Permanent Lock
+  window.addEventListener('blur', function () {
+    enableProtection();
   });
 
   // 4. Mobile touch hold protection (disables "save image" / context menus on images)
