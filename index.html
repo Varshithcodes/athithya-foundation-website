@@ -579,7 +579,7 @@
 
     @media (max-width: 450px) {
       .fab-menu {
-        right: 0;
+        right: 16px;
         left: auto;
         transform: translateY(-10px) scale(0.95);
       }
@@ -4401,40 +4401,54 @@
         left: 0;
         top: 0;
         border-radius: 0;
-        padding: 5px 15px !important;
-        /* Increased horizontal padding for better spacing */
-        min-height: 55px !important;
+        padding: 5px 10px !important;
+        min-height: 48px !important;
       }
 
       .nav-right {
-        padding-right: 12px;
-        /* Prevent menu button from being too "deep right" */
+        padding-right: 4px;
       }
 
       .brand-name {
-        font-size: 18px !important;
+        font-size: 14px !important;
         white-space: nowrap;
       }
 
       .brand-sub {
-        font-size: 8px !important;
+        font-size: 7px !important;
         letter-spacing: 0.05em;
         white-space: nowrap;
       }
 
       .logo-wrap {
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 10px !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 8px !important;
+      }
+
+      .logo-wrap img {
+        width: 100% !important;
+        height: 100% !important;
       }
 
       .nav-center {
-        margin-left: 8px !important;
+        margin-left: 6px !important;
       }
 
       .fab-btn svg {
-        width: 28px !important;
-        height: 28px !important;
+        width: 24px !important;
+        height: 24px !important;
+      }
+
+      .nav-phone {
+        font-size: 0.7rem !important;
+        margin: 0 4px !important;
+        gap: 3px !important;
+      }
+
+      .nav-phone svg {
+        width: 12px !important;
+        height: 12px !important;
       }
     }
 
