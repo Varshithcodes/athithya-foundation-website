@@ -657,33 +657,7 @@ let allProjects = [];
 let currentSwipeIndex = 0;
 let _swipeLocked = false;
 
-// Placeholder projects shown when no real projects are uploaded yet
-const PLACEHOLDER_PROJECTS = [
-  {
-    id: '__placeholder_1',
-    title: 'Smart Classroom Initiative',
-    shortDesc: 'Bringing interactive digital classrooms to government schools across Karnataka, equipped with projectors and curated learning content.',
-    detailedContent: 'Our Smart Classroom Initiative transforms bare government school rooms into vibrant digital learning hubs. We install projectors, interactive whiteboards, and curated educational content aligned to the state curriculum. This project has already impacted thousands of students.',
-    image: 'images/img3_educlassrooms.jpeg',
-    isPlaceholder: true
-  },
-  {
-    id: '__placeholder_2',
-    title: 'Library & Reading Programme',
-    shortDesc: 'Stocking school libraries with 500+ age-appropriate books in Kannada and English, with weekly reading circles and storytelling sessions.',
-    detailedContent: 'A love for reading is one of the greatest gifts we can give a child. We set up fully-stocked, beautifully designed libraries inside government schools. Weekly reading circles, storytelling sessions, and book-of-the-month clubs are run by trained facilitators.',
-    image: 'images/lib.avif',
-    isPlaceholder: true
-  },
-  {
-    id: '__placeholder_3',
-    title: 'Teacher Capacity Building',
-    shortDesc: 'Weekend workshops empowering government school teachers with modern pedagogy, digital tools, and subject-matter expertise.',
-    detailedContent: 'Great teachers are the backbone of great schools. Our intensive Teacher Capacity Building workshops run over weekends covering modern pedagogy, classroom management, digital tool integration, and emotional intelligence.',
-    image: 'images/teacher.jpg',
-    isPlaceholder: true
-  }
-];
+
 
 // ── Fetch & render initial 3 cards ──
 async function fetchAndRenderProjects() {
@@ -1090,3 +1064,380 @@ function closeWikiModal() {
     }
   }, { passive: true });
 })();
+
+
+// ── EXTRACTED INLINE SCRIPTS ──
+// ── DONATE MODAL ──
+    function openDonateModal() {
+      document.getElementById('donateModal').classList.add('open');
+      document.getElementById('donatePaymentView').style.display = 'block';
+      document.getElementById('donateSuccessView').style.display = 'none';
+      showDonateStep(1);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function showDonateStep(step) {
+      if (step === 1) {
+        document.getElementById('donateStep1').style.display = 'block';
+        document.getElementById('donateStep2').style.display = 'none';
+      } else {
+        document.getElementById('donateStep1').style.display = 'none';
+        document.getElementById('donateStep2').style.display = 'block';
+      }
+    }
+
+    function closeDonateModal() {
+      document.getElementById('donateModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function processPayment() {
+      const name = document.getElementById('donName').value.trim() || 'Anonymous';
+      const email = document.getElementById('donEmail').value.trim();
+      const amountStr = document.getElementById('donAmount').value.trim() || '0';
+      const phone = document.getElementById('donPhone').value.trim();
+
+      const amount = parseFloat(amountStr).toFixed(2);
+      const txnId = 'TXN' + Date.now();
+
+      // Use local timestamp for accuracy
+      const now = new Date();
+      const istTime = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+      const donation = {
+        sheetName: 'Payments',
+        txnId,
+        name,
+        email,
+        phone,
+        amount: Number(amount),
+        date: istTime,
+        isoDate: now.toISOString()
+      };
+
+      // Clear Form Fields
+      document.getElementById('donName').value = '';
+      document.getElementById('donEmail').value = '';
+      document.getElementById('donAmount').value = '';
+      document.getElementById('donPhone').value = '';
+
+      // 1. Save to localStorage (Admin Panel)
+      const existing = JSON.parse(localStorage.getItem('af_donations') || '[]');
+      existing.push(donation);
+      localStorage.setItem('af_donations', JSON.stringify(existing));
+
+      // 2. Clear view and show success
+      document.getElementById('donatePaymentView').style.display = 'none';
+      document.getElementById('donateTxnDisplay').innerHTML = `Transaction ID: <strong>${txnId}</strong><br>Time: ${istTime}`;
+      document.getElementById('donateSuccessView').style.display = 'block';
+
+      // 3. Sync to Google Sheets
+      sendToGoogleSheet(donation);
+    }
+
+    function copyUPI() {
+      const upi = "foundationathithya@okaxis";
+      navigator.clipboard.writeText(upi).then(() => {
+        const upiBox = document.querySelector('.donate-upi-id');
+        const originalHtml = upiBox.innerHTML;
+
+        // Visual Feedback
+        upiBox.innerHTML = "✅ UPI ID Copied!";
+        upiBox.style.background = "#e6f9ed";
+        upiBox.style.borderColor = "#25D366";
+        upiBox.style.color = "#0d6b43";
+
+        setTimeout(() => {
+          upiBox.innerHTML = originalHtml;
+          upiBox.style.background = "";
+          upiBox.style.borderColor = "";
+          upiBox.style.color = "";
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+
+    // Close donate modal on Escape
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDonateModal(); });
+
+    // ── CONVERSATIONS (Moderated Reviews) ──
+    async function submitConversation() {
+      const name = document.getElementById('conv-name').value.trim();
+      const role = document.getElementById('conv-role').value;
+      const message = document.getElementById('conv-message').value.trim();
+      const dpFile = document.getElementById('conv-dp').files[0];
+
+      if (!name || !message || name.length < 2 || message.length < 5) {
+        alert('Please provide a valid name and a detailed review (at least 5 characters).');
+        return;
+      }
+
+      let dpBase64 = null;
+      if (dpFile) {
+        dpBase64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const MAX_SIZE = 150;
+              let w = img.width;
+              let h = img.height;
+              if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
+              else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+              canvas.width = w; canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(dpFile);
+        });
+      }
+
+      const review = {
+        sheetName: 'Reviews',
+        id: 'rv_' + Date.now(),
+        name,
+        role,
+        message,
+        dp: dpBase64,
+        date: new Date().toISOString(),
+        status: 'pending'
+      };
+
+      // 1. Save to localStorage (Local Fallback)
+      const existing = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      existing.push(review);
+      localStorage.setItem('af_reviews', JSON.stringify(existing));
+
+      // 2. Sync to Google Sheets
+      sendToGoogleSheet(review);
+
+      // Clear form
+      document.getElementById('conv-name').value = '';
+      document.getElementById('conv-message').value = '';
+      document.getElementById('conv-role').selectedIndex = 0;
+      document.getElementById('conv-dp').value = '';
+
+      alert('✅ Thank you! Your review has been submitted and is awaiting approval from our admin team.');
+    }
+    // ── DYNAMIC REVIEWS (Main Page) ──
+    document.addEventListener('DOMContentLoaded', function () {
+      loadDynamicReviews();
+    });
+
+    async function loadDynamicReviews() {
+      // Load directly from local storage / Admin moderation overrides
+      const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      let published = allReviews.filter(r => r.status === 'published').reverse();
+
+      const grid = document.getElementById('dynamicReviewsGrid');
+      const moreBtn = document.getElementById('btnMoreReviews');
+
+      if (published.length > 0) {
+        const avatarColors = ['', 'tl', 'bl'];
+
+        grid.innerHTML = published.slice(0, 3).map((r, idx) => {
+          const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+          const color = avatarColors[idx % 3];
+          const dpImg = r.dp ? `<img src="${r.dp}" alt="${r.name}" onerror="this.parentElement.innerHTML='${initials}'">` : initials;
+
+          return `<div class="tc">
+            <div class="tc-qt">"</div>
+            <span class="tc-type">${r.role || 'Visitor'}</span>
+            <p>${r.message}</p>
+            <div class="tc-auth">
+              <div class="tc-av ${color}">${dpImg}</div>
+              <div>
+                <div class="tc-name">${r.name}</div>
+                <div class="tc-role">${r.role || 'Community Member'}</div>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+
+        if (moreBtn) moreBtn.style.display = published.length > 3 ? 'block' : 'none';
+      } else {
+        // Just empty if no new reviews, since we have hardcoded ones above
+        grid.innerHTML = '';
+        if (moreBtn) moreBtn.style.display = 'none';
+      }
+    }
+
+    function founderHover(id) {
+      // Slight hover interaction logged or triggered 
+    }
+
+    function openReviewsModal() {
+      document.getElementById('reviewsModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      renderAllReviews();
+    }
+
+    function closeReviewsModal() {
+      document.getElementById('reviewsModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // ── REVIEWS MODAL ──
+    async function renderAllReviews() {
+      const allReviews = JSON.parse(localStorage.getItem('af_reviews') || '[]');
+      let published = allReviews.filter(r => r.status === 'published').reverse();
+
+      const grid = document.getElementById('allReviewsGrid');
+
+      // Static Featured Reviews for the Modal
+      const featured = [];
+      if (typeof popupData !== 'undefined') {
+        [popupData.guest1, popupData.guest2, popupData.guest3].forEach(f => {
+          if (f) featured.push({
+            name: f.title,
+            role: f.role || 'Community Member',
+            message: f.desc,
+            dp: f.img,
+            status: 'published',
+            date: new Date('2026-04-01').toISOString() // Older than dynamic ones
+          });
+        });
+      }
+
+      const totalList = [...published, ...featured];
+
+      if (totalList.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--mut);padding:20px;">No reviews published yet. Be the first!</p>';
+        return;
+      }
+
+      const avatarColors = ['', 'tl', 'bl'];
+      grid.innerHTML = totalList.map((r, idx) => {
+        const initials = (r.name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        const color = avatarColors[idx % 3];
+        const dpImg = r.dp ? `<img src="${r.dp}" alt="${r.name}" onerror="this.parentElement.innerHTML='${initials}'">` : initials;
+
+        return `<div class="owner-card" style="padding: 20px; flex-direction: column; align-items: flex-start; gap: 12px; background: rgba(255,255,255,0.05); border-color: rgba(232, 97, 10, 0.15);">
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+             <span class="owner-badge" style="margin:0; color:var(--ors);">${r.role || 'Visitor'}</span>
+             <small style="color:var(--mut); font-size:0.65rem;">${new Date(r.date).toLocaleDateString()}</small>
+          </div>
+          <p style="font-size:0.85rem; color:#F7E7D3; font-style: italic; line-height:1.6;">"${r.message}"</p>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="tc-av ${color}" style="width:40px; height:40px; font-size:0.75rem;">${dpImg}</div>
+            <strong style="font-size:0.8rem; color:#fff;">${r.name}</strong>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── FULL GALLERY MODAL LOGIC ──
+    let fullGalleryData = [];
+    let sanityReadClient = null;
+
+    async function initSanityRead() {
+      if (typeof window.createSanityClient !== 'undefined') {
+        sanityReadClient = window.createSanityClient({
+          projectId: 'm5wsa8rt',
+          dataset: 'production',
+          useCdn: true, // Use CDN for public reads
+          apiVersion: '2023-01-01',
+        });
+      }
+    }
+
+    async function openGalleryModal() {
+      document.getElementById('galleryModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      const grid = document.getElementById('fullGalleryGrid');
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">📂 Loading cloud gallery...</div>';
+
+      // 1. Try to fetch from Sanity Cloud first
+      if (!sanityReadClient) await initSanityRead();
+
+      let data = [];
+      if (sanityReadClient) {
+        try {
+          const sanityItems = await sanityReadClient.fetch(`*[_type == "galleryItem"]{..., "mediaUrl": image.asset->url} | order(_createdAt desc)`);
+          data = sanityItems.map(item => ({
+            id: item._id,
+            type: item.image ? 'photo' : 'video',
+            media: item.image ? item.mediaUrl : item.videoUrl,
+            title: item.title,
+            desc: item.caption
+          }));
+        } catch (e) { console.warn('Sanity read failed, using local fallback.', e); }
+      }
+
+      // 2. Fallback to local data if Cloud failed or returned empty
+      if (!data.length) {
+        data = JSON.parse(localStorage.getItem('af_gallery') || '[]');
+      }
+
+      if (data && data.length > 0) {
+        fullGalleryData = data.map(item => ({
+          image: item.media,
+          title: item.title,
+          desc: item.desc,
+          type: item.type,
+          videoUrl: item.type === 'video' ? item.media : null
+        }));
+        renderGalleryItems(fullGalleryData);
+      } else {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--mut);">No items found in the official gallery.</div>';
+      }
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('galleryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function filterGallery(type) {
+      document.querySelectorAll('.gm-fbtn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('fbtn-' + type).classList.add('active');
+
+      const filtered = type === 'all'
+        ? fullGalleryData
+        : fullGalleryData.filter(i => i.type === type);
+
+      renderGalleryItems(filtered);
+    }
+
+    function renderGalleryItems(data) {
+      const grid = document.getElementById('fullGalleryGrid');
+      grid.innerHTML = '';
+
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'gm-item';
+        div.onclick = () => openLightbox(item.title, item.desc, item.image || item.videoUrl, item.type);
+
+        const mediaHtml = item.type === 'video'
+          ? `<video src="${item.image || item.videoUrl}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`
+          : `<img src="${item.image}" alt="${item.title}" loading="lazy">`;
+
+        div.innerHTML = `
+          ${mediaHtml}
+          <div class="gm-item-ov" style="opacity: 1; transform: none; background: linear-gradient(to top, rgba(13, 7, 0, 0.95) 0%, transparent 50%);">
+            <div class="gm-title" style="margin-bottom: 2px;">${item.title || 'Untitled'}</div>
+            <div class="gm-desc" style="font-size: 0.75rem; color: var(--ors); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${item.desc || ''}</div>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    // ── LIGHTBOX LOGIC ──
+
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeReviewsModal();
+        closeGalleryModal();
+        closeDonateModal();
+        closeWikiModal();
+        closeViewAllModal();
+      }
+    });
