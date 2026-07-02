@@ -14,7 +14,23 @@
     }
   }
 
-  // 1. Desktop Screenshot/Print key combination interceptors -> Permanent Lock
+  // 1. High-frequency focus monitor using requestAnimationFrame (beats standard interval timers)
+  function monitorFocus() {
+    if (!document.hasFocus()) {
+      enableProtection();
+    }
+    if (!isLocked) {
+      requestAnimationFrame(monitorFocus);
+    }
+  }
+  requestAnimationFrame(monitorFocus);
+
+  // 2. Viewport exit detection (triggers blackout immediately if mouse leaves the page area to open a tool)
+  document.addEventListener('mouseleave', function () {
+    enableProtection();
+  });
+
+  // 3. Desktop Screenshot/Print key combination interceptors -> Permanent Lock
   window.addEventListener('keydown', function (e) {
     if (e.key === 'PrintScreen' || e.keyCode === 44 ||
       (e.shiftKey && (e.metaKey || e.ctrlKey) && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5'))) {
@@ -23,14 +39,14 @@
     }
   });
 
-  // 2. Multitasking/Tab visibility detection (hides content in app switcher) -> Permanent Lock
+  // 4. Multitasking/Tab visibility detection (hides content in app switcher) -> Permanent Lock
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       enableProtection();
     }
   });
 
-  // 3. Blur detection (e.g., when Snipping Tool or PrintScreen overlay takes focus) -> Permanent Lock
+  // 5. Blur detection (e.g., when Snipping Tool or PrintScreen overlay takes focus) -> Permanent Lock
   window.addEventListener('blur', function () {
     enableProtection();
   });
