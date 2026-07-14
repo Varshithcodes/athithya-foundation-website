@@ -1076,7 +1076,8 @@
       </div>
       <p style="text-align:center; margin-top:15px;">
         <button onclick="document.getElementById('sanityConfigArea').style.display='block';this.style.display='none'"
-          style="background:none; border:none; padding:0; font:inherit; color:var(--mut); text-decoration:underline; cursor:pointer; font-size:0.65rem;">Advanced: Connect Sanity Cloud</button>
+          style="background:none; border:none; padding:0; font:inherit; color:var(--mut); text-decoration:underline; cursor:pointer; font-size:0.65rem;">Advanced:
+          Connect Sanity Cloud</button>
       </p>
     </div>
   </div>
@@ -1291,15 +1292,18 @@
                   </h3>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Project Title</label>
-                    <input type="text" id="newProjTitle" placeholder="e.g., Smart Classroom Initiative" style="width: 100%;">
+                    <input type="text" id="newProjTitle" placeholder="e.g., Smart Classroom Initiative"
+                      style="width: 100%;">
                   </div>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Short Description (for card)</label>
-                    <input type="text" id="newProjShortDesc" placeholder="e.g., Bringing interactive digital classrooms..." style="width: 100%;">
+                    <input type="text" id="newProjShortDesc"
+                      placeholder="e.g., Bringing interactive digital classrooms..." style="width: 100%;">
                   </div>
                   <div class="fg" style="margin-bottom: 15px;">
                     <label>Detailed Content (for wiki)</label>
-                    <textarea id="newProjDetailed" placeholder="Describe the full story of the project..." rows="5" style="width: 100%;"></textarea>
+                    <textarea id="newProjDetailed" placeholder="Describe the full story of the project..." rows="5"
+                      style="width: 100%;"></textarea>
                   </div>
                 </div>
 
@@ -1312,7 +1316,8 @@
                     style="flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; justify-content: center; position: relative;"
                     onclick="document.getElementById('projFileInput').click()">
                     <input type="file" id="projFileInput" hidden accept="image/*" onchange="handleProjPreview(this)">
-                    <div id="projPreviewWrap" style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
+                    <div id="projPreviewWrap"
+                      style="display:none; position:absolute; inset:5px; border-radius:10px; overflow:hidden; background:#000;">
                       <img id="projPreviewImg" style="width:100%; height:100%; object-fit:cover; display:none;">
                       <div onclick="event.stopPropagation(); clearProjPreview()"
                         style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
@@ -2445,7 +2450,7 @@
       async function fetchAdminProjects() {
         let projects = [];
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        
+
         // 1. Try to fetch from Sanity
         if (client) {
           try {
@@ -2502,7 +2507,7 @@
           div.className = 'gal-admin-item';
           const isShown = !!proj.showOnFront;
           const statusBadge = isShown ? '<span class="mod-status-badge published">📢 Front Page</span>' : '<span class="mod-status-badge pending">🙈 Hidden</span>';
-          
+
           div.innerHTML = `
             <div class="gal-admin-thumb">
               <img src="${proj.image}" alt="${proj.title}" style="width:100%;height:100%;object-fit:cover;">
